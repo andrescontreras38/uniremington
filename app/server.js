@@ -277,6 +277,42 @@ programas.forEach(p => {
   }
 });
 
+// Cuando el mismo programa existe en varias modalidades (ej. derecho-presencial vs
+// derecho-virtual: 98% del texto compartido, verificado por solapamiento de n-gramas —
+// 10 grupos de programas están así), Google puede leerlas como contenido casi duplicado en
+// vez de dejar que cada una compita por su propia búsqueda. Se antepone una sección propia
+// que explica qué implica esa modalidad — son las definiciones de metodología (presencial/
+// distancia/virtual) que rigen para toda la educación superior en Colombia, no se inventa
+// nada específico de Uniremington que no esté ya en los datos. Se aplica a los 65 programas
+// (no solo a los que tienen "hermanos" duplicados) porque es contenido legítimo y útil en
+// cualquier caso, con el mismo costo de implementación. Los 3 programas sin modalidad
+// definida simplemente no reciben nada (no se fabrica el dato).
+const MODALIDAD_INTRO = {
+  Presencial: {
+    id: 'modalidad-presencial',
+    title: '¿Qué significa estudiar este programa en modalidad presencial?',
+    html: '<p>En la modalidad presencial asistes a clases en el campus, dentro de un horario definido, con interacción directa y constante con tus profesores y compañeros. Es la opción pensada para quienes prefieren una rutina académica estructurada y el contacto cara a cara del aula.</p>'
+      + '<p>Además de las clases, tienes acceso a la biblioteca y los demás espacios del campus, y al acompañamiento académico propio de la vida universitaria presencial.</p>',
+  },
+  Virtual: {
+    id: 'modalidad-virtual',
+    title: '¿Qué significa estudiar este programa en modalidad virtual?',
+    html: '<p>En la modalidad virtual, tus clases, materiales y evaluaciones se desarrollan a través de una plataforma en línea. No necesitas desplazarte a un campus, lo que te da flexibilidad para organizar tus horarios de estudio alrededor de tu trabajo u otras responsabilidades.</p>'
+      + '<p>El acompañamiento académico —profesores, tutorías, comunidad de estudiantes— se mantiene a través de canales digitales, así que sigues formando parte de una comunidad de aprendizaje aunque no compartas un aula física.</p>',
+  },
+  Distancia: {
+    id: 'modalidad-distancia',
+    title: '¿Qué significa estudiar este programa a distancia?',
+    html: '<p>La modalidad a distancia combina el estudio autónomo —con material y guías de trabajo propias del programa— con encuentros periódicos de acompañamiento académico, sin exigirte asistencia diaria a un aula. Es una alternativa pensada para quienes necesitan flexibilidad geográfica y de horario para avanzar en su proceso.</p>'
+      + '<p>Mantienes contacto con profesores y compañeros a través de las tutorías y los canales de comunicación definidos por el programa, avanzando a tu propio ritmo dentro del calendario académico.</p>',
+  },
+};
+programas.forEach(p => {
+  const mod = MODALIDAD_INTRO[p.modalidad];
+  if (!mod || !p.content_html) return;
+  p.content_html = `<h2 id="${mod.id}">${mod.title}</h2>${mod.html}` + p.content_html;
+});
+
 // El índice "En esta página" (item.toc, ver programa.ejs) viene precalculado en el JSON de
 // origen y puede quedar desalineado con content_html después de una limpieza como la de
 // arriba (o si el propio HTML migrado ya traía anclas muertas) — un link del índice que
@@ -297,6 +333,16 @@ programas.forEach(p => {
       p.toc.forEach(h => { h.level = Math.min(3, h.level - shift); });
     }
   }
+});
+
+// La sección de modalidad se antepone DESPUÉS de la renormalización de arriba (no antes):
+// si se agregara al índice antes, un programa como derecho-presencial vería su nivel 2 ya
+// cubierto por esta entrada y el resto de encabezados sobrevivientes se quedaría en nivel 3
+// (sin el numerito/hover), deshaciendo esa corrección.
+programas.forEach(p => {
+  const mod = MODALIDAD_INTRO[p.modalidad];
+  if (!mod || !Array.isArray(p.toc)) return;
+  p.toc.unshift({ id: mod.id, text: mod.title, level: 2 });
 });
 
 // --- Metadescripciones ÚNICAS (dedupeMeta): Google puede ignorar las duplicadas ---
