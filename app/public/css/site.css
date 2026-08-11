@@ -713,8 +713,12 @@ section.blk.alt{background:var(--gris)}
 .sede-chip:hover{border-color:var(--azul-3);transform:translateY(-2px)}
 
 /* Perfil ocupacional del programa: cargos como chips escaneables en vez de lista vertical
-   (mismo lenguaje visual que .sede-chip, para que se sienta parte del mismo sistema). */
-.article .chip-list{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding-left:0;margin:16px 0}
+   (mismo lenguaje visual que .sede-chip, para que se sienta parte del mismo sistema).
+   list-style/padding-left llevan !important: algunos programas traen un <style> heredado
+   del tema de WordPress con ".unr-section ul{list-style:disc}" que, por tener un selector
+   de tipo (ul) además de las clases, gana por especificidad a una regla de solo clases —
+   sin !important se veía un bullet "•" de más al lado de cada chip/tarjeta. */
+.article .chip-list{display:flex;flex-wrap:wrap;gap:10px;list-style:none!important;padding-left:0!important;margin:16px 0}
 .article .chip-list li{display:flex;align-items:center;gap:7px;margin:0;background:#fff;border:1px solid var(--linea);
   border-radius:999px;padding:8px 16px 8px 13px;font-size:.86rem;font-weight:600;color:var(--tinta,var(--azul));
   box-shadow:var(--sombra-s);transition:.15s}
@@ -726,7 +730,7 @@ section.blk.alt{background:var(--gris)}
    administracion-de-empresas-agropecuarias) en vez de un cargo corto — forzar eso a chips
    se ve roto (texto partido, ícono descentrado). Se muestra como lista de tarjetas, con la
    categoría (el <strong>) como mini-título. */
-.article .def-list{list-style:none;padding-left:0;margin:16px 0;display:flex;flex-direction:column;gap:10px}
+.article .def-list{list-style:none!important;padding-left:0!important;margin:16px 0;display:flex;flex-direction:column;gap:10px}
 .article .def-list li{background:#fff;border:1px solid var(--linea);border-left:3px solid var(--azul-3);
   border-radius:0 10px 10px 0;padding:12px 16px;font-size:.92rem;line-height:1.55;color:var(--texto);
   text-align:left!important}

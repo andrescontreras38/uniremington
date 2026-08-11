@@ -78,6 +78,24 @@ pages.forEach(item => {
   );
 })();
 
+// 11 programas traen un <style> completo incrustado en su content_html (pegado del tema
+// original de WordPress al redactar el contenido, probablemente con ayuda de IA — algunos
+// hasta traen atributos data-start/data-end de copy-paste). Son ~200 reglas en total,
+// varias con !important, sobre clases (.unr-container, .unr-perfil-seccion, .grid, .item,
+// etc.) — YA encontramos 3 conflictos reales con el CSS del sitio (margin-top, justify-
+// content, list-style) resueltos con parches puntuales, y con font-size/color en !important
+// de por medio seguro hay más sin detectar. Verificado que NINGUNA de esas clases decorativas
+// (.grid, .item, .icon, .unr-button, etc.) tiene efecto visual sin su <style> — son <div>/
+// <section> sin estilo propio del navegador, así que quitar el <style> las deja como
+// contenedores inertes (invisibles) sin perder nada: el contenido real (h2/h3/p/ul/tabla)
+// ya se ve bien con el CSS normal del sitio. Se quita de TODAS las páginas, no solo estas
+// 11, por si aparece en otro contenido migrado a futuro.
+pages.forEach(item => {
+  if (item.content_html && /<style[^>]*>/i.test(item.content_html)) {
+    item.content_html = item.content_html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+  }
+});
+
 // 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
 // Se define aquí (temprano) porque la limpieza de abajo y dedupeMeta() la necesitan.
 const SEDES = {
@@ -229,6 +247,32 @@ function toEvent(e){ return { slug:e.slug, url:e.url, title:e.title, dia:calDia(
 
 // programas: identificados por el pipeline (URL bajo /facultades/)
 const programas = pages.filter(p => p.is_program);
+
+// Consistencia estructural: 13 de 65 programas (varios de alta calificada reciente, ej.
+// diseno-de-espacios-y-entornos-virtuales, especializacion-en-ciberseguridad,
+// maestria-en-administracion) traen "Título Otorgado"/"Perfil Profesional"/
+// "Perfil Ocupacional"/"Pénsum" como <h3> en vez de <h2> — se ven más pequeños que el
+// resto de secciones de la misma página y, más importante, convertirPerfilOcupacional()
+// (más abajo) solo busca <h2> para convertir la lista de cargos en chips, así que esos
+// programas se quedaban sin chips ni occupationalCategory. Se promueven a <h2> aquí,
+// ANTES de cualquier otra transformación — pero solo cuando el encabezado es "puro" (sin
+// sufijo de sede después, ej. NO toca "Pensum" ni "Perfil Profesional – Apartadó" dentro
+// del acordeón .unr-perfil-seccion de derecho-laboral y similares, donde <h3> sí es
+// correcto por ir anidado bajo el <h2> "Consulta el perfil... por sede").
+const NUCLEO_ESTRUCTURAL_RE = /^(t[ií]tulo (otorgado|a otorgar)|perfil profesional|perfil ocupacional|p[ée]nsum)$/i;
+programas.forEach(p => {
+  if (!p.content_html) return;
+  let dentroDeSede = false;
+  p.content_html = p.content_html.replace(/<section class="unr-perfil-seccion">|<\/section>|<h([34])([^>]*)>([\s\S]*?)<\/h\1>/gi,
+    (full, hLevel, attrs, inner) => {
+      if (full === '<section class="unr-perfil-seccion">') { dentroDeSede = true; return full; }
+      if (full === '</section>') { dentroDeSede = false; return full; }
+      if (dentroDeSede) return full;
+      const plain = (inner || '').replace(/<[^>]+>/g, '').trim();
+      if (!NUCLEO_ESTRUCTURAL_RE.test(plain)) return full;
+      return `<h2${attrs}>${inner}</h2>`;
+    });
+});
 
 // "Perfil Ocupacional": la lista de cargos a los que habilita el programa se lee mejor
 // como chips escaneables (ver .chip-list en site.css) que como una lista vertical larga
