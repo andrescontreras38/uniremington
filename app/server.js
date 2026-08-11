@@ -62,6 +62,20 @@ pages.forEach(item => {
   const newStart = item.content_html.indexOf('<div class="ms"><style data-ms>');
   if (oldStart === -1 || newStart === -1 || newStart <= oldStart) return;
   item.content_html = item.content_html.slice(0, oldStart) + item.content_html.slice(newStart);
+
+  // Además, dentro de ese acordeón por sede, las etiquetas <summary> (el nombre de la
+  // ciudad que se ve plegado) están corridas una posición respecto a su propio contenido:
+  // el bloque de "Bucaramanga" le falta y el resto de secciones se recorrió, así que
+  // "Bucaramanga" termina envolviendo el contenido real de Cúcuta, "Cúcuta" el de Ibagué,
+  // etc. — verificado comparando cada <summary> contra el <h3>Perfil Profesional – X</h3>
+  // que trae adentro. Se corrige realineando cada etiqueta con el nombre real de su propio
+  // contenido (nunca se inventa texto: si el <h3> interno no existe, no se toca esa parte).
+  // La sede sin contenido (Bucaramanga) simplemente deja de listarse como plegable — sigue
+  // siendo un vacío real de los datos migrados, no algo que se deba inventar aquí.
+  item.content_html = item.content_html.replace(
+    /(<details class="unr-sede-item"[^>]*><summary>)[^<]*(<\/summary><section class="unr-perfil-seccion">\s*<h3>Perfil Profesional\s*[–—-]\s*([^<]+)<\/h3>)/g,
+    (full, before, after, city) => before + city.trim() + after
+  );
 })();
 
 // 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
