@@ -259,6 +259,16 @@ programas.forEach(p => {
   }
 });
 
+// El índice "En esta página" (item.toc, ver programa.ejs) viene precalculado en el JSON de
+// origen y puede quedar desalineado con content_html después de una limpieza como la de
+// arriba (o si el propio HTML migrado ya traía anclas muertas) — un link del índice que
+// apunta a un id que ya no existe en la página. Se filtra aquí, después de todas las
+// transformaciones, contra los id= que de verdad quedaron en el HTML final.
+programas.forEach(p => {
+  if (!p.toc || !p.toc.length || !p.content_html) return;
+  p.toc = p.toc.filter(h => h.id && p.content_html.includes(`id="${h.id}"`));
+});
+
 // --- Metadescripciones ÚNICAS (dedupeMeta): Google puede ignorar las duplicadas ---
 // Muchas páginas comparten intro/plantilla → misma descripción. Se ancla con el TÍTULO
 // (único por página) cuando el cuerpo es pobre o se repite, garantizando unicidad.
