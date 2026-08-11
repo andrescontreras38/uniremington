@@ -96,6 +96,22 @@ pages.forEach(item => {
   }
 });
 
+// 3 programas (derecho-laboral, procedimientos-en-derecho-de-familia, ingenieria-en-
+// seguridad-y-salud-en-el-trabajo-distancia) repiten el pénsum una vez más al final de la
+// página, fuera del acordeón por sede — verificado que ese "Pénsum" final es literalmente
+// el mismo contenido que ya se muestra dentro de una de las tarjetas por sede (con otro
+// formato de tabla, pero mismas materias/créditos), no un pénsum distinto o genérico. Se
+// quita esa última sección redundante SOLO cuando la página además tiene el acordeón por
+// sede (unr-sede-item) — si no lo tiene (ej. maestria-en-ciencias-de-la-salud), ese
+// "Pénsum" final es el único y legítimo, como en cualquier programa normal, y no se toca.
+pages.forEach(item => {
+  if (!item.content_html || !item.content_html.includes('class="unr-sede-item"')) return;
+  const re = /<h2[^>]*>\s*Pénsum\s*<\/h2>/gi;
+  let lastMatch = null, m;
+  while ((m = re.exec(item.content_html))) lastMatch = m;
+  if (lastMatch) item.content_html = item.content_html.slice(0, lastMatch.index);
+});
+
 // 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
 // Se define aquí (temprano) porque la limpieza de abajo y dedupeMeta() la necesitan.
 const SEDES = {
