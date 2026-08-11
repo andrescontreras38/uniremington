@@ -1078,7 +1078,14 @@ a.doc-pdf + a.doc-pdf{margin-left:0}
   display:grid;place-items:center;font-weight:800;font-size:1rem;text-decoration:none;transition:.15s}
 .sede-social a:hover{background:var(--rojo,#e30613);transform:translateY(-2px)}
 
-/* Video embebido de YouTube (vc_video): 16:9 responsive y contenido */
+/* Video embebido de YouTube (vc_video): 16:9 responsive y contenido.
+   Base sin ámbito: red de seguridad para cualquier página que no sea .dep-content/
+   .fac-content/.blog-body (las únicas 3 con su propio tratamiento visual más abajo) — ej.
+   las páginas de programa, donde sin esto el video quedaba al tamaño mínimo del navegador
+   (304×154px) apenas se le daba clic al botón de play. */
+.video-embed{max-width:720px;margin:24px auto;border-radius:14px;overflow:hidden;box-shadow:var(--sombra-s);background:#000}
+.video-embed iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;margin:0;border-radius:14px}
+
 .dep-content .video-embed{max-width:720px;margin:24px auto;border-radius:14px;overflow:hidden;box-shadow:var(--sombra-s);background:#000}
 .dep-content .video-embed iframe{display:block;width:100%;aspect-ratio:16/9;height:auto;border:0;margin:0;border-radius:14px}
 

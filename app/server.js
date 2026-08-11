@@ -99,6 +99,24 @@ pages.forEach(item => {
   }
 });
 
+// Videos de YouTube sin envolver en .video-embed — ese contenedor (con aspect-ratio:16/9 en
+// site.css) es lo que hace que el video escale bien en cualquier tamaño de pantalla.
+// Auditado: 142 de 144 iframes de YouTube en todo el sitio ya lo tienen; 2 no — uno con una
+// altura fija en píxeles (no escala en móvil), el otro sin ningún contenedor. Se envuelven
+// automáticamente; los 142 que ya están bien quedan intactos (se detecta el wrapper mirando
+// el texto justo antes del iframe).
+pages.forEach(item => {
+  if (!item.content_html || !/<iframe[^>]*youtube/i.test(item.content_html)) return;
+  item.content_html = item.content_html.replace(
+    /<iframe[^>]*src="https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/[^"]*"[^>]*>\s*<\/iframe>/gi,
+    (match, offset, str) => {
+      const before = str.slice(Math.max(0, offset - 40), offset);
+      if (/class="video-embed"/.test(before)) return match;
+      return `<div class="video-embed">${match}</div>`;
+    }
+  );
+});
+
 // 3 programas (derecho-laboral, procedimientos-en-derecho-de-familia, ingenieria-en-
 // seguridad-y-salud-en-el-trabajo-distancia) repiten el pénsum una vez más al final de la
 // página, fuera del acordeón por sede — verificado que ese "Pénsum" final es literalmente
