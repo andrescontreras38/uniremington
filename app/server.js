@@ -431,19 +431,19 @@ programas.forEach(p => {
 const MODALIDAD_INTRO = {
   Presencial: {
     id: 'modalidad-presencial',
-    title: '¿Qué significa estudiar este programa en modalidad presencial?',
+    title: '¿Qué implica estudiar este programa en modalidad presencial?',
     html: '<p>En la modalidad presencial asistes a clases en el campus, dentro de un horario definido, con interacción directa y constante con tus profesores y compañeros. Es la opción pensada para quienes prefieren una rutina académica estructurada y el contacto cara a cara del aula.</p>'
       + '<p>Además de las clases, tienes acceso a la biblioteca y los demás espacios del campus, y al acompañamiento académico propio de la vida universitaria presencial.</p>',
   },
   Virtual: {
     id: 'modalidad-virtual',
-    title: '¿Qué significa estudiar este programa en modalidad virtual?',
+    title: '¿Qué implica estudiar este programa en modalidad virtual?',
     html: '<p>En la modalidad virtual, tus clases, materiales y evaluaciones se desarrollan a través de una plataforma en línea. No necesitas desplazarte a un campus, lo que te da flexibilidad para organizar tus horarios de estudio alrededor de tu trabajo u otras responsabilidades.</p>'
       + '<p>El acompañamiento académico —profesores, tutorías, comunidad de estudiantes— se mantiene a través de canales digitales, así que sigues formando parte de una comunidad de aprendizaje aunque no compartas un aula física.</p>',
   },
   Distancia: {
     id: 'modalidad-distancia',
-    title: '¿Qué significa estudiar este programa a distancia?',
+    title: '¿Qué implica estudiar este programa a distancia?',
     html: '<p>La modalidad a distancia combina el estudio autónomo —con material y guías de trabajo propias del programa— con encuentros periódicos de acompañamiento académico, sin exigirte asistencia diaria a un aula. Es una alternativa pensada para quienes necesitan flexibilidad geográfica y de horario para avanzar en su proceso.</p>'
       + '<p>Mantienes contacto con profesores y compañeros a través de las tutorías y los canales de comunicación definidos por el programa, avanzando a tu propio ritmo dentro del calendario académico.</p>',
   },
