@@ -55,7 +55,11 @@ pages.forEach(item => {
   const item = pages.find(p => p.slug === 'derecho-presencial');
   if (!item || !item.content_html) return;
   const oldStart = item.content_html.indexOf('<h2 id="titulo-otorgado">Título Otorgado</h2>');
-  const newStart = item.content_html.indexOf('<style data-ms>');
+  // El <div class="ms"> envuelve todo el bloque nuevo (estilos + secciones por sede) y su
+  // </div> de cierre queda al final del documento — el corte tiene que empezar EN esa
+  // apertura (no en el <style> que viene justo después) para no dejar un cierre huérfano
+  // que rompe el layout de la página (la barra lateral se cae fuera de la grilla).
+  const newStart = item.content_html.indexOf('<div class="ms"><style data-ms>');
   if (oldStart === -1 || newStart === -1 || newStart <= oldStart) return;
   item.content_html = item.content_html.slice(0, oldStart) + item.content_html.slice(newStart);
 })();
