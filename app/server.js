@@ -285,6 +285,18 @@ programas.forEach(p => {
 programas.forEach(p => {
   if (!p.toc || !p.toc.length || !p.content_html) return;
   p.toc = p.toc.filter(h => h.id && p.content_html.includes(`id="${h.id}"`));
+  // Si el filtro de arriba se llevó todos los encabezados de nivel 2 (ej. derecho-presencial:
+  // sobrevivieron solo los h3 de la sección nueva), el índice queda compuesto solo por
+  // ítems "toc-l3" — se ven como sub-ítems sueltos, sin el numerito ni el hover dorado que
+  // sí tienen las demás páginas. Se renormaliza para que el nivel más alto que quede pase a
+  // ser el "principal" (toc-l2), preservando el orden relativo entre los que sobrevivieron.
+  if (p.toc.length) {
+    const minLevel = Math.min(...p.toc.map(h => h.level));
+    if (minLevel > 2) {
+      const shift = minLevel - 2;
+      p.toc.forEach(h => { h.level = Math.min(3, h.level - shift); });
+    }
+  }
 });
 
 // --- Metadescripciones ÚNICAS (dedupeMeta): Google puede ignorar las duplicadas ---
