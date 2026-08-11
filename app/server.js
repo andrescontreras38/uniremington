@@ -78,20 +78,23 @@ pages.forEach(item => {
   );
 })();
 
-// 11 programas traen un <style> completo incrustado en su content_html (pegado del tema
+// 11 PROGRAMAS traen un <style> completo incrustado en su content_html (pegado del tema
 // original de WordPress al redactar el contenido, probablemente con ayuda de IA — algunos
 // hasta traen atributos data-start/data-end de copy-paste). Son ~200 reglas en total,
 // varias con !important, sobre clases (.unr-container, .unr-perfil-seccion, .grid, .item,
-// etc.) — YA encontramos 3 conflictos reales con el CSS del sitio (margin-top, justify-
-// content, list-style) resueltos con parches puntuales, y con font-size/color en !important
-// de por medio seguro hay más sin detectar. Verificado que NINGUNA de esas clases decorativas
-// (.grid, .item, .icon, .unr-button, etc.) tiene efecto visual sin su <style> — son <div>/
-// <section> sin estilo propio del navegador, así que quitar el <style> las deja como
-// contenedores inertes (invisibles) sin perder nada: el contenido real (h2/h3/p/ul/tabla)
-// ya se ve bien con el CSS normal del sitio. Se quita de TODAS las páginas, no solo estas
-// 11, por si aparece en otro contenido migrado a futuro.
+// etc.) — ya encontramos 3 conflictos reales con el CSS del sitio (margin-top, justify-
+// content, list-style) resueltos con parches puntuales. Verificado en ESOS 11 programas
+// específicamente que ninguna de esas clases decorativas tiene efecto visual sin su
+// <style> (son <div>/<section> sin estilo propio del navegador).
+// IMPORTANTE — esto NO se generaliza a todo `pages`: otras 57 páginas (ej. /investigacion/
+// y sus grupos/semilleros, consultorios jurídicos, etc.) también traen <style> embebido,
+// pero ahí SÍ hace cosas reales y visibles (grids de imágenes con aspect-ratio, líneas de
+// tiempo con posicionamiento absoluto) — quitarlo les rompió el layout en producción. Por
+// eso esto corre solo sobre `programas`, filtrado explícitamente aquí (page.json ya trae
+// is_program, aunque `programas` como array todavía no está definido en este punto del
+// archivo) y nunca sobre `pages` completo.
 pages.forEach(item => {
-  if (item.content_html && /<style[^>]*>/i.test(item.content_html)) {
+  if (item.is_program && item.content_html && /<style[^>]*>/i.test(item.content_html)) {
     item.content_html = item.content_html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
   }
 });
