@@ -287,6 +287,32 @@ programas.forEach(p => {
 // (no solo a los que tienen "hermanos" duplicados) porque es contenido legítimo y útil en
 // cualquier caso, con el mismo costo de implementación. Los 3 programas sin modalidad
 // definida simplemente no reciben nada (no se fabrica el dato).
+// "Título que obtienes" (ficha.titulo): falta en 15 de 65 programas (todas
+// especializaciones/maestrías/ingenierías más nuevas) — programa.ejs envuelve esa caja en
+// `if (ficha.titulo)`, así que esas 15 páginas simplemente no la muestran. El resto de
+// programas sigue un patrón 100% mecánico a partir de item.title (Especialización en X →
+// Especialista en X; Maestría en X → Magíster en X; Ingeniería de/en/[adj] X → Ingeniero
+// de/en/ X) — verificado contra los 28 casos donde el patrón aplica Y ya existe un
+// ficha.titulo real: 28/28 coinciden exactamente. Nunca sobreescribe un valor ya presente.
+function derivarTituloOtorgado(title) {
+  const base = (title || '').replace(/\s*[-–]\s*(Presencial|Virtual|Distancia|Combinada)\s*$/i, '').trim();
+  let out = null;
+  if (/^Especialización en /i.test(base)) out = base.replace(/^Especialización en /i, 'Especialista en ');
+  else if (/^Maestría en /i.test(base)) out = base.replace(/^Maestría en /i, 'Magíster en ');
+  else if (/^Ingeniería de /i.test(base)) out = base.replace(/^Ingeniería de /i, 'Ingeniero de ');
+  else if (/^Ingeniería en /i.test(base)) out = base.replace(/^Ingeniería en /i, 'Ingeniero en ');
+  else if (/^Ingeniería /i.test(base)) out = base.replace(/^Ingeniería /i, 'Ingeniero ');
+  return out ? out.replace(/\s+/g, ' ').trim() : null;
+}
+programas.forEach(p => {
+  if (p.ficha && p.ficha.titulo) return;
+  const derivado = derivarTituloOtorgado(p.title);
+  if (!derivado) return;
+  p.ficha = p.ficha || {};
+  p.ficha.titulo = derivado;
+  console.log(`[ficha.titulo derivado] ${p.slug} -> ${derivado}`);
+});
+
 const MODALIDAD_INTRO = {
   Presencial: {
     id: 'modalidad-presencial',
@@ -307,10 +333,50 @@ const MODALIDAD_INTRO = {
       + '<p>Mantienes contacto con profesores y compañeros a través de las tutorías y los canales de comunicación definidos por el programa, avanzando a tu propio ritmo dentro del calendario académico.</p>',
   },
 };
+const TITULO_OTORGADO_RE = /título otorgado|título a otorgar/i;
 programas.forEach(p => {
+  if (!p.content_html) return;
+  let prefix = '';
   const mod = MODALIDAD_INTRO[p.modalidad];
-  if (!mod || !p.content_html) return;
-  p.content_html = `<h2 id="${mod.id}">${mod.title}</h2>${mod.html}` + p.content_html;
+  if (mod) prefix += `<h2 id="${mod.id}">${mod.title}</h2>${mod.html}`;
+  // 2 programas no traen el encabezado "Título Otorgado" en el HTML migrado (subconjunto
+  // de los 15 a los que se les acaba de derivar ficha.titulo arriba). Se agrega solo si
+  // de verdad falta y ya hay un ficha.titulo real con el que llenarlo — nunca se inventa.
+  if (p.ficha && p.ficha.titulo && !TITULO_OTORGADO_RE.test(p.content_html)) {
+    prefix += `<h2 id="titulo-otorgado">Título Otorgado</h2><p>${p.ficha.titulo}.</p>`;
+  }
+  if (prefix) p.content_html = prefix + p.content_html;
+});
+
+// 31 de 65 programas no tienen ninguna sección "¿Por qué estudiar [programa]?" en su
+// content_html — sí conservan las 4 tarjetas genéricas "Razones para elegirnos" que ya
+// vienen fijas en programa.ejs, pero pierden el cierre específico del programa que sí
+// tienen los otros 34 (ej. derecho-presencial). Ninguno de estos 31 tiene ficha.roles
+// (roles ocupacionales extraídos antes en esta sesión) para construir un cierre basado en
+// cargos reales, así que se arma con campos que SÍ existen siempre — título, modalidad,
+// duración, nivel, número de sedes — nunca con logros/cifras/testimonios fabricados. Se
+// agrega solo donde falta, al final del contenido (mismo lugar donde aparece
+// orgánicamente en los programas que ya lo traen).
+const POR_QUE_ESTUDIAR_RE = /por qu[eé] (estudiar|elegir)/i;
+programas.forEach(p => {
+  if (!p.content_html || POR_QUE_ESTUDIAR_RE.test(p.content_html)) return;
+  const nombre = (p.title || '').replace(/\s*[-–]\s*(Presencial|Virtual|Distancia|Combinada)\s*$/i, '').trim();
+  if (!nombre) return;
+  const ficha = p.ficha || {};
+  const detalles = [];
+  if (p.nivel) detalles.push(`un programa de ${p.nivel.toLowerCase()}`);
+  if (p.modalidad) detalles.push(`en modalidad ${p.modalidad.toLowerCase()}`);
+  if (ficha.duracion) detalles.push(`con una duración de ${ficha.duracion.toLowerCase()}`);
+  const fraseDetalles = detalles.length ? `Es ${detalles.join(', ')}.` : '';
+  const fraseTitulo = ficha.titulo ? ` obtienes el título de ${ficha.titulo}, con` : ' cuentas con';
+  const sedesN = Array.isArray(p.sedes) ? p.sedes.length : 0;
+  const fraseSedes = sedesN > 1 ? ` Está disponible en ${sedesN} sedes en el país, para que estudies cerca de ti.` : '';
+  const id = 'por-que-estudiar-' + p.slug;
+  const html = `<h2 id="${id}">¿Por qué estudiar ${nombre} en Uniremington?</h2>`
+    + `<p>Al estudiar ${nombre} en Uniremington${fraseTitulo} el respaldo de una institución con más de 110 años de trayectoria y registro calificado vigente ante el Ministerio de Educación Nacional. ${fraseDetalles}${fraseSedes}</p>`
+    + `<p>Si quieres conocer más sobre el proceso de admisión y las opciones de financiación, escríbenos o deja tus datos en el formulario de esta página — un asesor académico te acompañará en todo el proceso.</p>`;
+  p.content_html += html;
+  if (Array.isArray(p.toc)) p.toc.push({ id, text: `¿Por qué estudiar ${nombre} en Uniremington?`, level: 2 });
 });
 
 // El índice "En esta página" (item.toc, ver programa.ejs) viene precalculado en el JSON de
