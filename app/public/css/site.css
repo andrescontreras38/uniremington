@@ -735,8 +735,8 @@ section.blk.alt{background:var(--gris)}
 .article details.unr-sede-item{border:1px solid var(--linea);border-left:4px solid var(--oro-2);border-radius:10px;
   margin:14px 0;background:#fff;overflow:hidden;box-shadow:var(--sombra-s)}
 .article details.unr-sede-item summary{cursor:pointer;list-style:none;padding:15px 48px 15px 18px;position:relative;
-  display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;color:var(--azul);
-  font-size:1.06rem;background:var(--gris)}
+  display:flex;align-items:center;justify-content:flex-start;gap:10px;font-family:var(--serif);font-weight:700;
+  color:var(--azul);font-size:1.06rem;background:var(--gris)}
 .article details.unr-sede-item summary::-webkit-details-marker{display:none}
 .article details.unr-sede-item summary::before{content:"location_on";font-family:'Material Symbols Sharp';
   font-size:1.2em;color:var(--oro-2);flex:none}
@@ -747,7 +747,11 @@ section.blk.alt{background:var(--gris)}
   border-bottom:1px solid var(--linea)}
 .article details.unr-sede-item[open] summary::before{color:#fff}
 .article details.unr-sede-item[open] summary::after{content:"–";color:#ff9aa2}
-.article details.unr-sede-item .unr-perfil-seccion{padding:18px 20px 24px;display:block}
+/* El HTML migrado de este programa trae su propio <style> heredado del tema de WordPress
+   (.unr-perfil-seccion{margin-top:-50px;color:#000}) pensado para un diseño distinto —
+   con el acordeón nuevo eso deja el texto montado encima de la barra azul del summary.
+   Se neutraliza explícitamente (mayor especificidad que ese selector, no hace falta !important). */
+.article details.unr-sede-item .unr-perfil-seccion{padding:18px 20px 24px;margin-top:0;display:block}
 .article details.unr-sede-item .unr-perfil-seccion>*:first-child{margin-top:0}
 .article details.unr-sede-item .unr-perfil-seccion h3{margin-top:24px}
 
