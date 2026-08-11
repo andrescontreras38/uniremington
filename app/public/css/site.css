@@ -722,6 +722,35 @@ section.blk.alt{background:var(--gris)}
 .article .chip-list li::before{content:"check_circle";font-family:'Material Symbols Sharp';font-size:1.05em;
   color:var(--azul-3);flex:none}
 
+/* Pénsum por sede: cuando un programa ofrece currículos distintos según la ciudad (ej.
+   derecho-laboral, 8 sedes; ingeniería en seguridad y salud a distancia, 11), el HTML
+   migrado de WordPress YA trae cada trío Perfil Profesional/Ocupacional/Pénsum envuelto en
+   su propio <details class="unr-sede-item"> dentro de <div class="unr-acordeon-sede">, con
+   la primera sede abierta y el resto plegado — pero esas clases nunca tuvieron CSS, así que
+   se veían como texto plano sin distinción alguna entre sedes. Se estiliza aquí como
+   acordeón (mismo lenguaje que .article details.acc) con acento dorado y un ícono de
+   ubicación delante del nombre de cada sede, para que "elige tu sede" se lea de un vistazo y
+   no se confunda con los acordeones de contenido (semestres, preguntas frecuentes, etc). */
+.article .unr-acordeon-sede{margin:20px 0 28px}
+.article details.unr-sede-item{border:1px solid var(--linea);border-left:4px solid var(--oro-2);border-radius:10px;
+  margin:14px 0;background:#fff;overflow:hidden;box-shadow:var(--sombra-s)}
+.article details.unr-sede-item summary{cursor:pointer;list-style:none;padding:15px 48px 15px 18px;position:relative;
+  display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;color:var(--azul);
+  font-size:1.06rem;background:var(--gris)}
+.article details.unr-sede-item summary::-webkit-details-marker{display:none}
+.article details.unr-sede-item summary::before{content:"location_on";font-family:'Material Symbols Sharp';
+  font-size:1.2em;color:var(--oro-2);flex:none}
+.article details.unr-sede-item summary::after{content:"+";position:absolute;right:18px;top:50%;
+  transform:translateY(-50%);font-size:1.4rem;color:var(--oro-2)}
+.article details.unr-sede-item:hover summary{filter:brightness(.985)}
+.article details.unr-sede-item[open] summary{background:linear-gradient(90deg,var(--azul),var(--azul-2));color:#fff;
+  border-bottom:1px solid var(--linea)}
+.article details.unr-sede-item[open] summary::before{color:#fff}
+.article details.unr-sede-item[open] summary::after{content:"–";color:#ff9aa2}
+.article details.unr-sede-item .unr-perfil-seccion{padding:18px 20px 24px;display:block}
+.article details.unr-sede-item .unr-perfil-seccion>*:first-child{margin-top:0}
+.article details.unr-sede-item .unr-perfil-seccion h3{margin-top:24px}
+
 /* CTA final: refuerzos */
 .lead-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:.86rem;color:#cfe0f2}
 .lead-trust span{font-weight:600}

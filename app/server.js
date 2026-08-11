@@ -42,6 +42,24 @@ pages.forEach(item => {
   }
 });
 
+// derecho-presencial: el contenido migrado de WordPress trae la página ENTERA duplicada —
+// una versión antigua (agrupa 5 sedes bajo un solo perfil/pénsum genérico y menciona
+// "Bogotá", que ya no es una sede real: no está en item.sedes ni en los registros SNIES
+// del propio encabezado) seguida de la versión nueva y correcta (perfil, perfil ocupacional
+// y pénsum propios para cada una de las 9 sedes reales, coincide con item.sedes). Se
+// conserva solo la versión nueva —la misma que ya trae el acordeón .unr-sede-item
+// estilizado en site.css— y el bloque de resoluciones SNIES inicial, que no se repite.
+// Verificado con ambos marcadores exactos presentes y en orden antes de tocar nada; si el
+// dato de origen cambia y deja de calzar, esto no hace nada (no corrompe el contenido).
+(function fixDerechoPresencialDup() {
+  const item = pages.find(p => p.slug === 'derecho-presencial');
+  if (!item || !item.content_html) return;
+  const oldStart = item.content_html.indexOf('<h2 id="titulo-otorgado">Título Otorgado</h2>');
+  const newStart = item.content_html.indexOf('<style data-ms>');
+  if (oldStart === -1 || newStart === -1 || newStart <= oldStart) return;
+  item.content_html = item.content_html.slice(0, oldStart) + item.content_html.slice(newStart);
+})();
+
 // 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
 // Se define aquí (temprano) porque la limpieza de abajo y dedupeMeta() la necesitan.
 const SEDES = {
