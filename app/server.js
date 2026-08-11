@@ -256,8 +256,26 @@ function convertirPerfilOcupacional(html) {
     const sectionEnd = (i + 1 < headings.length) ? headings[i + 1].start : out.length;
     const before = out.slice(0, sectionStart);
     const section = out.slice(sectionStart, sectionEnd).replace(/<ul>([\s\S]*?)<\/ul>/gi, (full, inner) => {
-      const items = [...inner.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)]
-        .map(li => li[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().replace(/\.$/, ''))
+      const liList = [...inner.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map(li => li[1]);
+      if (!liList.length) return full;
+      // Caso "categoría: descripción larga" (ej. administracion-de-empresas-agropecuarias:
+      // "Liderazgo y gestión estratégica: empresas agropecuarias, cooperativas...") — un
+      // <strong>etiqueta:</strong> corto seguido de una frase larga. Forzar esto a chips
+      // (pensados para etiquetas cortas) se ve roto: el ícono queda descentrado y el texto
+      // se parte a media palabra. Si la MAYORÍA de los <li> de esta lista siguen ese
+      // patrón, se deja como lista normal (mejor legibilidad) y solo la etiqueta corta
+      // (sin la descripción) alimenta el schema — sigue siendo un dato real, no inventado.
+      const LABEL_RE = /^\s*<strong>\s*([^<]+?):\s*<\/strong>/i;
+      const conLabel = liList.filter(li => LABEL_RE.test(li)).length;
+      if (conLabel / liList.length > 0.5) {
+        liList.forEach(li => {
+          const lm = li.match(LABEL_RE);
+          if (lm) roles.unshift(lm[1].replace(/\s+/g, ' ').trim());
+        });
+        return '<ul class="def-list">' + inner + '</ul>';
+      }
+      const items = liList
+        .map(li => li.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().replace(/\.$/, ''))
         .filter(Boolean);
       roles.unshift(...items);
       return '<ul class="chip-list">' + inner + '</ul>';
@@ -274,6 +292,40 @@ programas.forEach(p => {
   if (roles.length) {
     p.ficha = p.ficha || {};
     p.ficha.roles = roles;
+  }
+});
+
+// "Perfil Profesional"/"Perfil Ocupacional": encabezados institucionales correctos pero
+// poco vendedores para un futuro estudiante, y peores para SEO/GEO que un titular en
+// formato beneficio (la gente busca "qué aprendo estudiando X" o "en qué puedo trabajar
+// si estudio X", no "perfil profesional X"). Se reemplaza el TEXTO del encabezado
+// (conservando el nivel h2/h3 y el id, para no romper anclas ni el índice) por algo
+// orientado al beneficio — se preserva el sufijo de sede o programa cuando lo hay
+// ("– Apartadó", "– Ingeniería Civil"). Se corre DESPUÉS de convertirPerfilOcupacional
+// porque esa función busca el texto original "perfil ocupacional" para ubicar la sección.
+// De paso esto quita los <span style="color:..."> variopintos que traían 22 de estos
+// encabezados (colores al azar puestos por el editor de WordPress, sin relación con el
+// diseño del sitio) — el h2/h3 vuelve a heredar el azul institucional consistente.
+const PERFIL_HEADING_RE = /^perfil (profesional|ocupacional)\s*(.*)$/i;
+function textoPerfilVendedor(plain) {
+  const m = plain.match(PERFIL_HEADING_RE);
+  if (!m) return null;
+  const suffix = m[2].replace(/^(de\s+|[–—-]\s*)/i, '').trim();
+  const base = m[1].toLowerCase() === 'profesional' ? 'Te graduarás con estas habilidades' : 'Podrás ejercer estos cargos';
+  return suffix ? `${base} – ${suffix}` : base;
+}
+programas.forEach(p => {
+  if (!p.content_html) return;
+  p.content_html = p.content_html.replace(/<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi, (full, tag, attrs, inner) => {
+    const plain = inner.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    const nuevo = textoPerfilVendedor(plain);
+    return nuevo ? `<${tag}${attrs}>${nuevo}</${tag}>` : full;
+  });
+  if (Array.isArray(p.toc)) {
+    p.toc.forEach(h => {
+      const nuevo = textoPerfilVendedor((h.text || '').trim());
+      if (nuevo) h.text = nuevo;
+    });
   }
 });
 
