@@ -712,6 +712,16 @@ section.blk.alt{background:var(--gris)}
 .sede-chip{background:#fff;border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-size:.9rem;font-weight:600;color:var(--azul);box-shadow:var(--sombra-s);transition:.15s}
 .sede-chip:hover{border-color:var(--azul-3);transform:translateY(-2px)}
 
+/* Perfil ocupacional del programa: cargos como chips escaneables en vez de lista vertical
+   (mismo lenguaje visual que .sede-chip, para que se sienta parte del mismo sistema). */
+.article .chip-list{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding-left:0;margin:16px 0}
+.article .chip-list li{display:flex;align-items:center;gap:7px;margin:0;background:#fff;border:1px solid var(--linea);
+  border-radius:999px;padding:8px 16px 8px 13px;font-size:.86rem;font-weight:600;color:var(--tinta,var(--azul));
+  box-shadow:var(--sombra-s);transition:.15s}
+.article .chip-list li:hover{border-color:var(--azul-3);transform:translateY(-2px);box-shadow:var(--sombra)}
+.article .chip-list li::before{content:"check_circle";font-family:'Material Symbols Sharp';font-size:1.05em;
+  color:var(--azul-3);flex:none}
+
 /* CTA final: refuerzos */
 .lead-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:.86rem;color:#cfe0f2}
 .lead-trust span{font-weight:600}

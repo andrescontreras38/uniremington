@@ -194,6 +194,53 @@ function toEvent(e){ return { slug:e.slug, url:e.url, title:e.title, dia:calDia(
 // programas: identificados por el pipeline (URL bajo /facultades/)
 const programas = pages.filter(p => p.is_program);
 
+// "Perfil Ocupacional": la lista de cargos a los que habilita el programa se lee mejor
+// como chips escaneables (ver .chip-list en site.css) que como una lista vertical larga
+// (hasta 11 ítems en algún programa) — y esos mismos cargos alimentan el schema.org del
+// programa (occupationalCategory, en jsonldPrograma) para SEO/GEO. Solo aplica donde el
+// contenido migrado trae al menos una lista <ul> real bajo ese encabezado (verificado:
+// 46 de 65 programas); donde esa sección es solo un párrafo de prosa se deja intacta.
+// Cubre además dos casos reales encontrados en los datos: (a) varias secciones "Perfil
+// Ocupacional" en la misma página (una por grupo de sedes, ej. derecho-presencial) y
+// (b) una sola sección cuyos cargos vienen fragmentados en VARIOS <ul> de un solo <li>
+// cada uno (mismo programa) en vez de un único <ul> con todos los <li> — se recorren
+// todos los <ul> de cada sección, no solo el primero.
+function convertirPerfilOcupacional(html) {
+  const roles = [];
+  const H2_RE = /<h2[^>]*>((?:(?!<\/h2>)[\s\S])*?)<\/h2>/gi;
+  const headings = [];
+  let m;
+  while ((m = H2_RE.exec(html))) headings.push({ start: m.index, end: H2_RE.lastIndex, text: m[1].replace(/<[^>]+>/g, '') });
+  let out = html;
+  // De atrás hacia adelante: así los índices de los headings anteriores no se corren
+  // al insertar class="chip-list" en las secciones que sí se transforman.
+  for (let i = headings.length - 1; i >= 0; i--) {
+    if (!/perfil ocupacional/i.test(headings[i].text)) continue;
+    const sectionStart = headings[i].end;
+    const sectionEnd = (i + 1 < headings.length) ? headings[i + 1].start : out.length;
+    const before = out.slice(0, sectionStart);
+    const section = out.slice(sectionStart, sectionEnd).replace(/<ul>([\s\S]*?)<\/ul>/gi, (full, inner) => {
+      const items = [...inner.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)]
+        .map(li => li[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().replace(/\.$/, ''))
+        .filter(Boolean);
+      roles.unshift(...items);
+      return '<ul class="chip-list">' + inner + '</ul>';
+    });
+    const after = out.slice(sectionEnd);
+    out = before + section + after;
+  }
+  return { html: out, roles };
+}
+programas.forEach(p => {
+  if (!p.content_html) return;
+  const { html, roles } = convertirPerfilOcupacional(p.content_html);
+  p.content_html = html;
+  if (roles.length) {
+    p.ficha = p.ficha || {};
+    p.ficha.roles = roles;
+  }
+});
+
 // --- Metadescripciones ÚNICAS (dedupeMeta): Google puede ignorar las duplicadas ---
 // Muchas páginas comparten intro/plantilla → misma descripción. Se ancla con el TÍTULO
 // (único por página) cuando el cuerpo es pobre o se repite, garantizando unicidad.
@@ -1493,6 +1540,10 @@ function jsonldPrograma(item, ficha, facultadNombre, canonical, desc, faqs) {
     ...(item.nivel ? { educationalCredentialAwarded: item.nivel } : {}),
     ...(ficha.snies ? { courseCode: ficha.snies } : {}),
     ...(ficha.snies ? { identifier: { '@type': 'PropertyValue', name: 'SNIES', value: ficha.snies } } : {}),
+    // Cargos/roles reales a los que habilita el programa (extraídos de "Perfil
+    // Ocupacional" más arriba) — ayuda a Google/IA generativa a asociar el programa
+    // directamente con salidas laborales, no solo inferirlo de la descripción.
+    ...(ficha.roles && ficha.roles.length ? { occupationalCategory: ficha.roles } : {}),
     hasCourseInstance: [{
       '@type': 'CourseInstance',
       ...(courseMode ? { courseMode } : {}),
