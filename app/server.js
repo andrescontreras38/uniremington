@@ -769,6 +769,9 @@ const ORG_JSONLD = {
     addressRegion: 'Antioquia',
     addressCountry: 'CO',
   },
+  // Coordenadas del edificio de la sede principal (verificadas contra OpenStreetMap,
+  // catalogado como "Uniremington Corporación Universitaria", building=university).
+  geo: { '@type': 'GeoCoordinates', latitude: 6.2504039, longitude: -75.5685413 },
   contactPoint: {
     '@type': 'ContactPoint',
     telephone: '+57-604-322-1212',
