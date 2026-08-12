@@ -1337,6 +1337,24 @@
     .act-principal:hover .act-media::after,
     .act-card:hover .act-media::after { opacity: .6; }
 
+    /* Placeholder de marca cuando la noticia/evento no trae imagen real — evita mostrar
+       una foto genérica repetida en varias tarjetas distintas (se ve como contenido roto). */
+    .act-media .ph {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; height: 100%; background: linear-gradient(135deg, #012a50, #0a5aa8); color: #fff;
+      text-align: center; padding: 16px; position: relative; overflow: hidden;
+    }
+    .act-media .ph::after {
+      content: ""; position: absolute; inset: 0;
+      background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 2px, transparent 2px 22px);
+    }
+    .act-media .ph .msi { font-size: 2.4rem; opacity: .9; position: relative; z-index: 1; }
+    .act-media .ph b { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: #cfe0f5; position: relative; z-index: 1; }
+    .act-principal .act-media .ph { min-height: 260px; max-height: 340px; }
+    .act-card .act-media .ph { height: 150px; }
+    .act-card .act-media .ph .msi { font-size: 2rem; }
+
     /* --- Destacada horizontal --- */
     .act-principal {
       display: grid;
@@ -2512,7 +2530,9 @@ html { scroll-behavior: smooth; }
       const moreUrl = ACT_MORE[id] || "/noticias";
       const media = function(p, eager){ return (
         '<a class="act-media" href="' + esc(p.url) + '">' +
-          '<img src="' + esc(p.img) + '" alt="' + esc(p.title) + '"' + (eager ? '' : ' loading="lazy"') + '>' +
+          (p.img
+            ? '<img src="' + esc(p.img) + '" alt="' + esc(p.title) + '"' + (eager ? '' : ' loading="lazy"') + '>'
+            : '<span class="ph"><span class="msi">' + (p.tag === 'Eventos' ? 'event' : 'newspaper') + '</span><b>Uniremington</b></span>') +
           '<span class="act-tag">' + esc(p.tag) + '</span>' +
         '</a>'); };
       container.innerHTML =

@@ -1165,8 +1165,9 @@ app.get('/', (req, res) => {
 
 // ---- API para la sección "Actualidad" de la home ----
 function firstImg(item){
+  if (item.cover_image) return item.cover_image;
   const m = (item.content_html || '').match(/<img[^>]+src="([^"]+)"/i);
-  return m ? m[1] : '/media/imagen-banner.jpeg';
+  return m ? m[1] : '';
 }
 function toActualidad(item, tag){
   return { title: item.title, url: item.url,
@@ -1566,7 +1567,7 @@ function renderDependencia(res, item) {
     title: `${item.title} — ${facNombre} | Uniremington`,
     desc: metaDesc(item) || `${item.title} · ${facNombre} de la Corporación Universitaria Remington.`,
     canonical: SITE + (item.url || ''),
-    ogImage: firstImg(item) !== '/media/imagen-banner.jpeg' ? firstImg(item) : '',
+    ogImage: firstImg(item),
     item, contentHtml: item.content_html || '',
     pdf: CARTILLAS[seg[2]] || '',
     facSlug, facNombre, facUrl: '/facultad/' + facSlug,
@@ -2605,7 +2606,7 @@ app.get('/sitemap.xml', (req, res) => {
   pages.filter(p => !p.is_program && !isJunk(p.url) && !offer.has(normPath(p.url).replace(/\/$/, '') || '/'))
     .forEach(p => add(p.url, (p.date || '').slice(0, 10) || null, '0.5'));
   posts.filter(p => !isJunk(p.url)).forEach(p => add(p.url, (p.date || '').slice(0, 10) || null, '0.5', firstImg(p)));
-  events.filter(e => !isJunk(e.url)).forEach(e => add(e.url, (e.date || '').slice(0, 10) || null, '0.4'));
+  events.filter(e => !isJunk(e.url)).forEach(e => add(e.url, (e.date || '').slice(0, 10) || null, '0.4', firstImg(e)));
   const body = urls.map(u =>
     `  <url><loc>${esc(u.loc)}</loc>` +
     (u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : '') +
