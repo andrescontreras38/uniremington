@@ -4,13 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Corporación Universitaria Remington — Universidad en Colombia</title>
-  <% var _desc = (typeof desc !== 'undefined' && desc) ? desc : 'Corporación Universitaria Remington: más de 100 años formando profesionales, con presencia en 19 sedes de Colombia. Programas de pregrado, posgrado y educación continua, presenciales y a distancia.'; %>
+  <title>Corporación Universitaria Remington — Universidad Colombiana</title>
+  <% var _desc = (typeof desc !== 'undefined' && desc) ? desc : 'Más de 100 años formando profesionales en Colombia, con 19 sedes. Programas de pregrado, posgrado y educación continua, presenciales y a distancia.'; %>
   <meta name="description" content="<%= _desc %>">
   <link rel="canonical" href="<%= (typeof canonical !== 'undefined' && canonical) ? canonical : 'https://www.uniremington.edu.co/' %>">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Corporación Universitaria Remington">
-  <meta property="og:title" content="Corporación Universitaria Remington — Universidad en Colombia">
+  <meta property="og:title" content="Corporación Universitaria Remington — Universidad Colombiana">
   <meta property="og:description" content="<%= _desc %>">
   <meta property="og:url" content="<%= (typeof canonical !== 'undefined' && canonical) ? canonical : 'https://www.uniremington.edu.co/' %>">
   <meta name="twitter:card" content="summary">
@@ -2007,6 +2007,7 @@ html { scroll-behavior: smooth; }
 }
 
   </style>
+  <%- include('partials/analytics') %>
 </head>
 
 <body>
