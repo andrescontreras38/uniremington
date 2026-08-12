@@ -6,7 +6,7 @@ import { adminRouter } from './admin/router.js';
 import {
   normPath, contentIndex, assignUrl, primaryCat, catSlug,
   posts, events, postIdx, eventIdx, postsByDate, eventsSorted, catIndex, catList,
-  reloadPostsAndEvents,
+  reloadPostsAndEvents, EVENTOS_REC,
 } from './lib/contentStore.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -175,6 +175,7 @@ pages.forEach(p => {
 // usa un widget WPBakery "hoverbox" con la foto como background-image inline). Clave: facSlug.
 const EQUIPOS_REC = (() => { try { return load('equipos-recuperados.json'); } catch { return {}; } })();
 
+
 // índices por slug para búsqueda O(1) (posts/events: ver contentStore.js)
 const bySlug = (arr) => Object.fromEntries(arr.map(x => [x.slug, x]));
 const pageIdx = bySlug(pages);
@@ -255,7 +256,11 @@ function toCard(p){
 }
 function isoDate(s){ const d = parseDate(s); return d ? d.toISOString().slice(0,10) : ''; }
 // primaryCat/catSlug: ver contentStore.js (compartidas con reloadPostsAndEvents()).
-function realImg(p){ const m = (p.content_html || '').match(/<img[^>]+src="([^"]+)"/i); return m ? m[1] : ''; }
+function realImg(p){
+  if (p.cover_image) return p.cover_image;
+  const m = (p.content_html || '').match(/<img[^>]+src="([^"]+)"/i);
+  return m ? m[1] : '';
+}
 function toNews(p){
   return { slug:p.slug, url:p.url, title:p.title,
            fecha:fechaCorta(p.date), iso:isoDate(p.date),
@@ -264,6 +269,7 @@ function toNews(p){
 // Separa la imagen principal (para el hero del artículo) y limpia el contenido
 function leadAndBody(item){
   let html = item.content_html || '';
+  if (item.cover_image) return { lead: item.cover_image, html };
   const m = html.match(/<img[^>]+src="([^"]+)"[^>]*>/i);
   let lead = '';
   if (m && html.indexOf(m[0]) < 900) {
@@ -280,7 +286,19 @@ function readingTime(item){
   const words = stripHtml(item.content_html).split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
-function toEvent(e){ return { slug:e.slug, url:e.url, title:e.title, dia:calDia(e.date), mes:calMes(e.date), fechaTxt:fechaCorta(e.date) }; }
+// Eventos: cover_image (recuperada en EVENTOS_REC/contentStore.js) tiene prioridad sobre la
+// primera imagen embebida en content_html; venue/organizadores/costo/URL externa se anexan
+// solo cuando el backup los trae (57/517, 25/517, 49/517 y 9/517 respectivamente — la mayoría
+// de eventos del calendario nunca llenó esos campos en WordPress).
+function toEvent(e){
+  const rec = EVENTOS_REC[e.slug] || {};
+  return {
+    slug:e.slug, url:e.url, title:e.title,
+    dia:calDia(e.date), mes:calMes(e.date), fechaTxt:fechaCorta(e.date), iso:isoDate(e.date),
+    resumen:resumen(e, 130), img:realImg(e),
+    venue: rec.venue || null, cost: rec.cost || '', externalUrl: rec.externalUrl || '',
+  };
+}
 
 // programas: identificados por el pipeline (URL bajo /facultades/)
 const programas = pages.filter(p => p.is_program);
@@ -1694,6 +1712,17 @@ function renderArticle(res, item, kind) {
   const esEvento = kind === 'event';
   const { lead, html } = leadAndBody(item);
   const cat = esEvento ? 'Evento' : primaryCat(item);
+  // Ficha del evento (sede/organizadores/costo/URL de inscripción externa): solo 388/517
+  // eventos traen algo del backup — cuando no hay nada, evInfo.hasData queda en false y la
+  // plantilla no dibuja el widget.
+  const evRec = esEvento ? (EVENTOS_REC[item.slug] || {}) : {};
+  const evInfo = {
+    venue: evRec.venue || null,
+    organizers: evRec.organizers || [],
+    cost: evRec.cost || '', currency: evRec.currency || '',
+    externalUrl: evRec.externalUrl || '',
+    hasData: !!(evRec.venue || (evRec.organizers && evRec.organizers.length) || evRec.cost || evRec.externalUrl),
+  };
   const recientes = !esEvento
     ? postsByDate.filter(p => p.slug !== item.slug).slice(0, 5).map(toNews)
     : [];
@@ -1719,6 +1748,9 @@ function renderArticle(res, item, kind) {
     ...(esEvento ? {} : { dateModified: fechaISO, articleSection: cat,
                           author: publisher, publisher }),
     ...(esEvento ? { organizer: publisher } : {}),
+    ...(esEvento && evInfo.venue ? { location: { '@type': 'Place', name: evInfo.venue.title || 'Uniremington',
+      address: { '@type': 'PostalAddress', streetAddress: evInfo.venue.address || undefined,
+                 addressLocality: evInfo.venue.city || undefined, addressCountry: 'CO' } } } : {}),
     ...(lead ? { image: [lead] } : {}),
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     url,
@@ -1737,7 +1769,7 @@ function renderArticle(res, item, kind) {
     title: `${item.title} — Uniremington`, desc: metaDesc(item),
     canonical: SITE + (item.url || ''),
     ogImage: lead || '', ogType: 'article', jsonld,
-    item, contentHtml: html, lead, cat,
+    item, contentHtml: html, lead, cat, evInfo,
     fecha: fechaCorta(item.date), iso: isoDate(item.date),
     lectura: esEvento ? 0 : readingTime(item),
     recientes, eventos,

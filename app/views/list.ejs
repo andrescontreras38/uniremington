@@ -10,8 +10,21 @@
     <div class="agenda">
       <% items.forEach(function(e){ %>
         <a class="ev" href="<%= e.url %>">
-          <span class="cal"><span class="d"><%= e.dia %></span><span class="m"><%= e.mes %></span></span>
-          <span class="in"><h3><%= e.title %></h3><span><%= e.fechaTxt %></span></span>
+          <span class="ev-media">
+            <% if (e.img){ %><img src="<%= e.img %>" alt="<%= e.title %>" loading="lazy" decoding="async"><% } else { %><span class="ph"><span class="msi">event</span><b>Uniremington</b></span><% } %>
+            <span class="cal"><span class="d"><%= e.dia %></span><span class="m"><%= e.mes %></span></span>
+          </span>
+          <span class="ev-bd">
+            <% if (e.venue || e.cost){ %>
+              <span class="chips">
+                <% if (e.venue && e.venue.city){ %><span class="chip ev-chip"><span class="msi">location_on</span><%= e.venue.city %></span><% } %>
+                <% if (e.cost){ %><span class="chip ev-chip"><span class="msi">confirmation_number</span><%= e.cost %></span><% } %>
+              </span>
+            <% } %>
+            <h3><%= e.title %></h3>
+            <p><%= e.resumen %></p>
+            <span class="ev-foot"><time datetime="<%= e.iso %>"><span class="msi">calendar_today</span><%= e.fechaTxt %></time><span class="go">Ver evento <span class="msi">arrow_forward</span></span></span>
+          </span>
         </a>
       <% }) %>
     </div>

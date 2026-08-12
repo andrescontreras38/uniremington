@@ -37,6 +37,28 @@
 
     <aside class="blog-aside">
       <div class="aside-inner">
+        <% if (typeof evInfo !== 'undefined' && evInfo.hasData){ %>
+        <div class="ficha">
+          <div class="ficha-h"><span class="msi">event</span> Información del evento</div>
+          <dl>
+            <% if (evInfo.venue){ %>
+              <dt>Sede</dt>
+              <dd><%= evInfo.venue.title %><% if (evInfo.venue.city){ %> · <%= evInfo.venue.city %><% } %><% if (evInfo.venue.address){ %><br><%= evInfo.venue.address %><% } %></dd>
+            <% } %>
+            <% if (evInfo.organizers && evInfo.organizers.length){ %>
+              <dt>Organiza</dt>
+              <dd><%= evInfo.organizers.join(', ') %></dd>
+            <% } %>
+            <% if (evInfo.cost){ %>
+              <dt>Costo</dt>
+              <dd><%= evInfo.cost %></dd>
+            <% } %>
+          </dl>
+          <% if (evInfo.externalUrl){ %>
+            <a class="ficha-dl" href="<%= evInfo.externalUrl %>" target="_blank" rel="noopener"><span class="msi">open_in_new</span> Más información e inscripción</a>
+          <% } %>
+        </div>
+        <% } %>
         <div class="widget cta-widget">
           <span class="msi cta-ic">school</span>
           <h4>Corporación Universitaria Remington</h4>

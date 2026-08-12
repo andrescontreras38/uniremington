@@ -46,6 +46,18 @@ export function assignUrl(kind, item, fallback) {
 const bySlug = (arr) => Object.fromEntries(arr.map((x) => [x.slug, x]));
 function parseDate(s) { const d = new Date((s || '').replace(' ', 'T')); return isNaN(d) ? null : d; }
 
+// Eventos (The Events Calendar) recuperados del backup WXR: el pipeline de migración nunca
+// extrajo la imagen destacada (_thumbnail_id) ni los metadatos propios del calendario (sede,
+// organizador, costo, URL de inscripción externa) — solo el content_html. Reconstruido cruzando
+// tribe_events con sus adjuntos/venues/organizadores en el XML; las imágenes solo se incluyen
+// si su URL en producción todavía respondía 200 al verificar (~19% de los adjuntos de 2020-2021
+// ya no existen en el servidor de WordPress). Clave: slug del evento. Exportado para que
+// server.js pueda leer venue/organizadores/costo/URL externa al armar la tarjeta/ficha.
+export const EVENTOS_REC = (() => {
+  try { return JSON.parse(readFileSync(join(DATA, 'eventos-recuperados.json'), 'utf-8')); }
+  catch { return {}; }
+})();
+
 // Categoría principal legible (descarta las genéricas/internas) — igual que antes.
 export function primaryCat(p) {
   const cats = (p.categories || []).filter((c) => !/^(uncategorized|nobuscar|blog|sin categor)/i.test(c));
@@ -63,7 +75,22 @@ export function catSlug(c) {
 // también cubra contenido recién editado a mano en el panel.
 const DUPE_HEADING_RE = /(<h([1-3])>([^<]{1,80})<\/h\2>)(?:\s*<[^>]+>\s*)*<h\2>\3<\/h\2>/gi;
 const STRAY_TAB_LABEL_RE = /<p>\s*(?:Noticias|Eventos)\s*(?:<br\s*\/?>|\s)\s*Uniremington\s*<\/p>\s*/gi;
+// Títulos con etiquetas HTML embebidas (ej. "<i>Open Day</i> - Maestría en...") vienen de
+// WordPress así, sin escapar — EJS los escapa al mostrarlos (<%= %>), así que se ven como
+// texto literal ("&lt;i&gt;...") en vez de cursiva. Solo 4 casos en todo el sitio: se limpia
+// la etiqueta en vez de cambiar el renderizado, porque el título debe seguir siendo texto
+// plano en <title>/meta/JSON-LD.
+function cleanTitle(item) {
+  if (item.title && /<[a-z][^>]*>/i.test(item.title)) {
+    item.title = item.title.replace(/<\/?[a-z][^>]*>/gi, '').trim();
+  }
+}
 function cleanContentHtml(item) {
+  cleanTitle(item);
+  if (item.type === 'tribe_events' && !item.cover_image) {
+    const rec = EVENTOS_REC[item.slug];
+    if (rec && rec.img) item.cover_image = rec.img;
+  }
   if (!item.content_html) return;
   if (DUPE_HEADING_RE.test(item.content_html)) {
     DUPE_HEADING_RE.lastIndex = 0;
