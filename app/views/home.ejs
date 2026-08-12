@@ -1861,7 +1861,9 @@ html { scroll-behavior: smooth; }
 @keyframes scaleIn      { from {opacity:0; transform: scale(.9);} to {opacity:1; transform: scale(1);} }
 @keyframes float-y      { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-16px);} }
 @keyframes float-y-slow { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-24px);} }
-@keyframes pulse-glow   { 0%,100% {box-shadow: 0 0 0 0 rgba(227,7,21,.5);} 50% {box-shadow: 0 0 0 20px rgba(227,7,21,0);} }
+/* filter (no box-shadow): se anima en el hilo compositor en vez de forzar repintados
+   en cada frame — mismo brillo rojo de marca, como pulso de intensidad en vez de anillo. */
+@keyframes pulse-glow   { 0%,100% {filter: drop-shadow(0 0 0 rgba(227,7,21,0));} 50% {filter: drop-shadow(0 0 12px rgba(227,7,21,.55));} }
 @keyframes spin-slow    { from {transform: rotate(0);} to {transform: rotate(360deg);} }
 
 /* Contador — efecto ticking visible */
@@ -1876,9 +1878,11 @@ html { scroll-behavior: smooth; }
   50%  { transform: translateY(-6px) scale(1.08); }
   100% { transform: translateY(0) scale(1); }
 }
+/* filter en vez de text-shadow: mismo brillo, compositado por GPU en vez de repintar
+   cada número en cada frame (hasta 8 contadores pueden animar esto a la vez). */
 @keyframes counter-glow {
-  0%,100% { text-shadow: 0 0 0 transparent; }
-  50%     { text-shadow: 0 0 22px rgba(227,7,21,.6), 0 0 8px rgba(255,255,255,.4); }
+  0%,100% { filter: drop-shadow(0 0 0 transparent); }
+  50%     { filter: drop-shadow(0 0 11px rgba(227,7,21,.6)) drop-shadow(0 0 4px rgba(255,255,255,.4)); }
 }
 
 /* ─── Hero bento — entrada escalonada de las celdas ──────── */
@@ -2025,13 +2029,13 @@ html { scroll-behavior: smooth; }
       // una sección/carrusel aparte-. Mercadeo rota estas piezas seguido; para cambiar
       // cuáles se muestran aquí, solo se edita este arreglo.
       var campaigns = [
-        { img: '/media/campanas/maestria-ciencias-salud.jpg',
+        { img: '/media/campanas/maestria-ciencias-salud.webp',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
           label: 'Maestría en Ciencias de la Salud' },
-        { img: '/media/campanas/maestria-clinica-veterinaria.jpg',
+        { img: '/media/campanas/maestria-clinica-veterinaria.webp',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277098/105053', external: true,
           label: 'Maestría en Clínica y Cirugía Veterinaria' },
-        { img: '/media/campanas/maestria-administracion.jpg',
+        { img: '/media/campanas/maestria-administracion.webp',
           href: '/facultades/facultad-de-ciencias-empresariales/maestria-en-administracion/', external: false,
           label: 'Maestría en Administración' },
       ];
@@ -2060,7 +2064,7 @@ html { scroll-behavior: smooth; }
             <% campaigns.forEach(function(c, i){ %>
             <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
               <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-                <img src="<%= c.img %>" alt="<%= c.label %>" width="1200" height="850" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
+                <img src="<%= c.img %>" alt="<%= c.label %>" width="1100" height="779" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
                 <span class="bento-media-cap"><%= c.label %></span>
               </a>
             </div>
@@ -2156,7 +2160,7 @@ html { scroll-behavior: smooth; }
     <section class="impacto">
       <div class="impacto-grid">
         <div class="impacto-img">
-          <img src="/media/imagen-banner-1.jpeg" alt="Estudiantes Uniremington" width="1200" height="856" loading="lazy" decoding="async">
+          <img src="/media/imagen-banner-1.webp" alt="Estudiantes Uniremington" width="1200" height="856" loading="lazy" decoding="async">
         </div>
         <div class="impacto-text">
           <div class="impacto-eyebrow">Nuestro Impacto</div>
