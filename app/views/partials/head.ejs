@@ -18,9 +18,10 @@
 <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington-32x32.png" sizes="32x32">
 <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png" sizes="192x192">
 <link rel="apple-touch-icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png">
-<!-- Preload de la fuente de iconos: el megamenú (y muchos componentes) dependen de ella;
-     sin preload los iconos aparecen como texto hasta que algún elemento visible la dispara. -->
-<link rel="preload" href="/fonts/ms-sharp.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Sin preload a propósito: la fuente de íconos (220KB) competía por ancho de banda
+     con el LCP en móvil bajo conexiones lentas (medido con PageSpeed Insights real).
+     El navegador la descubre igual en cuanto el CSS pide @font-face — solo entra un
+     instante después en vez de con máxima prioridad desde el primer byte. -->
 <link rel="stylesheet" href="/css/fonts.css">
 <link rel="stylesheet" href="/css/menu.css">
 <link rel="stylesheet" href="/css/site.css">

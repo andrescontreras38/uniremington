@@ -18,9 +18,10 @@
   <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png" sizes="192x192">
   <link rel="apple-touch-icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png">
   <% if (typeof jsonld !== 'undefined' && jsonld){ %><script type="application/ld+json"><%- JSON.stringify(jsonld) %></script><% } %>
-  <!-- Preload de la fuente de iconos: sin esto los iconos del megamenú aparecen como
-       texto hasta que un elemento visible la dispara (en la home no hay ninguno). -->
-  <link rel="preload" href="/fonts/ms-sharp.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Sin preload a propósito: la fuente de íconos (220KB) competía por ancho de banda
+       con el LCP en móvil bajo conexiones lentas (medido con PageSpeed Insights real).
+       El navbar usa .msi casi de inmediato, así que el navegador la sigue descubriendo
+       muy pronto — solo entra a prioridad normal en vez de forzada desde el primer byte. -->
   <!-- PT Sans (400/700 latin): son los únicos dos cortes de la tipografía que el texto
        visible realmente usa; precargarlos evita esperar a que el CSS termine de parsear
        para descubrirlos, acortando la cadena de dependencia crítica. -->
