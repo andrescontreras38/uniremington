@@ -14,6 +14,10 @@
   <meta property="og:description" content="<%= _desc %>">
   <meta property="og:url" content="<%= (typeof canonical !== 'undefined' && canonical) ? canonical : 'https://www.uniremington.edu.co/' %>">
   <meta name="twitter:card" content="summary">
+  <!-- El home referencia www.uniremington.edu.co más que cualquier otra página (logo,
+       favicons, y las 5 imágenes de "Oferta Académica") — preconnect adelanta el DNS/TLS
+       de ese origen en vez de esperar a que el navegador lo descubra en medio del render. -->
+  <link rel="preconnect" href="https://www.uniremington.edu.co">
   <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington-32x32.png" sizes="32x32">
   <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png" sizes="192x192">
   <link rel="apple-touch-icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png">
@@ -192,18 +196,14 @@
       line-height: 1.15;
       font-weight: 800;
     }
+    /* Gradiente estático (sin animar background-position): PageSpeed marcaba el barrido
+       como animación no compositada — fuerza repintado en vez de correr en la GPU. */
     .hero h1 .accent {
       display: block;
       background: linear-gradient(90deg, #ff8a80 0%, #ff6b6b 35%, #ffc069 100%);
-      background-size: 200% auto;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: heroAccentSheen 6s ease-in-out infinite;
-    }
-    @keyframes heroAccentSheen {
-      0%, 100% { background-position: 0% center; }
-      50%      { background-position: 100% center; }
     }
     .hero p {
       font-size: 16px;
@@ -2118,9 +2118,9 @@ html { scroll-behavior: smooth; }
       </div>
       <div class="video-oferta">
         <div class="video-thumb" id="videoThumb" data-video="_D5nmSNZ-F8" role="button" tabindex="0" aria-label="Reproducir video institucional">
-          <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/sddefault.jpg" alt="Video Institucional Uniremington"
-               width="640" height="480" loading="lazy" decoding="async"
-               onerror="this.src='https://img.youtube.com/vi/_D5nmSNZ-F8/hqdefault.jpg'">
+          <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/hqdefault.jpg" alt="Video Institucional Uniremington"
+               width="480" height="360" loading="lazy" decoding="async"
+               onerror="this.src='https://img.youtube.com/vi/_D5nmSNZ-F8/mqdefault.jpg'">
           <div class="play-btn" aria-hidden="true"></div>
         </div>
       </div>

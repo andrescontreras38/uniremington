@@ -707,6 +707,13 @@ app.use(express.static(join(__dirname, 'public'), {
     }
   },
 }));
+
+// /favicon.ico: varios navegadores/herramientas lo piden por convención sin fijarse en las
+// etiquetas <link rel="icon"> del <head> — sin esta ruta devolvía 404 y el ícono no aparecía
+// en algunos contextos (pestañas, marcadores). Redirige al PNG que ya sirve de favicon real.
+app.get('/favicon.ico', (req, res) => {
+  res.redirect(301, 'https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington-32x32.png');
+});
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: '20kb' }));
 

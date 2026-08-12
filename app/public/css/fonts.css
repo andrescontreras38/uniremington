@@ -76,6 +76,9 @@
   font-family:'Material Symbols Sharp';
   font-style:normal;
   font-weight:400;
-  font-display:block;
+  /* swap (no block): PageSpeed marcaba esto como solicitud de bloqueo de renderización.
+     block deja los íconos invisibles hasta 3s si la fuente tarda; swap solo ~100ms antes
+     de mostrar el texto de reserva (ej. "menu") y cambia al ícono real en cuanto llega. */
+  font-display:swap;
   src:url(/fonts/ms-sharp.woff2) format('woff2');
 }
