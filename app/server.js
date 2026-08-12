@@ -657,7 +657,7 @@ app.use((req, res, next) => {
   res.set('X-Content-Type-Options', 'nosniff');
   res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   res.set('Content-Security-Policy', CSP);
   next();
 });
