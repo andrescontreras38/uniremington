@@ -2070,7 +2070,15 @@ html { scroll-behavior: smooth; }
             <% campaigns.forEach(function(c, i){ %>
             <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
               <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-                <img src="<%= c.img %>" alt="<%= c.label %>" width="1100" height="779" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
+                <% if (i === 0) { %>
+                <img src="<%= c.img %>" alt="<%= c.label %>" width="1100" height="779" loading="eager" fetchpriority="high" decoding="async">
+                <% } else { %>
+                <!-- data-src (no src): las diapositivas inactivas están en position:absolute
+                     con el mismo tamaño del viewport (para el crossfade), así que aunque
+                     lleven loading="lazy" el navegador las considera "cerca" y las descarga
+                     igual — se cargan por JS más abajo, tras el LCP, en vez de competir con él. -->
+                <img data-src="<%= c.img %>" alt="<%= c.label %>" width="1100" height="779" decoding="async">
+                <% } %>
                 <span class="bento-media-cap"><%= c.label %></span>
               </a>
             </div>
@@ -2466,6 +2474,22 @@ html { scroll-behavior: smooth; }
       const slides = [...media.querySelectorAll('.bm-slide')];
       const dots = [...media.querySelectorAll('.bm-dot')];
       if (slides.length < 2) return;
+
+      // Las imágenes de las diapositivas 2+ no llevan src de entrada (ver arriba): se
+      // cargan aquí cuando el navegador ya está libre, para no competir por ancho de
+      // banda con la imagen del LCP (diapositiva 1) durante el arranque.
+      function loadDeferredSlideImages() {
+        slides.forEach((s) => {
+          const img = s.querySelector('img[data-src]');
+          if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+        });
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadDeferredSlideImages, { timeout: 3000 });
+      } else {
+        setTimeout(loadDeferredSlideImages, 2000);
+      }
+
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const DURATION = 4500;
       let current = 0;

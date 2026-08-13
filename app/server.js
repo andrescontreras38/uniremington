@@ -681,14 +681,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Minificador simple (sin dependencia externa): quita comentarios y espacios
+// sobrantes. Los archivos fuente no tienen contenido de texto con ":" pegado a
+// espacios dentro de comillas (verificado), así que es seguro colapsar espacios
+// alrededor de {}:;, sin arriesgar el contenido de ninguna cadena.
+function minifyCss(css) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([{}:;,])\s*/g, '$1')
+    .replace(/;}/g, '}')
+    .trim();
+}
+
 // CSS fusionado para la home (standalone: no carga site.css). Une fonts.css + menu.css
 // en UNA sola respuesta para ahorrarse una solicitud de bloqueo de renderización bajo
 // conexiones lentas; se lee de los mismos archivos fuente en cada arranque, así que nunca
 // puede quedar desincronizado si se edita alguno de los dos.
-const HOME_CRITICAL_CSS = [
+const HOME_CRITICAL_CSS = minifyCss([
   readFileSync(join(__dirname, 'public/css/fonts.css'), 'utf-8'),
   readFileSync(join(__dirname, 'public/css/menu.css'), 'utf-8'),
-].join('\n');
+].join('\n'));
 app.get('/css/home-critical.css', (req, res) => {
   res.set('Content-Type', 'text/css; charset=utf-8');
   res.set('Cache-Control', 'public, max-age=3600');
@@ -1195,6 +1208,10 @@ app.get('/api/actualidad/:tab', (req, res) => {
   } else {
     list = postsByDate.slice(0, 5).map(p => toActualidad(p, 'Noticias'));
   }
+  // El contenido solo cambia cuando se publica algo nuevo desde /admin (no en cada
+  // solicitud), así que una vida corta de caché evita descargas repetidas del mismo
+  // JSON en la misma sesión sin retrasar la aparición de contenido nuevo.
+  res.set('Cache-Control', 'public, max-age=300');
   res.json(list);
 });
 
