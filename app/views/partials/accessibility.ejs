@@ -41,12 +41,28 @@
   font-weight:700;font-size:.84rem;cursor:pointer;transition:background .15s}
 .a11y-reset:hover{background:#b0050f}
 
+.a11y-note{font-size:.74rem;color:#5b6b78;line-height:1.4;padding:0 2px}
+
+/* Botón de micrófono flotante: aparece junto al campo de texto que tenga el foco
+   mientras el dictado está activo (no se inserta dentro del formulario, así que no
+   puede desarmar ninguna cuadrícula/diseño de ningún formulario del sitio). */
+.a11y-mic-fab{position:fixed;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;
+  background:#00457c;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,40,80,.4);
+  z-index:95;transition:background .15s,transform .15s}
+.a11y-mic-fab:hover{transform:scale(1.08)}
+.a11y-mic-fab svg{width:18px;height:18px}
+.a11y-mic-fab.listening{background:#e30613}
+.a11y-mic-fab.listening::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid rgba(227,6,19,.55);animation:a11yMicPulse 1.4s infinite}
+@keyframes a11yMicPulse{0%{transform:scale(1);opacity:.6}70%,100%{transform:scale(1.5);opacity:0}}
+
 @media (max-width:480px){
   .a11y-widget{left:14px;bottom:86px}
   .a11y-panel{width:min(280px,calc(100vw - 28px))}
 }
 @media (prefers-reduced-motion:reduce){
   .a11y-panel{transition:none}
+  .a11y-mic-fab.listening::after{animation:none}
 }
 </style>
 
@@ -79,6 +95,8 @@
       <button type="button" class="a11y-toggle-btn" data-a11y="underline" aria-pressed="false">Subrayar enlaces</button>
       <button type="button" class="a11y-toggle-btn" data-a11y="readable" aria-pressed="false">Espaciado de lectura</button>
       <button type="button" class="a11y-toggle-btn" data-a11y="nomotion" aria-pressed="false">Pausar animaciones</button>
+      <button type="button" class="a11y-toggle-btn" id="a11yDictateBtn" data-a11y="dictate" aria-pressed="false">Dictado por voz</button>
+      <p class="a11y-note" id="a11yDictateNote">Con esto activo, al enfocar cualquier campo de texto del sitio aparece un botón de micrófono para dictar en vez de escribir.</p>
     </div>
     <button type="button" class="a11y-reset" id="a11yReset">Restablecer todo</button>
   </div>
@@ -96,6 +114,8 @@
   var resetBtn = document.getElementById('a11yReset');
   var fsLabel = document.getElementById('a11yFsLabel');
   var FS_PCT = { 1: '100%', 2: '112%', 3: '125%', 4: '137%' };
+  var TOGGLE_KEYS = ['contrast', 'gray', 'underline', 'readable', 'nomotion', 'dictate'];
+  var setDictateEnabled = function () {}; // se reemplaza más abajo si el navegador soporta dictado
 
   function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
   function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
@@ -106,13 +126,114 @@
   function applyAll() {
     root.classList.remove('a11y-fs2', 'a11y-fs3', 'a11y-fs4');
     if (state.fs > 1) root.classList.add('a11y-fs' + state.fs);
-    ['contrast', 'gray', 'underline', 'readable', 'nomotion'].forEach(function (key) {
+    TOGGLE_KEYS.forEach(function (key) {
       root.classList.toggle('a11y-' + key, !!state[key]);
       var btn = widget.querySelector('[data-a11y="' + key + '"]');
       if (btn) btn.setAttribute('aria-pressed', state[key] ? 'true' : 'false');
     });
     if (fsLabel) fsLabel.textContent = FS_PCT[state.fs];
+    setDictateEnabled(!!state.dictate);
   }
+
+  // ── Dictado por voz (Web Speech API nativa del navegador: sin librerías ni
+  // peticiones de red). Con el modo activo, enfocar cualquier campo de texto del
+  // sitio muestra un micrófono flotante junto a él — no se toca el DOM del
+  // formulario, así que ningún diseño/cuadrícula existente puede romperse. ──
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var dictateBtn = document.getElementById('a11yDictateBtn');
+  var dictateNote = document.getElementById('a11yDictateNote');
+  if (!SR) {
+    // Sin soporte (Firefox de escritorio, algunas versiones de Safari): se oculta
+    // en vez de ofrecer un botón que no va a funcionar.
+    if (dictateBtn) dictateBtn.remove();
+    if (dictateNote) dictateNote.remove();
+    var idx = TOGGLE_KEYS.indexOf('dictate');
+    if (idx !== -1) TOGGLE_KEYS.splice(idx, 1);
+  } else {
+    var micBtn = document.createElement('button');
+    micBtn.type = 'button';
+    micBtn.className = 'a11y-mic-fab';
+    micBtn.hidden = true;
+    micBtn.setAttribute('aria-label', 'Dictar por voz en este campo');
+    micBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>' +
+      '<path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>' +
+      '<line x1="8" y1="23" x2="16" y2="23"/></svg>';
+    document.body.appendChild(micBtn);
+
+    var dictateActive = false, activeField = null, recognition = null;
+
+    function isTextField(el) {
+      if (!el) return false;
+      if (el.tagName === 'TEXTAREA') return !el.readOnly && !el.disabled;
+      if (el.tagName === 'INPUT') {
+        var t = (el.type || 'text').toLowerCase();
+        return ['text', 'email', 'tel', 'search', 'url'].indexOf(t) !== -1 &&
+          el.name !== 'pf_hp' && !el.readOnly && !el.disabled;
+      }
+      return false;
+    }
+    function positionMic(el) {
+      var r = el.getBoundingClientRect();
+      micBtn.style.top = Math.max(4, r.top + r.height / 2 - 17) + 'px';
+      micBtn.style.left = Math.max(4, r.right - 40) + 'px';
+    }
+    function stopDictation() {
+      if (recognition) { try { recognition.stop(); } catch (e) {} }
+      micBtn.classList.remove('listening');
+    }
+    function onFocusIn(e) {
+      if (!dictateActive || !isTextField(e.target)) return;
+      activeField = e.target;
+      positionMic(activeField);
+      micBtn.hidden = false;
+    }
+    function onFocusOut(e) {
+      // Solo importa cuando el campo que SÍ tiene el micrófono asociado pierde el
+      // foco — de lo contrario, cualquier otro blur en la página (p. ej. al cerrar
+      // el panel de accesibilidad) programaba este chequeo y terminaba ocultando
+      // el micrófono recién mostrado en el campo real.
+      if (e.target !== activeField) return;
+      // Da tiempo a que un clic en el micrófono se registre antes de ocultarlo.
+      setTimeout(function () {
+        if (document.activeElement !== micBtn) { micBtn.hidden = true; stopDictation(); }
+      }, 180);
+    }
+    function onReposition() { if (!micBtn.hidden && activeField) positionMic(activeField); }
+
+    micBtn.addEventListener('click', function () {
+      if (!activeField) return;
+      if (recognition) { stopDictation(); return; }
+      recognition = new SR();
+      recognition.lang = 'es-CO';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.onstart = function () { micBtn.classList.add('listening'); };
+      recognition.onerror = function () { micBtn.classList.remove('listening'); recognition = null; };
+      recognition.onend = function () { micBtn.classList.remove('listening'); recognition = null; };
+      recognition.onresult = function (e) {
+        var text = e.results[0][0].transcript;
+        var f = activeField;
+        if (!f) return;
+        var sep = f.value && !/\s$/.test(f.value) ? ' ' : '';
+        f.value = (f.value || '') + sep + text;
+        f.dispatchEvent(new Event('input', { bubbles: true }));
+        f.focus();
+      };
+      recognition.start();
+    });
+
+    setDictateEnabled = function (on) {
+      dictateActive = on;
+      if (!on) { micBtn.hidden = true; stopDictation(); activeField = null; }
+    };
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    window.addEventListener('scroll', onReposition, { passive: true });
+    window.addEventListener('resize', onReposition);
+  }
+
   applyAll();
 
   function openPanel() {
