@@ -587,6 +587,15 @@
       left: 50%;
       transform: translateX(-50%);
       margin-top: 24px;
+      /* Cancela el padding-bottom de <main class="wrap"> (28px, ver más abajo su valor
+         en cada breakpoint) para que la franja llegue justo hasta el footer, sin la
+         tira blanca que quedaba entre los dos. */
+      margin-bottom: -28px;
+      /* Sin esto, la regla genérica "section{padding:36px 0}" le mete su propio
+         padding arriba/abajo — pero el color vive en .lead-final-grid (adentro), así
+         que ese padding se veía como una franja blanca entre el fondo de la página y
+         la franja de color, tanto arriba como (sobre todo) abajo, justo antes del footer. */
+      padding: 0;
     }
 
     .lead-final-grid {
@@ -700,11 +709,17 @@
       font-size: 1.1rem;
     }
 
+    /* Fondo con tinte (no blanco puro): en pantallas muy anchas el formulario no llena
+       toda la mitad, y un blanco puro ahí se perdía contra el blanco de la página —
+       este tinte deja la franja visible sin importar qué tan ancha quede la pantalla.
+       Contenido centrado en vez de pegado al borde exterior, para que no quede
+       descuadrado hacia un lado cuando sobra espacio. */
     .lead-final-form {
-      background: #fff;
+      background: var(--light);
       display: flex;
       align-items: center;
-      padding: 56px max(24px, calc(50vw - (var(--container) / 2))) 56px 48px;
+      justify-content: center;
+      padding: 56px max(24px, calc(50vw - (var(--container) / 2)));
     }
 
     .lead-final-form-inner {
@@ -746,7 +761,7 @@
       border-radius: 9px;
       font: inherit;
       font-size: 0.9rem;
-      background: #f5f8fa;
+      background: #fff;
       color: var(--dark);
       width: 100%;
       resize: vertical;
@@ -760,7 +775,6 @@
     .lead-final-form-inner select:focus,
     .lead-final-form-inner textarea:focus {
       outline: 2px solid var(--blue-soft);
-      background: #fff;
     }
 
     .lead-final-submit {
@@ -1139,7 +1153,6 @@
     footer {
       background: linear-gradient(180deg, #0b2b3a 0%, #071c27 100%);
       color: #fff;
-      margin-top: 30px;
       position: relative;
       overflow: hidden;
     }
@@ -1661,6 +1674,10 @@
     padding: 16px;
   }
 
+  .lead-final {
+    margin-bottom: -16px;
+  }
+
   /* El footer no heredaba la reducción de margen del resto de la página en móvil
      (seguía con el padding de escritorio) y quedaba más pegado a los bordes. */
   .footer-top { padding: 40px 16px 24px; }
@@ -1860,6 +1877,7 @@ img, iframe, video, svg { max-width: 100%; }
 /* --- Telefonos muy pequeños (<=360px): compactar paddings y stats --- */
 @media (max-width: 360px) {
   .wrap { padding: 12px; }
+  .lead-final { margin-bottom: -12px; }
   .bento-meta { gap: 16px; }
   .btn, .btn-ghost { padding: 8px 10px; font-size: 0.9rem; }
   .act-tabs { gap: 14px; }
