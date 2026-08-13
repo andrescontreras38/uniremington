@@ -54,7 +54,10 @@
       --accent-dark: #b0050f;
       --dark: #0b2b3a;
       --muted: #5b6b78;
-      --container: 1100px;
+      /* Antes 1100px: el hero (.bento) usaba 1260px y todo el resto del contenido usaba
+         este valor, así que la página se veía "encogerse" 160px justo al salir del hero.
+         Se unifica al ancho del hero en vez de al revés para dar más aire a las tarjetas. */
+      --container: 1260px;
     }
 
     * {
@@ -1282,10 +1285,8 @@
 
     /* --- Estilos para la sección Actualidad Uniremington --- */
     .act-container {
-      max-width: 1200px;
       margin: auto;
       padding: 20px;
-      font-family: Arial, sans-serif;
     }
 
     .act-container h2 {
@@ -1642,6 +1643,11 @@
     padding: 16px;
   }
 
+  /* El footer no heredaba la reducción de margen del resto de la página en móvil
+     (seguía con el padding de escritorio) y quedaba más pegado a los bordes. */
+  .footer-top { padding: 40px 16px 24px; }
+  .foot-bottom { padding: 18px 16px; }
+
   .hero { padding: 32px 0; }
 
   /* Rejilla bento: una sola columna, todo apilado en orden de lectura. */
@@ -1697,10 +1703,6 @@
 
   .foot-social {
     justify-content: center;
-  }
-
-  footer {
-    padding: 20px 10px;
   }
 }
 
