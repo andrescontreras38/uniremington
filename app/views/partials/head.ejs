@@ -26,6 +26,16 @@
 <link rel="stylesheet" href="/css/menu.css">
 <link rel="stylesheet" href="/css/site.css">
 <%- include('analytics') %>
+<script>
+// Aplica las preferencias de accesibilidad guardadas (partials/accessibility.ejs) ANTES
+// del primer pintado, para que a quien ya activó texto grande/alto contraste no le
+// parpadee la página en tamaño normal un instante antes de saltar al suyo.
+(function(){try{var s=JSON.parse(localStorage.getItem('a11yPrefs')||'{}'),c=[];
+if(s.fs>1)c.push('a11y-fs'+s.fs);
+['contrast','gray','underline','readable','nomotion'].forEach(function(k){if(s[k])c.push('a11y-'+k)});
+if(c.length)document.documentElement.classList.add.apply(document.documentElement.classList,c);
+}catch(e){}})();
+</script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>

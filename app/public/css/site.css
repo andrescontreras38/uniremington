@@ -43,6 +43,22 @@ p,li,dd,td,input,select,textarea,button{font-weight:400}
 .pf-ico .msi,.cta-ico .msi,.bc-ico .msi,.pcard .cap .ico .msi,.crest .msi{font-size:1em;vertical-align:middle}
 img{max-width:100%;height:auto;display:block}
 a{color:var(--azul-2)}
+
+/* ═══ Accesibilidad: clases que activa el widget flotante (partials/accessibility.ejs).
+   Solo filtros CSS, espaciado y decoración — nada que reestructure el layout, para no
+   arriesgar romper ninguna página con un cambio global. ═══ */
+html.a11y-fs2{font-size:112.5%}
+html.a11y-fs3{font-size:125%}
+html.a11y-fs4{font-size:137.5%}
+html.a11y-contrast{filter:contrast(1.3) brightness(1.04)}
+html.a11y-gray{filter:grayscale(1)}
+html.a11y-contrast.a11y-gray{filter:contrast(1.3) brightness(1.04) grayscale(1)}
+html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
+html.a11y-readable body{letter-spacing:.02em;line-height:1.75}
+html.a11y-readable p,html.a11y-readable li,html.a11y-readable td,html.a11y-readable dd{word-spacing:.06em}
+html.a11y-nomotion *,html.a11y-nomotion *::before,html.a11y-nomotion *::after{
+  animation-duration:.001ms!important;animation-iteration-count:1!important;
+  transition-duration:.001ms!important;scroll-behavior:auto!important}
 .wrap{max-width:var(--ancho);margin:0 auto;padding:0 24px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 

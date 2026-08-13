@@ -1,0 +1,165 @@
+<style>
+/* Botón flotante en el lado opuesto a WhatsApp (izquierda), apilado encima de él —
+   mismo criterio que el botón "volver arriba" en el lado derecho. */
+.a11y-widget{position:fixed;left:20px;bottom:92px;z-index:76;font-family:inherit}
+.a11y-toggle{width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;
+  background:#00457c;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,40,80,.4);
+  transition:transform .15s,box-shadow .15s}
+.a11y-toggle:hover{transform:scale(1.06);box-shadow:0 10px 26px rgba(0,40,80,.5)}
+.a11y-toggle svg{width:30px;height:30px;display:block}
+
+.a11y-panel{position:absolute;left:0;bottom:66px;width:280px;background:#fff;border-radius:16px;
+  box-shadow:0 24px 60px rgba(0,40,80,.28);overflow:hidden;
+  opacity:0;visibility:hidden;transform:translateY(12px) scale(.98);transform-origin:bottom left;
+  transition:opacity .18s ease,transform .18s ease,visibility 0s linear .18s}
+.a11y-panel.open{opacity:1;visibility:visible;transform:none;transition:opacity .18s ease,transform .18s ease}
+
+.a11y-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#00457c;color:#fff}
+.a11y-head strong{font-size:.96rem}
+.a11y-close{background:none;border:0;color:#fff;cursor:pointer;width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;font-size:1rem;line-height:1;flex:none}
+.a11y-close:hover{background:rgba(255,255,255,.15)}
+
+.a11y-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;max-height:min(60vh,420px);overflow-y:auto}
+.a11y-row{display:flex;align-items:center;justify-content:space-between;font-size:.86rem;color:#1c2b38;padding:2px 2px 6px}
+.a11y-stepper{display:flex;align-items:center;gap:6px}
+.a11y-stepper button{width:28px;height:28px;border-radius:8px;border:1px solid #dbe3ec;background:#f5f8fa;
+  cursor:pointer;font-weight:700;font-size:.8rem;color:#1c2b38}
+.a11y-stepper button:hover{background:#e9eef5}
+.a11y-stepper button:disabled{opacity:.4;cursor:default}
+.a11y-stepper span{font-size:.78rem;color:#5b6b78;min-width:34px;text-align:center}
+
+.a11y-toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;
+  border:1px solid #dbe3ec;border-radius:10px;background:#f5f8fa;color:#1c2b38;font:inherit;font-size:.86rem;
+  cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
+.a11y-toggle-btn::after{content:"";width:16px;height:16px;border-radius:50%;border:2px solid #c3ccd6;flex:none;
+  transition:background .15s,border-color .15s}
+.a11y-toggle-btn[aria-pressed="true"]{background:#eaf3fb;border-color:#00457c}
+.a11y-toggle-btn[aria-pressed="true"]::after{background:#00457c;border-color:#00457c}
+
+.a11y-reset{margin:4px 16px 14px;padding:9px;border:0;border-radius:10px;background:#e30613;color:#fff;
+  font-weight:700;font-size:.84rem;cursor:pointer;transition:background .15s}
+.a11y-reset:hover{background:#b0050f}
+
+@media (max-width:480px){
+  .a11y-widget{left:14px;bottom:86px}
+  .a11y-panel{width:min(280px,calc(100vw - 28px))}
+}
+@media (prefers-reduced-motion:reduce){
+  .a11y-panel{transition:none}
+}
+</style>
+
+<div class="a11y-widget" id="a11yWidget">
+  <button type="button" class="a11y-toggle" id="a11yToggle" aria-haspopup="dialog" aria-expanded="false"
+          aria-controls="a11yPanel" aria-label="Herramientas de accesibilidad">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="12" cy="7.4" r="1.7"/>
+      <path d="M12 9.6c-2.7 0-5.2.7-5.2 1.8 0 .68.87 1.27 2.18 1.58l.5 2.02-1.66 4.28a1 1 0 0 0 1.86.73l1.55-4h1.58l1.55 4a1 1 0 0 0 1.86-.73L14.54 15l.5-2.02c1.31-.31 2.18-.9 2.18-1.58 0-1.1-2.5-1.8-5.22-1.8Z"/>
+    </svg>
+  </button>
+
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-label="Herramientas de accesibilidad" inert>
+    <div class="a11y-head">
+      <strong>Accesibilidad</strong>
+      <button type="button" class="a11y-close" id="a11yClose" aria-label="Cerrar herramientas de accesibilidad">&#10005;</button>
+    </div>
+    <div class="a11y-body">
+      <div class="a11y-row">
+        <span>Tamaño de texto</span>
+        <div class="a11y-stepper">
+          <button type="button" data-a11y="fs-dec" aria-label="Reducir tamaño de texto">A&minus;</button>
+          <span id="a11yFsLabel">100%</span>
+          <button type="button" data-a11y="fs-inc" aria-label="Aumentar tamaño de texto">A+</button>
+        </div>
+      </div>
+      <button type="button" class="a11y-toggle-btn" data-a11y="contrast" aria-pressed="false">Alto contraste</button>
+      <button type="button" class="a11y-toggle-btn" data-a11y="gray" aria-pressed="false">Escala de grises</button>
+      <button type="button" class="a11y-toggle-btn" data-a11y="underline" aria-pressed="false">Subrayar enlaces</button>
+      <button type="button" class="a11y-toggle-btn" data-a11y="readable" aria-pressed="false">Espaciado de lectura</button>
+      <button type="button" class="a11y-toggle-btn" data-a11y="nomotion" aria-pressed="false">Pausar animaciones</button>
+    </div>
+    <button type="button" class="a11y-reset" id="a11yReset">Restablecer todo</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'a11yPrefs';
+  var root = document.documentElement;
+  var widget = document.getElementById('a11yWidget');
+  if (!widget) return;
+  var toggle = document.getElementById('a11yToggle');
+  var panel = document.getElementById('a11yPanel');
+  var closeBtn = document.getElementById('a11yClose');
+  var resetBtn = document.getElementById('a11yReset');
+  var fsLabel = document.getElementById('a11yFsLabel');
+  var FS_PCT = { 1: '100%', 2: '112%', 3: '125%', 4: '137%' };
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
+  function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+
+  var state = load();
+  if (!state.fs) state.fs = 1;
+
+  function applyAll() {
+    root.classList.remove('a11y-fs2', 'a11y-fs3', 'a11y-fs4');
+    if (state.fs > 1) root.classList.add('a11y-fs' + state.fs);
+    ['contrast', 'gray', 'underline', 'readable', 'nomotion'].forEach(function (key) {
+      root.classList.toggle('a11y-' + key, !!state[key]);
+      var btn = widget.querySelector('[data-a11y="' + key + '"]');
+      if (btn) btn.setAttribute('aria-pressed', state[key] ? 'true' : 'false');
+    });
+    if (fsLabel) fsLabel.textContent = FS_PCT[state.fs];
+  }
+  applyAll();
+
+  function openPanel() {
+    // Se asigna la propiedad IDL (no removeAttribute/setAttribute) y el foco se difiere
+    // 200ms (mismo patrón ya probado en chat-widget.ejs): quitar "inert" no deja el
+    // subárbol enfocable de forma fiable en el mismo turno síncrono.
+    panel.inert = false;
+    panel.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+    setTimeout(function () {
+      var first = panel.querySelector('button');
+      if (first) first.focus();
+    }, 200);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('click', onOutside, true);
+  }
+  function closePanel(returnFocus) {
+    panel.classList.remove('open');
+    panel.inert = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('keydown', onKey);
+    document.removeEventListener('click', onOutside, true);
+    if (returnFocus !== false) toggle.focus();
+  }
+  function onKey(e) { if (e.key === 'Escape') closePanel(); }
+  function onOutside(e) { if (!widget.contains(e.target)) closePanel(false); }
+
+  toggle.addEventListener('click', function () {
+    if (panel.classList.contains('open')) closePanel(); else openPanel();
+  });
+  closeBtn.addEventListener('click', function () { closePanel(); });
+
+  widget.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-a11y]');
+    if (!btn) return;
+    var key = btn.dataset.a11y;
+    if (key === 'fs-inc') { state.fs = Math.min(4, (state.fs || 1) + 1); }
+    else if (key === 'fs-dec') { state.fs = Math.max(1, (state.fs || 1) - 1); }
+    else { state[key] = !state[key]; }
+    save(state);
+    applyAll();
+  });
+
+  resetBtn.addEventListener('click', function () {
+    state = { fs: 1 };
+    save(state);
+    applyAll();
+  });
+})();
+</script>
