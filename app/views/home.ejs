@@ -46,7 +46,6 @@
     /* Campo trampa anti-spam: invisible para personas, los bots que rellenan todos los
        campos caen en él y la solicitud se descarta en el servidor. */
     .hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-    .grid-oferta{margin-top:22px}
     :root {
       --blue: #00457c;
       --blue-soft: #0f6f9e;
@@ -899,53 +898,146 @@
       padding: 36px 0
     }
 
-    /* Nueva sección de Oferta Académica con video */
-    .oferta-container {
-      display: flex;
-      flex-wrap: wrap;
+    /* ═══ Oferta Académica: grid de programas primero, video como cierre ═══ */
+    .oferta-section { padding: 64px 0 8px; }
+
+    .oferta-head {
+      max-width: 640px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+    .oferta-eyebrow {
+      color: var(--accent);
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 40px;
-      padding: 50px 20px;
+      gap: 10px;
     }
-
-    .texto-oferta {
-      flex: 1 1 400px;
-      max-width: 500px;
-    }
-
-    .texto-oferta h2 {
-      font-size: 40px;
-      margin-bottom: 20px;
-      font-weight: 800;
-    }
-
-    .texto-oferta p {
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
-      color: var(--muted);
-    }
-
-    .texto-oferta .btn {
-      display: inline-block;
+    .oferta-eyebrow::before,
+    .oferta-eyebrow::after {
+      content: "";
+      width: 28px;
+      height: 2px;
       background: var(--accent);
+      display: inline-block;
+    }
+    .oferta-head h2 {
+      font-size: clamp(1.8rem, 1.2rem + 2.4vw, 2.5rem);
+      color: var(--blue);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 14px;
+    }
+    .oferta-head p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 1.02rem;
+      margin: 0;
+    }
+
+    /* Grid de programas (las "imágenes"): tarjetas con la etiqueta superpuesta sobre la
+       foto (degradado inferior) en vez de una barra de color aparte — más compacto y con
+       más presencia visual, con una barrita de color propia por categoría. */
+    .oferta-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+    .oferta-card {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      aspect-ratio: 3 / 4;
+      box-shadow: 0 10px 28px rgba(0, 69, 124, .14);
+      transition: transform .45s cubic-bezier(.22,.61,.36,1), box-shadow .4s ease;
+    }
+    .oferta-card:hover,
+    .oferta-card:focus-within { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(0, 69, 124, .26); }
+    .oferta-card a { display: block; position: relative; width: 100%; height: 100%; outline-offset: 4px; }
+    .oferta-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .8s cubic-bezier(.22,.61,.36,1);
+    }
+    .oferta-card:hover img { transform: scale(1.09); }
+    .oferta-card::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(3,20,40,0) 42%, rgba(2,14,28,.86) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .oferta-card::after {
+      content: "";
+      position: absolute; left: 18px; bottom: 18px;
+      width: 30px; height: 4px; border-radius: 2px;
+      background: var(--card-accent, var(--accent));
+      z-index: 2;
+    }
+    .oferta-card-tag {
+      position: absolute; left: 18px; right: 18px; bottom: 30px;
+      color: #fff; font-weight: 800; font-size: 1rem; letter-spacing: .01em;
+      z-index: 2;
+      text-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    .oferta-card--tecnologias       { --card-accent: var(--blue-soft); }
+    .oferta-card--pregrados         { --card-accent: var(--blue); }
+    .oferta-card--especializaciones { --card-accent: #2c7da0; }
+    .oferta-card--maestrias         { --card-accent: #013a63; }
+    .oferta-card--extension         { --card-accent: var(--accent); }
+
+    /* La foto de Maestrías es una foto real (graduación); se le aplica el mismo duotono
+       azul que ya traen las otras 4 de fábrica, para que las 5 se vean parte del mismo set. */
+    .oferta-card--maestrias img {
+      filter: grayscale(1) contrast(1.05) brightness(1.04);
+      mix-blend-mode: luminosity;
+      background: #1c62a6;
+    }
+
+    /* Cierre: banner con el video institucional + CTA (mismo lenguaje visual que .lead-cta,
+       más abajo en la página, para que ambos cierres de sección se sientan de la misma familia). */
+    .oferta-closer {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 52px;
+      padding: 44px;
+      border-radius: 26px;
+      background: linear-gradient(155deg, var(--dark) 0%, #0d3854 60%, var(--blue) 100%);
       color: #fff;
-      padding: 10px 22px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background 0.3s;
+      box-shadow: 0 26px 60px rgba(0, 20, 50, .24);
     }
-
-    .texto-oferta .btn:hover {
-      background: var(--accent-dark);
+    .oferta-closer::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(32vw 32vw at 95% 100%, rgba(227,6,19,.20), transparent 65%);
+      pointer-events: none;
     }
+    .oferta-closer-text { position: relative; z-index: 1; }
+    .oferta-closer-eyebrow {
+      color: #ff8f7a;
+      font-size: .85rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 12px; display: inline-flex; align-items: center; gap: 10px;
+    }
+    .oferta-closer-eyebrow::before { content: ""; width: 28px; height: 2px; background: #ff8f7a; display: inline-block; }
+    .oferta-closer-text h3 { font-size: clamp(1.4rem, 1rem + 1.6vw, 1.9rem); font-weight: 800; margin: 0 0 14px; line-height: 1.2; }
+    .oferta-closer-text p { color: #cfe0ec; line-height: 1.6; margin: 0 0 26px; max-width: 46ch; }
+    .oferta-closer-btn {
+      display: inline-block; background: var(--accent); color: #fff;
+      padding: 12px 26px; border-radius: 10px; font-weight: 700; text-decoration: none;
+      transition: background .3s, transform .2s;
+    }
+    .oferta-closer-btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
 
-.video-oferta {
-  flex: 1 1 400px;
-  max-width: 560px;
-}
+    .oferta-closer-video { position: relative; z-index: 1; }
 
 .video-oferta iframe,
 .video-thumb {
@@ -1021,83 +1113,6 @@
   background: #C40411; /* Rojo un poco más oscuro al pasar el cursor */
   box-shadow: 0 8px 24px rgba(227, 7, 21, 0.55);
 }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .card {
-      background: #fff;
-      overflow: hidden;
-      box-shadow: 0 1px 2px rgba(3, 58, 104, .05), 0 12px 26px -12px rgba(3, 58, 104, .16);
-    }
-
-    .card img {
-      display: block;
-      width: 100%;
-      height: 360px;
-      object-fit: cover;
-    }
-
-    .card a.caption {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 70px;
-      font-weight: 700;
-      color: white;
-      transition: 0.3s ease
-    }
-
-    .card a.caption:hover {
-      opacity: 0.9;
-      cursor: pointer
-    }
-
-    .caption.carreras {
-      background-color: var(--blue);
-    }
-
-    .caption.tecnologias {
-      background-color: var(--blue-soft);
-    }
-
-    .caption.especializaciones {
-      background-color: #2c7da0;
-    }
-
-    .caption.extension {
-      background-color: var(--accent);
-    }
-
-    .caption.maestrias {
-      background-color: #013a63;
-    }
-
-    /* La tarjeta de Maestrías usa una foto real (graduación) a la que aplicamos un duotono
-       azul por CSS para igualar la identidad de las demás (que ya vienen tintadas). */
-    .card-tinted {
-      position: relative;
-      display: block;
-      background: #1c62a6;
-    }
-    .card-tinted img {
-      filter: grayscale(1) contrast(1.05) brightness(1.04);
-      mix-blend-mode: luminosity;
-    }
-    .card-tinted::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(30, 110, 190, .28), rgba(1, 40, 75, .40));
-      pointer-events: none;
-    }
-
-    /* Redondeo del footer segun la POSICION (no el color): así queda bien con cualquier orden */
-    .grid-4 .card:first-child .caption { border-bottom-left-radius: 20px; }
-    .grid-4 .card:last-child .caption { border-bottom-right-radius: 20px; }
 
     /* ═══════════════ FOOTER ═══════════════ */
     footer {
@@ -1658,24 +1673,14 @@
     gap: 10px;
   }
 
-  .oferta-container {
-    flex-direction: column;
-    padding: 30px 16px;
-    text-align: center;
-  }
-
-  .texto-oferta {
-    max-width: 100%;
+  .oferta-closer {
+    grid-template-columns: 1fr;
+    padding: 32px 24px;
+    gap: 28px;
   }
 
   .video-oferta iframe {
     height: 240px;
-  }
-
-  .grid-4 {
-    margin-top: 50px;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
   }
 
   .foot-grid {
@@ -1719,20 +1724,8 @@
     grid-template-columns: 1fr;
   }
 
-  .grid-4 {
-    grid-template-columns: 1fr;
-  }
-
-  .card img {
-    height: 240px;
-  }
-
-  .oferta-container {
-    padding: 20px 10px;
-  }
-
-  .texto-oferta h2 {
-    font-size: 28px;
+  .oferta-closer {
+    padding: 26px 20px;
   }
 
   .act-tabs {
@@ -1762,20 +1755,21 @@ img, iframe, video, svg { max-width: 100%; }
 /* --- Tipografia fluida: escala suave en TODOS los anchos (sin saltos) --- */
 .hero h1                     { font-size: clamp(1.7rem, 1.05rem + 2.7vw, 2.4rem); }
 .hero p                      { font-size: clamp(0.95rem, 0.88rem + 0.4vw, 1.06rem); }
-.texto-oferta h2             { font-size: clamp(1.8rem, 1.2rem + 2.4vw, 2.5rem); }
 .impacto-text h2             { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.4rem); }
 .act-container h2, #canal h2 { font-size: clamp(1.4rem, 1rem + 1.8vw, 2rem); }
 
-/* --- Tarjetas de oferta (grid-4): max 2 por fila en tablet, 1 en movil --- */
-@media (min-width: 1025px) {
-  .grid-5 { grid-template-columns: repeat(5, 1fr); }
+/* --- Grid de programas: 5 en escritorio, 3 en tablet, 2 en móvil, 1 en pantallas muy
+   pequeñas (donde además se pasa a un recorte más horizontal, menos alargado). --- */
+@media (max-width: 1100px) {
+  .oferta-grid { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 700px) {
+  .oferta-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .oferta-closer-video .video-thumb { aspect-ratio: 16 / 10; }
 }
-@media (max-width: 560px) {
-  .grid-4 { grid-template-columns: 1fr; }
-  .card img { height: 220px; }
+@media (max-width: 340px) {
+  .oferta-grid { grid-template-columns: 1fr; }
+  .oferta-card { aspect-ratio: 16 / 10; }
 }
 
 /* --- Grilla de videos YouTube: nunca desborda en pantallas muy pequeñas --- */
@@ -1935,14 +1929,6 @@ html { scroll-behavior: smooth; }
   pointer-events: none;
 }
 .btn:hover::before, .btn-canal:hover::before { left: 130%; }
-
-/* ─── Cards de oferta (PREGRADOS, etc.) ──── */
-.grid-4 .card { transition: transform .5s cubic-bezier(.22,.61,.36,1), box-shadow .4s ease; }
-.grid-4 .card:hover { transform: translateY(-10px); box-shadow: 0 22px 54px rgba(0,69,124,.22); }
-.grid-4 .card img { transition: transform .9s cubic-bezier(.22,.61,.36,1); }
-.grid-4 .card:hover img { transform: scale(1.1); }
-.grid-4 .card .caption { transition: transform .3s ease, letter-spacing .3s ease; }
-.grid-4 .card:hover .caption { letter-spacing: .05em; }
 
 /* ─── Cifras (Impacto) ───────────────────── */
 .impacto-cifras .cifra {
@@ -2128,60 +2114,71 @@ html { scroll-behavior: smooth; }
 
   <main class="wrap" id="contenido" tabindex="-1">
 
-    <!-- Nueva sección de Oferta Académica con video -->
-    <section class="oferta-container">
-      <div class="texto-oferta">
-        <h2>Oferta <br> Académica</h2>
-        <p>En Uniremington estamos comprometidos en brindarte toda la orientación que necesitas para dar tus
-          primeros pasos en tu etapa de pregrado o de posgrado.</p>
-        <p>Aquí puedes explorar nuestros programas académicos, conocer los requisitos y fechas de admisión, además
-          de conocer alternativas para financiar tu carrera universitaria.</p>
-        <p>¡Te invitamos a iniciar tu nueva etapa para adquirir conocimiento y educación pertinente para
-          transformar las realidades de tu entorno!</p>
-        <a href="/programas" class="btn">VER OFERTA</a>
+    <!-- Oferta Académica: el grid de programas (las imágenes) va primero, el video
+         institucional cierra la sección como banner de invitación + CTA. -->
+    <section class="oferta-section">
+      <div class="oferta-head">
+        <span class="oferta-eyebrow">Programas académicos</span>
+        <h2>Oferta Académica</h2>
+        <p>Técnicas, tecnologías, pregrados, posgrados y educación continua — presenciales,
+          virtuales y a distancia. Conoce los requisitos, las fechas de admisión y las
+          alternativas para financiar tu carrera.</p>
       </div>
-      <div class="video-oferta">
-        <div class="video-thumb" id="videoThumb" data-video="_D5nmSNZ-F8" role="button" tabindex="0" aria-label="Reproducir video institucional">
-          <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/hqdefault.jpg" alt="Video Institucional Uniremington"
-               width="480" height="360" loading="lazy" decoding="async"
-               onerror="this.src='https://img.youtube.com/vi/_D5nmSNZ-F8/mqdefault.jpg'">
-          <div class="play-btn" aria-hidden="true"></div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Sección de tarjetas original -->
-    <section>
-      <div class="grid-4 grid-5 grid-oferta">
+      <div class="oferta-grid">
         <!-- Estas 5 imágenes se sirven localmente (no hotlink a WordPress): la ficha de
              PageSpeed señaló ~40 KiB de más por exceso de compresión/resolución frente al
              tamaño real en el que se muestran (~665px físicos en móvil). Se descargaron una
              vez de producción y se reprocesaron con sharp (720px de ancho, calidad 82). -->
-        <article class="card">
-          <a href="/tecnologias" aria-label="Ver tecnologías"><img alt="Tecnologías" width="720" height="900" loading="lazy" decoding="async"
-              src="/media/oferta/tecnologias.webp"></a>
-          <a class="caption tecnologias" href="/tecnologias">TECNOLOGÍAS</a>
+        <article class="oferta-card oferta-card--tecnologias">
+          <a href="/tecnologias" aria-label="Ver tecnologías">
+            <img alt="Tecnologías" width="720" height="900" loading="lazy" decoding="async" src="/media/oferta/tecnologias.webp">
+            <span class="oferta-card-tag">Tecnologías</span>
+          </a>
         </article>
-        <article class="card">
-          <a href="/pregrados" aria-label="Ver pregrados"><img alt="Pregrados" width="720" height="900" loading="lazy" decoding="async"
-              src="/media/oferta/pregrados.webp"></a>
-          <a class="caption carreras" href="/pregrados">PREGRADOS</a>
+        <article class="oferta-card oferta-card--pregrados">
+          <a href="/pregrados" aria-label="Ver pregrados">
+            <img alt="Pregrados" width="720" height="900" loading="lazy" decoding="async" src="/media/oferta/pregrados.webp">
+            <span class="oferta-card-tag">Pregrados</span>
+          </a>
         </article>
-        <article class="card">
-          <a href="/especializaciones" aria-label="Ver especializaciones"><img alt="Especializaciones" width="720" height="900" loading="lazy" decoding="async"
-              src="/media/oferta/especializaciones.webp"></a>
-          <a class="caption especializaciones" href="/especializaciones">ESPECIALIZACIONES</a>
+        <article class="oferta-card oferta-card--especializaciones">
+          <a href="/especializaciones" aria-label="Ver especializaciones">
+            <img alt="Especializaciones" width="720" height="900" loading="lazy" decoding="async" src="/media/oferta/especializaciones.webp">
+            <span class="oferta-card-tag">Especializaciones</span>
+          </a>
         </article>
-        <article class="card card-maestrias">
-          <a class="card-tinted" href="/maestrias" aria-label="Ver maestrías"><img alt="Maestrías" width="720" height="405" loading="lazy" decoding="async"
-              src="/media/oferta/maestrias.webp"></a>
-          <a class="caption maestrias" href="/maestrias">MAESTRÍAS</a>
+        <article class="oferta-card oferta-card--maestrias">
+          <a href="/maestrias" aria-label="Ver maestrías">
+            <img alt="Maestrías" width="720" height="405" loading="lazy" decoding="async" src="/media/oferta/maestrias.webp">
+            <span class="oferta-card-tag">Maestrías</span>
+          </a>
         </article>
-        <article class="card">
-          <a href="/extension-y-posgrados" aria-label="Ver educación continua"><img alt="Educación continua" width="720" height="900" loading="lazy" decoding="async"
-              src="/media/oferta/extension.webp"></a>
-          <a class="caption extension" href="/extension-y-posgrados">EDUCACIÓN Y <br> CONTINUA</a>
+        <article class="oferta-card oferta-card--extension">
+          <a href="/extension-y-posgrados" aria-label="Ver educación continua">
+            <img alt="Educación continua" width="720" height="900" loading="lazy" decoding="async" src="/media/oferta/extension.webp">
+            <span class="oferta-card-tag">Educación continua</span>
+          </a>
         </article>
+      </div>
+
+      <div class="oferta-closer">
+        <div class="oferta-closer-text">
+          <span class="oferta-closer-eyebrow">Conócenos</span>
+          <h3>Uniremington en video</h3>
+          <p>Más de un siglo formando profesionales íntegros, comprometidos con la
+            transformación social del país. Descubre por qué miles de estudiantes ya hacen
+            parte de esta comunidad.</p>
+          <a href="/programas" class="oferta-closer-btn">Ver oferta completa &rarr;</a>
+        </div>
+        <div class="oferta-closer-video">
+          <div class="video-thumb" id="videoThumb" data-video="_D5nmSNZ-F8" role="button" tabindex="0" aria-label="Reproducir video institucional">
+            <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/hqdefault.jpg" alt="Video Institucional Uniremington"
+                 width="480" height="360" loading="lazy" decoding="async"
+                 onerror="this.src='https://img.youtube.com/vi/_D5nmSNZ-F8/mqdefault.jpg'">
+            <div class="play-btn" aria-hidden="true"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2919,11 +2916,10 @@ html { scroll-behavior: smooth; }
     /* ────────── REVEAL DE TODAS LAS SECCIONES ────────── */
     const revealTargets = [
       // Sección Oferta Académica
-      { sel: '.oferta-container .texto-oferta',   cls: 'reveal from-left' },
-      { sel: '.oferta-container .video-oferta',   cls: 'reveal from-right' },
-
-      // Grid de 4 cards (PREGRADOS, etc.)
-      { sel: '.grid-4 .card',                     cls: 'reveal with-scale', stagger: 0.12 },
+      { sel: '.oferta-head',                      cls: 'reveal' },
+      { sel: '.oferta-card',                      cls: 'reveal with-scale', stagger: 0.08 },
+      { sel: '.oferta-closer-text',                cls: 'reveal from-left' },
+      { sel: '.oferta-closer-video',               cls: 'reveal from-right' },
 
       // Sección Impacto
       { sel: '.impacto-img',                      cls: 'reveal from-left' },
