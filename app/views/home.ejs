@@ -577,56 +577,40 @@
       color: rgba(255, 255, 255, 0.85);
     }
 
-    /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════ */
-    /* Franja de ancho completo (no una tarjeta redondeada flotando en la página):
-       mitad oscura con el mensaje + mitad blanca con el formulario, cada una alineada
-       al mismo borde de contenido que usa el resto de la página (var(--container)). */
+    /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════
+       Rediseño completo: nada de dos paneles de igual altura con color plano. Ahora es
+       un fondo "aurora" oscuro y animado (el mismo lenguaje visual del hero: manchas de
+       gradiente a la deriva) con una tarjeta de vidrio flotante para el formulario —
+       el texto y la tarjeta se acomodan cada uno a su propio contenido en vez de
+       estirarse para igualar al otro, así nunca queda espacio vacío de sobra. */
     .lead-final {
       width: 100vw;
       position: relative;
       left: 50%;
       transform: translateX(-50%);
       margin-top: 24px;
-      /* Cancela el padding-bottom de <main class="wrap"> (28px, ver más abajo su valor
-         en cada breakpoint) para que la franja llegue justo hasta el footer, sin la
-         tira blanca que quedaba entre los dos. */
       margin-bottom: -28px;
-      /* Sin esto, la regla genérica "section{padding:36px 0}" le mete su propio
-         padding arriba/abajo — pero el color vive en .lead-final-grid (adentro), así
-         que ese padding se veía como una franja blanca entre el fondo de la página y
-         la franja de color, tanto arriba como (sobre todo) abajo, justo antes del footer. */
       padding: 0;
+      overflow: hidden;
+      background: #061c30;
     }
 
-    .lead-final-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: stretch;
+    .lead-final-inner {
+      position: relative;
+      z-index: 1;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 60px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 56px;
+      flex-wrap: wrap;
     }
 
     .lead-final-pitch {
-      position: relative;
-      overflow: hidden;
-      background: var(--dark);
+      flex: 1 1 400px;
       color: #fff;
-      display: flex;
-      align-items: center;
-      padding: 44px 48px 44px max(24px, calc(50vw - (var(--container) / 2)));
-    }
-
-    .lead-final-pitch::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(30vw 30vw at 100% 0%, rgba(227, 6, 19, 0.16), transparent 65%),
-                  radial-gradient(24vw 24vw at 0% 100%, rgba(15, 111, 158, 0.2), transparent 70%);
-      pointer-events: none;
-    }
-
-    .lead-final-pitch-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 480px;
     }
 
     .lead-final-eyebrow {
@@ -649,115 +633,111 @@
       display: inline-block;
     }
 
-    .lead-final-pitch-inner h2 {
-      font-size: 2.1rem;
+    .lead-final-pitch h2 {
+      font-size: 2.2rem;
       font-weight: 800;
       line-height: 1.15;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      max-width: 15ch;
     }
 
-    .lead-final-pitch-inner > p {
+    .lead-final-pitch > p {
       color: #cfe0ec;
       line-height: 1.6;
-      font-size: 0.98rem;
-      margin-bottom: 18px;
+      font-size: 1rem;
+      max-width: 42ch;
+      margin-bottom: 22px;
     }
 
-    .lead-final-checks {
-      list-style: none;
+    /* Confianza en píldoras horizontales (no lista vertical apilada): mismo mensaje,
+       una fracción de la altura. */
+    .lead-final-pills {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 0;
     }
 
-    .lead-final-checks li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 0.96rem;
-      color: #e7f0f6;
-    }
-
-    .lead-final-checks .ico {
-      flex-shrink: 0;
-      font-size: 1.25rem;
-      color: var(--accent);
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
+    .lead-final-pill {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 8px 14px 8px 10px;
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #e7f0f6;
+      backdrop-filter: blur(6px);
     }
 
-    /* Fondo con tinte (no blanco puro): en pantallas muy anchas el formulario no llena
-       toda la mitad, y un blanco puro ahí se perdía contra el blanco de la página —
-       este tinte deja la franja visible sin importar qué tan ancha quede la pantalla.
-       Contenido centrado en vez de pegado al borde exterior, para que no quede
-       descuadrado hacia un lado cuando sobra espacio. */
-    .lead-final-form {
-      background: var(--light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 32px max(24px, calc(50vw - (var(--container) / 2)));
+    .lead-final-pill .ico {
+      color: var(--accent);
+      font-size: 1.05rem;
+      flex: none;
     }
 
-    .lead-final-form-inner {
+    /* Tarjeta de vidrio flotante: tamaño propio (no estira para igualar al texto),
+       fondo blanco con desenfoque leve para leerse bien sobre el aurora del fondo. */
+    .lead-final-card {
+      flex: 0 1 420px;
       width: 100%;
-      max-width: 460px;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 22px;
+      padding: 30px 28px;
+      box-shadow: 0 30px 70px rgba(0, 8, 25, 0.5), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
       color: var(--dark);
     }
 
-    .lead-final-form-inner h3 {
-      font-size: 1.3rem;
+    .lead-final-card h3 {
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--blue);
       margin-bottom: 3px;
     }
 
-    .lead-final-form-inner .sub {
+    .lead-final-card .sub {
       color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 18px;
+      font-size: 0.86rem;
+      margin-bottom: 16px;
     }
 
     /* Grid de 2 columnas: nombre/correo/teléfono/programa en pares, y lo que
        necesita más espacio (sede, mensaje, botón, aviso legal) ocupa la fila entera. */
-    .lead-final-form-inner form {
+    .lead-final-card form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px 12px;
     }
 
-    .lead-final-form-inner form .wide {
+    .lead-final-card form .wide {
       grid-column: 1 / -1;
     }
 
-    .lead-final-form-inner input,
-    .lead-final-form-inner select,
-    .lead-final-form-inner textarea {
+    .lead-final-card input,
+    .lead-final-card select,
+    .lead-final-card textarea {
       padding: 11px 13px;
       border: 1px solid #dbe3ec;
       border-radius: 9px;
       font: inherit;
       font-size: 0.9rem;
-      background: #fff;
+      background: #f5f8fa;
       color: var(--dark);
       width: 100%;
       resize: vertical;
     }
 
-    .lead-final-form-inner textarea {
+    .lead-final-card textarea {
       min-height: 44px;
     }
 
-    .lead-final-form-inner input:focus,
-    .lead-final-form-inner select:focus,
-    .lead-final-form-inner textarea:focus {
+    .lead-final-card input:focus,
+    .lead-final-card select:focus,
+    .lead-final-card textarea:focus {
       outline: 2px solid var(--blue-soft);
+      background: #fff;
     }
 
     .lead-final-submit {
@@ -876,26 +856,24 @@
     }
 
     @media (max-width: 860px) {
-      .lead-final-grid {
-        grid-template-columns: 1fr;
+      .lead-final-inner {
+        padding: 44px 20px;
+        gap: 32px;
       }
-      .lead-final-pitch {
-        padding: 40px 24px;
-      }
-      .lead-final-form {
-        padding: 40px 24px;
-      }
-      .lead-final-pitch-inner,
-      .lead-final-form-inner {
+      .lead-final-pitch h2 {
+        font-size: 1.8rem;
         max-width: none;
       }
-      .lead-final-pitch-inner h2 {
-        font-size: 1.8rem;
+      .lead-final-pitch > p {
+        max-width: none;
+      }
+      .lead-final-card {
+        max-width: none;
       }
     }
 
     @media (max-width: 420px) {
-      .lead-final-form-inner form {
+      .lead-final-card form {
         grid-template-columns: 1fr;
       }
     }
@@ -2314,66 +2292,63 @@ html { scroll-behavior: smooth; }
 
     <!-- Sección Solicita información: form de captación de leads -->
     <section class="lead-final" id="quiero-informacion">
-      <div class="lead-final-grid">
+      <div class="hero-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="lead-final-inner">
         <div class="lead-final-pitch">
-          <div class="lead-final-pitch-inner">
-            <div class="lead-final-eyebrow">Asesoría gratuita</div>
-            <h2>Empieza tu carrera universitaria hoy mismo</h2>
-            <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
-            <ul class="lead-final-checks">
-              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Programas con registro calificado del Ministerio de Educación</li>
-              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Modalidad presencial, virtual y a distancia en 19 sedes</li>
-              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Descuentos y créditos educativos disponibles</li>
-            </ul>
+          <div class="lead-final-eyebrow">Asesoría gratuita</div>
+          <h2>Empieza tu carrera universitaria hoy mismo</h2>
+          <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
+          <div class="lead-final-pills">
+            <span class="lead-final-pill"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Registro calificado MEN</span>
+            <span class="lead-final-pill"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> 19 sedes en Colombia</span>
+            <span class="lead-final-pill"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Créditos y descuentos</span>
           </div>
         </div>
 
-        <div class="lead-final-form">
-          <div class="lead-final-form-inner">
-            <h3>Solicita información gratis</h3>
-            <p class="sub">Un asesor académico te contacta muy pronto.</p>
-            <form method="post" action="/solicitar-info" class="js-lead">
-              <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
-              <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
-              <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
-              <select name="programa" required aria-label="¿Qué te interesa estudiar?">
-                <option value="">¿Qué te interesa estudiar?</option>
-                <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
-                <option value="Especialización">Especialización</option>
-                <option value="Maestría">Maestría</option>
-                <option value="Diplomados y educación continua">Diplomados y educación continua</option>
-                <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
-              </select>
-              <select name="sede" class="wide" aria-label="Sede de tu interés">
-                <option value="">Sede de tu interés (opcional)</option>
-                <option value="Virtual / A distancia">Virtual / A distancia</option>
-                <option>Apartadó</option>
-                <option>Armenia</option>
-                <option>Bucaramanga</option>
-                <option>Cali</option>
-                <option>Caucasia</option>
-                <option>Cúcuta</option>
-                <option>Ibagué</option>
-                <option>Ipiales</option>
-                <option>Manizales</option>
-                <option>Medellín</option>
-                <option>Montería</option>
-                <option>Palmira</option>
-                <option>Pasto</option>
-                <option>Pereira</option>
-                <option>Rionegro</option>
-                <option>Sahagún</option>
-                <option>Sincelejo</option>
-                <option>Tuluá</option>
-                <option>Yopal</option>
-                <option value="No estoy seguro/a">No estoy seguro/a</option>
-              </select>
-              <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
-              <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
-              <button class="lead-final-submit wide" type="submit">Quiero mi asesoría gratis</button>
-              <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
-            </form>
-          </div>
+        <div class="lead-final-card">
+          <h3>Solicita información gratis</h3>
+          <p class="sub">Un asesor académico te contacta muy pronto.</p>
+          <form method="post" action="/solicitar-info" class="js-lead">
+            <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+            <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+            <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+            <select name="programa" required aria-label="¿Qué te interesa estudiar?">
+              <option value="">¿Qué te interesa estudiar?</option>
+              <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
+              <option value="Especialización">Especialización</option>
+              <option value="Maestría">Maestría</option>
+              <option value="Diplomados y educación continua">Diplomados y educación continua</option>
+              <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
+            </select>
+            <select name="sede" class="wide" aria-label="Sede de tu interés">
+              <option value="">Sede de tu interés (opcional)</option>
+              <option value="Virtual / A distancia">Virtual / A distancia</option>
+              <option>Apartadó</option>
+              <option>Armenia</option>
+              <option>Bucaramanga</option>
+              <option>Cali</option>
+              <option>Caucasia</option>
+              <option>Cúcuta</option>
+              <option>Ibagué</option>
+              <option>Ipiales</option>
+              <option>Manizales</option>
+              <option>Medellín</option>
+              <option>Montería</option>
+              <option>Palmira</option>
+              <option>Pasto</option>
+              <option>Pereira</option>
+              <option>Rionegro</option>
+              <option>Sahagún</option>
+              <option>Sincelejo</option>
+              <option>Tuluá</option>
+              <option>Yopal</option>
+              <option value="No estoy seguro/a">No estoy seguro/a</option>
+            </select>
+            <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
+            <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
+            <button class="lead-final-submit wide" type="submit">Quiero mi asesoría gratis</button>
+            <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+          </form>
         </div>
       </div>
     </section>
@@ -2959,6 +2934,10 @@ html { scroll-behavior: smooth; }
       // Sección Canal YouTube
       { sel: '#canal > h2',                       cls: 'reveal' },
       { sel: '.btn-wrap',                         cls: 'reveal' },
+
+      // Solicita información
+      { sel: '.lead-final-pitch',                 cls: 'reveal from-left' },
+      { sel: '.lead-final-card',                  cls: 'reveal from-right' },
     ];
 
     revealTargets.forEach(t => {
