@@ -40,7 +40,7 @@
             ok.className = 'lead-ok';
             ok.setAttribute('role', 'status');
             ok.innerHTML =
-              '<span class="msi">check_circle</span>' +
+              '<svg class="msi ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg>' +
               '<div><strong>¡Solicitud enviada!</strong><p>' +
               ((data && data.message) || 'Un asesor académico te contactará muy pronto.') +
               '</p></div>';

@@ -1,8 +1,32 @@
 <!-- Google tag (gtag.js) — Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7LS6YS8TPB"></script>
+<!-- Carga diferida a propósito: gtag.js pesa ~190KB y competía por ancho de banda con el
+     LCP en móvil bajo conexiones lentas (medido con trazas reales contra producción). El
+     dataLayer se define de inmediato así que ningún evento se pierde — el script en sí se
+     descarga recién cuando el navegador queda libre (o al primer scroll/clic/toque, o a
+     los 3s como respaldo), lo que llegue primero. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-7LS6YS8TPB');
+
+  (function () {
+    var loaded = false;
+    function loadGtag() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-7LS6YS8TPB';
+      document.head.appendChild(s);
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadGtag, { timeout: 4000 });
+    } else {
+      setTimeout(loadGtag, 3000);
+    }
+    ['scroll', 'click', 'touchstart', 'keydown'].forEach(function (ev) {
+      window.addEventListener(ev, loadGtag, { once: true, passive: true });
+    });
+  })();
 </script>

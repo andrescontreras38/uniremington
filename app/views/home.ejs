@@ -38,6 +38,11 @@
       padding:10px 18px;border-radius:0 0 10px 10px;font-weight:700;text-decoration:none;
       box-shadow:0 6px 18px rgba(0,0,0,.25);transition:top .18s ease}
     .skip-link:focus{top:0;outline:3px solid #fff;outline-offset:-3px}
+    /* SVG en línea en vez de la fuente de íconos (220KB, competía por ancho de banda con
+       el LCP en móvil): mismos trazos exactos, extraídos del propio ms-sharp.woff2 con
+       fontTools. Mismo comportamiento de tamaño/alineación que .msi para no romper layout. */
+    .ico{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.18em;fill:currentColor;flex:none}
+    .ico path{fill:currentColor}
     :root {
       --blue: #00457c;
       --blue-soft: #0f6f9e;
@@ -355,7 +360,7 @@
       cursor: pointer;
       transition: background .25s ease, transform .2s ease;
     }
-    .bm-arrow .msi, .bm-play .msi { font-size: 1.05rem; }
+    .bm-arrow .ico, .bm-play .ico { font-size: 1.05rem; }
     .bm-arrow:hover, .bm-play:hover { background: rgba(255, 255, 255, 0.2); }
     .bm-arrow:active, .bm-play:active { transform: scale(.92); }
     .bm-arrow:focus-visible, .bm-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
@@ -377,7 +382,7 @@
       background: rgba(255, 255, 255, 0.14);
       display: grid; place-items: center;
     }
-    .bl-ic .msi { font-size: 1.2rem; }
+    .bl-ic .ico { font-size: 1.2rem; }
     .bl-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .bl-title { font-weight: 700; font-size: .95rem; }
     .bl-kicker { font-size: .78rem; color: #a9bbcb; }
@@ -650,7 +655,7 @@
       color: #e7f0f6;
     }
 
-    .lead-cta-checks .msi {
+    .lead-cta-checks .ico {
       flex-shrink: 0;
       font-size: 1.25rem;
       color: var(--accent);
@@ -675,7 +680,7 @@
       font-size: 0.88rem;
     }
 
-    .lead-cta-badge .msi {
+    .lead-cta-badge .ico {
       color: #ffc069;
       font-size: 1.1rem;
     }
@@ -815,7 +820,7 @@
       gap: 6px;
     }
 
-    .pf-fine .msi {
+    .pf-fine .ico {
       font-size: 0.95rem;
       flex-shrink: 0;
     }
@@ -831,7 +836,7 @@
       color: #14603f;
     }
 
-    .lead-ok .msi {
+    .lead-ok .ico {
       font-size: 2rem;
       color: #1e9e5f;
     }
@@ -1349,12 +1354,12 @@
       content: ""; position: absolute; inset: 0;
       background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 2px, transparent 2px 22px);
     }
-    .act-media .ph .msi { font-size: 2.4rem; opacity: .9; position: relative; z-index: 1; }
+    .act-media .ph .ico { font-size: 2.4rem; opacity: .9; position: relative; z-index: 1; }
     .act-media .ph b { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
       color: #cfe0f5; position: relative; z-index: 1; }
     .act-principal .act-media .ph { min-height: 260px; max-height: 340px; }
     .act-card .act-media .ph { height: 150px; }
-    .act-card .act-media .ph .msi { font-size: 2rem; }
+    .act-card .act-media .ph .ico { font-size: 2rem; }
 
     /* --- Destacada horizontal --- */
     .act-principal {
@@ -2072,31 +2077,31 @@ html { scroll-behavior: smooth; }
             <% }) %>
           </div>
           <div class="bm-controls">
-            <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><span class="msi" aria-hidden="true">chevron_left</span></button>
+            <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M560 240 320 480 560 720 616 664 432 480 616 296Z"/></svg></button>
             <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
               <% campaigns.forEach(function(c, i){ %>
               <button type="button" id="bm-tab-<%= i %>" role="tab" aria-controls="bm-panel-<%= i %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
               <% }) %>
             </div>
-            <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><span class="msi" aria-hidden="true">pause</span></button>
-            <button type="button" class="bm-arrow bm-arrow-next" aria-label="Oferta siguiente"><span class="msi" aria-hidden="true">chevron_right</span></button>
+            <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M520 200V760H760V200ZM200 200V760H440V200Z"/></svg></button>
+            <button type="button" class="bm-arrow bm-arrow-next" aria-label="Oferta siguiente"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M504 480 320 664 376 720 616 480 376 240 320 296Z"/></svg></button>
           </div>
         </div>
 
         <a class="bento-cell bento-link bento-link-a" href="/programas">
-          <span class="bl-ic"><span class="msi" aria-hidden="true">school</span></span>
+          <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M480 120 200 272V512L40 600L480 840L920 600V280H840V556L760 512V272ZM480 452 754 600 480 748 206 600ZM480 211 680 319V470L480 360L280 470V319Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Programas académicos</span><span class="bl-kicker">+80 opciones</span></span>
-          <span class="bl-go msi" aria-hidden="true">arrow_forward</span>
+          <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
         <a class="bento-cell bento-link bento-link-b" href="/donde-estamos/">
-          <span class="bl-ic"><span class="msi" aria-hidden="true">map</span></span>
+          <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M600 120 360 204 120 111V758L360 840L600 756L840 849V202ZM560 218V686L400 742V274ZM640 218 760 258V732L640 686ZM200 228 320 274V742L200 702Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Sedes en Colombia</span><span class="bl-kicker">19 ciudades</span></span>
-          <span class="bl-go msi" aria-hidden="true">arrow_forward</span>
+          <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
         <a class="bento-cell bento-link bento-link-c" href="/soy-egresado-uniremington/">
-          <span class="bl-ic"><span class="msi" aria-hidden="true">workspace_premium</span></span>
+          <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M387 412 422 526 330 600H444L480 712L516 600H630L537 526L572 412L480 483ZM240 40V349Q202 391 181 445Q160 499 160 560Q160 694 253 787Q346 880 480 880Q614 880 707 787Q800 694 800 560Q800 499 779 445Q758 391 720 349V40L480 120ZM480 320Q580 320 650 390Q720 460 720 560Q720 660 650 730Q580 800 480 800Q380 800 310 730Q240 660 240 560Q240 460 310 390Q380 320 480 320ZM320 159 480 200 640 159V283Q605 263 564.5 251.5Q524 240 480 240Q436 240 395.5 251.5Q355 263 320 283Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Comunidad de egresados</span><span class="bl-kicker">Red en crecimiento</span></span>
-          <span class="bl-go msi" aria-hidden="true">arrow_forward</span>
+          <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
       </div>
     </div>
@@ -2272,11 +2277,11 @@ html { scroll-behavior: smooth; }
               <h2>Empieza tu carrera universitaria hoy mismo</h2>
               <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
               <ul class="lead-cta-checks">
-                <li><span class="msi" aria-hidden="true">check_circle</span> Programas con registro calificado del Ministerio de Educación</li>
-                <li><span class="msi" aria-hidden="true">check_circle</span> Modalidad presencial, virtual y a distancia en 19 sedes</li>
-                <li><span class="msi" aria-hidden="true">check_circle</span> Descuentos y créditos educativos disponibles</li>
+                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Programas con registro calificado del Ministerio de Educación</li>
+                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Modalidad presencial, virtual y a distancia en 19 sedes</li>
+                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Descuentos y créditos educativos disponibles</li>
               </ul>
-              <div class="lead-cta-badge"><span class="msi" aria-hidden="true">support_agent</span> Asesoría personalizada, sin compromiso</div>
+              <div class="lead-cta-badge"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M440 120V200H760V484Q760 601 678.5 682.5Q597 764 480 764Q363 764 281.5 682.5Q200 601 200 484V240H80V469H120L123 522Q131 590 162.5 648Q194 706 241.5 749Q289 792 350.5 816Q412 840 480 840Q548 840 609 816Q670 792 718 749.5Q766 707 797 649Q828 591 837 523L840 469H880V240H840V120ZM360 400Q343 400 331.5 411.5Q320 423 320 440Q320 457 331.5 468.5Q343 480 360 480Q377 480 388.5 468.5Q400 457 400 440Q400 423 388.5 411.5Q377 400 360 400ZM600 400Q583 400 571.5 411.5Q560 423 560 440Q560 457 571.5 468.5Q583 480 600 480Q617 480 628.5 468.5Q640 457 640 440Q640 423 628.5 411.5Q617 400 600 400ZM241 462Q234 568 305 644Q376 720 482 720Q571 720 638.5 663.5Q706 607 720 519Q629 520 552.5 568Q476 616 435 698Q419 618 367.5 555.5Q316 493 241 462Z"/></svg> Asesoría personalizada, sin compromiso</div>
             </div>
 
             <div class="lead-cta-card">
@@ -2321,7 +2326,7 @@ html { scroll-behavior: smooth; }
                 <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
                 <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
                 <button class="lead-cta-submit wide" type="submit">Quiero mi asesoría gratis</button>
-                <span class="pf-fine wide"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+                <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
               </form>
             </div>
           </div>
@@ -2503,8 +2508,10 @@ html { scroll-behavior: smooth; }
       // Botón play/pausa: control explícito y persistente del avance automático
       const playBtn = media.querySelector('.bm-play');
       if (playBtn) {
+        const PAUSE_D = 'M520 200V760H760V200ZM200 200V760H440V200Z';
+        const PLAY_D = 'M320 200V760L760 480ZM400 346 610 480 400 614Z';
         const syncPlayBtn = () => {
-          playBtn.querySelector('.msi').textContent = userPaused ? 'play_arrow' : 'pause';
+          playBtn.querySelector('.ico path').setAttribute('d', userPaused ? PLAY_D : PAUSE_D);
           playBtn.setAttribute('aria-pressed', String(!userPaused));
           playBtn.setAttribute('aria-label', userPaused ? 'Reanudar avance automático' : 'Pausar avance automático');
         };
@@ -2534,11 +2541,15 @@ html { scroll-behavior: smooth; }
       const principal = posts[0];
       const secundarios = posts.slice(1, 5);
       const moreUrl = ACT_MORE[id] || "/noticias";
+      var ICON_D = {
+        event: 'M580 240Q538 240 509 269Q480 298 480 340Q480 382 509 411Q538 440 580 440Q622 440 651 411Q680 382 680 340Q680 298 651 269Q622 240 580 240ZM120 80V800H240V880H320V800H640V880H720V800H840V80ZM200 160H760V560H200ZM200 640H760V720H200Z',
+        newspaper: 'M80 120V840L147 773L213 840L280 773L347 840L413 773L480 840L547 773L613 840L680 773L747 840L813 773L880 840V120ZM160 200H440V440H160ZM520 200H800V280H520ZM520 360H800V440H520ZM160 520H800V640H160Z'
+      };
       const media = function(p, eager){ return (
         '<a class="act-media" href="' + esc(p.url) + '">' +
           (p.img
             ? '<img src="' + esc(p.img) + '" alt="' + esc(p.title) + '"' + (eager ? '' : ' loading="lazy"') + '>'
-            : '<span class="ph"><span class="msi">' + (p.tag === 'Eventos' ? 'event' : 'newspaper') + '</span><b>Uniremington</b></span>') +
+            : '<span class="ph"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="' + ICON_D[p.tag === 'Eventos' ? 'event' : 'newspaper'] + '"/></svg><b>Uniremington</b></span>') +
           '<span class="act-tag">' + esc(p.tag) + '</span>' +
         '</a>'); };
       container.innerHTML =

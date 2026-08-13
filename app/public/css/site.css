@@ -33,6 +33,12 @@ h3,h4,h5,h6{font-weight:600}
 p,li,dd,td,input,select,textarea,button{font-weight:400}
 /* Íconos Material Symbols Sharp */
 .msi{font-family:'Material Symbols Sharp';font-weight:400;font-style:normal;font-size:1.2em;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:'liga';-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;vertical-align:-.18em;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+/* .ico: SVG en línea equivalente a .msi, usado en home.ejs, navbar.ejs y chat-widget.ejs
+   para eliminar la dependencia de la fuente de íconos de 220KB en el home (esos íconos
+   forzaban su descarga urgente aunque la página nunca mostrara texto con .msi). Se
+   define también aquí porque home.ejs no carga este archivo pero sí lo cargan las demás
+   páginas que incluyen esos mismos partials compartidos. */
+.ico{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.18em;fill:currentColor;flex:none}
 /* íconos grandes: heredan el tamaño de su contenedor */
 .pf-ico .msi,.cta-ico .msi,.bc-ico .msi,.pcard .cap .ico .msi,.crest .msi{font-size:1em;vertical-align:middle}
 img{max-width:100%;height:auto;display:block}
