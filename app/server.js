@@ -770,7 +770,11 @@ const SOCIAL = [
 const ORG_ID = SITE + '/#organizacion';
 const ORG_JSONLD = {
   '@context': 'https://schema.org',
-  '@type': 'CollegeOrUniversity',
+  // CollegeOrUniversity ya hereda de LocalBusiness en el árbol de tipos de schema.org, pero
+  // algunas herramientas de auditoría (Clientify, etc.) buscan el string "LocalBusiness"
+  // de forma literal y no resuelven la herencia — se declara explícito para que lo detecten,
+  // sin dejar de ser preciso: la sede principal es, en efecto, ambas cosas.
+  '@type': ['CollegeOrUniversity', 'LocalBusiness'],
   '@id': ORG_ID,
   name: 'Corporación Universitaria Remington',
   alternateName: 'Uniremington',
@@ -814,7 +818,7 @@ function sedeJsonld(slug, item){
   const address = { '@type': 'PostalAddress', addressLocality: s.city, addressRegion: s.region, addressCountry: 'CO' };
   if (s.street) address.streetAddress = s.street;
   const node = {
-    '@context': 'https://schema.org', '@type': 'CollegeOrUniversity',
+    '@context': 'https://schema.org', '@type': ['CollegeOrUniversity', 'LocalBusiness'],
     '@id': SITE + '/' + slug + '/#sede',
     name: 'Uniremington · Sede ' + s.city,
     url: SITE + '/' + slug + '/',
@@ -2346,12 +2350,12 @@ app.get('/contacto', (req, res) => {
   res.render('page', { ...base, title: 'Contacto — Uniremington',
     item: { title:'Contacto', content_html: `
       <p>¿Quieres más información sobre nuestros programas? Escríbenos y te contactaremos.</p>
-      <form method="post" action="/contacto" class="js-lead" style="display:grid;gap:14px;max-width:520px;margin-top:20px">
-        <input name="nombre" placeholder="Nombre completo" required autocomplete="name" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px">
-        <input name="correo" type="email" placeholder="Correo electrónico" required autocomplete="email" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px">
-        <input name="telefono" type="tel" placeholder="Teléfono / WhatsApp" autocomplete="tel" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px">
-        <textarea name="mensaje" placeholder="Tu mensaje" rows="4" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px"></textarea>
-        <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <form method="post" action="/contacto" class="js-lead contact-form-simple">
+        <input name="nombre" placeholder="Nombre completo" required autocomplete="name">
+        <input name="correo" type="email" placeholder="Correo electrónico" required autocomplete="email">
+        <input name="telefono" type="tel" placeholder="Teléfono / WhatsApp" autocomplete="tel">
+        <textarea name="mensaje" placeholder="Tu mensaje" rows="4"></textarea>
+        <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
         <button class="btn btn-oro" type="submit">Enviar</button>
       </form>` },
     seccion: null, relacionadas: [] });

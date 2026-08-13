@@ -457,6 +457,7 @@
       padding: 14px;
       border-radius: 999px;
     }
+    .m-cta--secondary { background: var(--blue); margin-top: 8px; }
 
     /* "SOY" en el drawer móvil: antes texto plano con línea divisoria; ahora ícono por
        público + flecha, mismo lenguaje visual que el megamenú de escritorio (.mi). */

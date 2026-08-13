@@ -43,6 +43,10 @@
        fontTools. Mismo comportamiento de tamaño/alineación que .msi para no romper layout. */
     .ico{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.18em;fill:currentColor;flex:none}
     .ico path{fill:currentColor}
+    /* Campo trampa anti-spam: invisible para personas, los bots que rellenan todos los
+       campos caen en él y la solicitud se descarta en el servidor. */
+    .hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+    .grid-oferta{margin-top:22px}
     :root {
       --blue: #00457c;
       --blue-soft: #0f6f9e;
@@ -2148,7 +2152,7 @@ html { scroll-behavior: smooth; }
 
     <!-- Sección de tarjetas original -->
     <section>
-      <div style="margin-top:22px" class="grid-4 grid-5">
+      <div class="grid-4 grid-5 grid-oferta">
         <!-- Estas 5 imágenes se sirven localmente (no hotlink a WordPress): la ficha de
              PageSpeed señaló ~40 KiB de más por exceso de compresión/resolución frente al
              tamaño real en el que se muestran (~665px físicos en móvil). Se descargaron una
@@ -2343,7 +2347,7 @@ html { scroll-behavior: smooth; }
                   <option value="No estoy seguro/a">No estoy seguro/a</option>
                 </select>
                 <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
-                <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+                <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
                 <button class="lead-cta-submit wide" type="submit">Quiero mi asesoría gratis</button>
                 <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
               </form>
@@ -2404,7 +2408,7 @@ html { scroll-behavior: smooth; }
           <h3>Contacto</h3>
           <address>
             Línea nacional: 01 8000 51 8200<br>
-            contacto@uniremington.edu.co<br>
+            <a href="#" class="email-link" data-u="contacto" data-d="uniremington.edu.co"><span class="email-tx"></span></a><br>
             19 sedes a nivel nacional
           </address>
         </div>
@@ -2426,6 +2430,15 @@ html { scroll-behavior: smooth; }
     // Año dinámico en el footer
     const footerYear = document.getElementById('footer-year');
     if (footerYear) footerYear.textContent = new Date().getFullYear();
+
+    // El correo no va como texto plano en el HTML (evita que bots de spam lo cosechen
+    // con un regex simple); se arma en el navegador a partir de dos atributos separados.
+    document.querySelectorAll('.email-link[data-u]').forEach((a) => {
+      const addr = a.dataset.u + '@' + a.dataset.d;
+      a.href = 'mailto:' + addr;
+      const tx = a.querySelector('.email-tx');
+      if (tx) tx.textContent = addr;
+    });
 
     // Video thumbnail → iframe al hacer clic
     const videoThumb = document.getElementById('videoThumb');

@@ -31,12 +31,22 @@
       <h4>Contacto</h4>
       <a href="#"><span class="msi">location_on</span> Cra. 51 #51-27, Medellín</a>
       <a href="tel:+576043221212"><span class="msi">call</span> (604) 322 12 12</a>
-      <a href="mailto:info@uniremington.edu.co"><span class="msi">mail</span> info@uniremington.edu.co</a>
+      <a href="#" class="email-link" data-u="info" data-d="uniremington.edu.co"><span class="msi">mail</span> <span class="email-tx"></span></a>
       <a href="https://mejoramiso.com/mejoramisosql/loginPQRSRemington.asp" target="_blank" rel="noopener">PQRS</a>
     </div>
   </div>
   <div class="legal">© <%= new Date().getFullYear() %> Corporación Universitaria Remington · Vigilada Mineducación · SNIES · Todos los derechos reservados.</div>
 </footer>
+<script>
+  // El correo no va como texto plano en el HTML (evita que bots de spam lo cosechen
+  // con un regex simple); se arma en el navegador a partir de dos atributos separados.
+  document.querySelectorAll('.email-link[data-u]').forEach(function (a) {
+    var addr = a.dataset.u + '@' + a.dataset.d;
+    a.href = 'mailto:' + addr;
+    var tx = a.querySelector('.email-tx');
+    if (tx) tx.textContent = addr;
+  });
+</script>
 <%- include('whatsapp') %>
 <%- include('totop') %>
 <%- include('chat-widget') %>

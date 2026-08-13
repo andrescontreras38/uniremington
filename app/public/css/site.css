@@ -337,6 +337,15 @@ section.blk.alt{background:var(--gris)}
 .lead-form .fine{font-size:.72rem;color:var(--suave);margin:12px 0 0;line-height:1.4}
 @media(max-width:820px){.lead-band .wrap{grid-template-columns:1fr;gap:26px}}
 
+/* Campo trampa anti-spam (formularios js-lead): invisible para personas, los bots que
+   rellenan todos los campos caen en él y la solicitud se descarta en el servidor. */
+.hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* Formulario simple de /contacto (mismo campos que .lead-form pero en una página de
+   contenido normal, no en una franja con fondo oscuro). */
+.contact-form-simple{display:grid;gap:14px;max-width:520px;margin-top:20px}
+.contact-form-simple input,.contact-form-simple textarea{padding:12px;border:1px solid var(--linea);border-radius:9px;font:inherit}
+
 /* ---------- barra CTA fija (solo móvil) ---------- */
 .cta-bar{display:none}
 @media(max-width:860px){
@@ -414,7 +423,7 @@ section.blk.alt{background:var(--gris)}
 .pcard .chips span{font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--gris-2);color:var(--azul)}
 .pcard .sede{font-size:.8rem;color:var(--suave);margin-top:12px;display:flex;align-items:center;gap:4px}
 .pcard .go{margin-top:12px;color:var(--azul-2);font-weight:800;font-size:.82rem}
-.prog-empty{text-align:center;padding:50px 20px;color:var(--suave)}
+.prog-empty{display:none;text-align:center;padding:50px 20px;color:var(--suave)}
 .prog-empty p{margin:0 0 16px;font-size:1.05rem}
 
 @media(max-width:900px){
