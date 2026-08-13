@@ -578,39 +578,49 @@
     }
 
     /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════ */
+    /* Franja de ancho completo (no una tarjeta redondeada flotando en la página):
+       mitad oscura con el mensaje + mitad blanca con el formulario, cada una alineada
+       al mismo borde de contenido que usa el resto de la página (var(--container)). */
     .lead-final {
-      padding: 20px 0 56px;
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 24px;
     }
 
-    .lead-cta {
+    .lead-final-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+
+    .lead-final-pitch {
       position: relative;
       overflow: hidden;
-      border-radius: 28px;
-      background: linear-gradient(155deg, var(--dark) 0%, #0d3854 55%, var(--blue) 100%);
-      padding: 52px 48px;
+      background: var(--dark);
       color: #fff;
-      box-shadow: 0 30px 70px rgba(0, 20, 50, 0.28);
+      display: flex;
+      align-items: center;
+      padding: 72px 48px 72px max(24px, calc(50vw - (var(--container) / 2)));
     }
 
-    .lead-cta::before {
+    .lead-final-pitch::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(38vw 38vw at 92% 8%, rgba(227, 6, 19, 0.22), transparent 65%),
-                  radial-gradient(30vw 30vw at 4% 100%, rgba(15, 111, 158, 0.3), transparent 70%);
+      background: radial-gradient(30vw 30vw at 100% 0%, rgba(227, 6, 19, 0.16), transparent 65%),
+                  radial-gradient(24vw 24vw at 0% 100%, rgba(15, 111, 158, 0.2), transparent 70%);
       pointer-events: none;
     }
 
-    .lead-cta-grid {
+    .lead-final-pitch-inner {
       position: relative;
       z-index: 1;
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 54px;
-      align-items: center;
+      max-width: 480px;
     }
 
-    .lead-cta-eyebrow {
+    .lead-final-eyebrow {
       color: #ff8f7a;
       font-size: 0.85rem;
       font-weight: 700;
@@ -622,7 +632,7 @@
       gap: 10px;
     }
 
-    .lead-cta-eyebrow::before {
+    .lead-final-eyebrow::before {
       content: "";
       width: 28px;
       height: 2px;
@@ -630,22 +640,21 @@
       display: inline-block;
     }
 
-    .lead-cta-copy h2 {
+    .lead-final-pitch-inner h2 {
       font-size: 2.3rem;
       font-weight: 800;
       line-height: 1.15;
       margin-bottom: 16px;
     }
 
-    .lead-cta-copy > p {
+    .lead-final-pitch-inner > p {
       color: #cfe0ec;
       line-height: 1.65;
       font-size: 1.02rem;
-      max-width: 480px;
       margin-bottom: 26px;
     }
 
-    .lead-cta-checks {
+    .lead-final-checks {
       list-style: none;
       display: flex;
       flex-direction: column;
@@ -653,7 +662,7 @@
       margin-bottom: 28px;
     }
 
-    .lead-cta-checks li {
+    .lead-final-checks li {
       display: flex;
       align-items: flex-start;
       gap: 12px;
@@ -661,7 +670,7 @@
       color: #e7f0f6;
     }
 
-    .lead-cta-checks .ico {
+    .lead-final-checks .ico {
       flex-shrink: 0;
       font-size: 1.25rem;
       color: var(--accent);
@@ -674,7 +683,7 @@
       justify-content: center;
     }
 
-    .lead-cta-badge {
+    .lead-final-badge {
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -686,48 +695,52 @@
       font-size: 0.88rem;
     }
 
-    .lead-cta-badge .ico {
+    .lead-final-badge .ico {
       color: #ffc069;
       font-size: 1.1rem;
     }
 
-    .lead-cta-card {
-      position: relative;
+    .lead-final-form {
       background: #fff;
-      border-radius: 18px;
-      padding: 24px 26px;
-      box-shadow: 0 30px 70px rgba(0, 10, 30, 0.45);
+      display: flex;
+      align-items: center;
+      padding: 56px max(24px, calc(50vw - (var(--container) / 2))) 56px 48px;
+    }
+
+    .lead-final-form-inner {
+      width: 100%;
+      max-width: 460px;
       color: var(--dark);
     }
 
-    .lead-cta-card h3 {
-      font-size: 1.25rem;
+    .lead-final-form-inner h3 {
+      font-size: 1.3rem;
       font-weight: 800;
       color: var(--blue);
       margin-bottom: 3px;
     }
 
-    .lead-cta-card .sub {
+    .lead-final-form-inner .sub {
       color: var(--muted);
-      font-size: 0.86rem;
-      margin-bottom: 14px;
+      font-size: 0.88rem;
+      margin-bottom: 18px;
     }
 
     /* Grid de 2 columnas: nombre/correo/teléfono/programa en pares, y lo que
        necesita más espacio (sede, mensaje, botón, aviso legal) ocupa la fila entera. */
-    .lead-cta-card form {
+    .lead-final-form-inner form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px 12px;
     }
 
-    .lead-cta-card form .wide {
+    .lead-final-form-inner form .wide {
       grid-column: 1 / -1;
     }
 
-    .lead-cta-card input,
-    .lead-cta-card select,
-    .lead-cta-card textarea {
+    .lead-final-form-inner input,
+    .lead-final-form-inner select,
+    .lead-final-form-inner textarea {
       padding: 11px 13px;
       border: 1px solid #dbe3ec;
       border-radius: 9px;
@@ -739,18 +752,18 @@
       resize: vertical;
     }
 
-    .lead-cta-card textarea {
+    .lead-final-form-inner textarea {
       min-height: 44px;
     }
 
-    .lead-cta-card input:focus,
-    .lead-cta-card select:focus,
-    .lead-cta-card textarea:focus {
+    .lead-final-form-inner input:focus,
+    .lead-final-form-inner select:focus,
+    .lead-final-form-inner textarea:focus {
       outline: 2px solid var(--blue-soft);
       background: #fff;
     }
 
-    .lead-cta-submit {
+    .lead-final-submit {
       position: relative;
       overflow: hidden;
       isolation: isolate;
@@ -773,13 +786,13 @@
       margin-top: 4px;
     }
 
-    .lead-cta-submit:hover {
+    .lead-final-submit:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
       box-shadow: 0 14px 30px rgba(227, 7, 21, 0.4);
     }
 
-    .lead-cta-submit::after {
+    .lead-final-submit::after {
       content: "";
       position: absolute;
       top: 0;
@@ -792,16 +805,16 @@
       pointer-events: none;
     }
 
-    .lead-cta-submit:hover::after {
+    .lead-final-submit:hover::after {
       left: 130%;
     }
 
-    .lead-cta-submit.loading {
+    .lead-final-submit.loading {
       opacity: 0.85;
       cursor: progress;
     }
 
-    .lead-cta-submit .spin {
+    .lead-final-submit .spin {
       display: inline-block;
       width: 15px;
       height: 15px;
@@ -866,27 +879,32 @@
     }
 
     @media (max-width: 860px) {
-      .lead-cta {
-        padding: 34px 22px;
-        border-radius: 22px;
-      }
-      .lead-cta-grid {
+      .lead-final-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
       }
-      .lead-cta-copy h2 {
+      .lead-final-pitch {
+        padding: 40px 24px;
+      }
+      .lead-final-form {
+        padding: 40px 24px;
+      }
+      .lead-final-pitch-inner,
+      .lead-final-form-inner {
+        max-width: none;
+      }
+      .lead-final-pitch-inner h2 {
         font-size: 1.8rem;
       }
     }
 
     @media (max-width: 420px) {
-      .lead-cta-card form {
+      .lead-final-form-inner form {
         grid-template-columns: 1fr;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .lead-cta-submit .spin { animation: none; }
+      .lead-final-submit .spin { animation: none; }
     }
 
     .cta-row {
@@ -1002,8 +1020,8 @@
       background: #1c62a6;
     }
 
-    /* Cierre: banner con el video institucional + CTA (mismo lenguaje visual que .lead-cta,
-       más abajo en la página, para que ambos cierres de sección se sientan de la misma familia). */
+    /* Cierre: banner con el video institucional + CTA (fondo oscuro con degradado + halo
+       de acento, mismo lenguaje que la franja final de "Solicita información"). */
     .oferta-closer {
       position: relative;
       overflow: hidden;
@@ -1749,8 +1767,12 @@
    Colocado al final para prioridad de cascada sobre las reglas previas.
    ===================================================================== */
 
-/* --- Seguridad: sin desbordes horizontales y medios siempre fluidos --- */
-html { -webkit-text-size-adjust: 100%; }
+/* --- Seguridad: sin desbordes horizontales y medios siempre fluidos ---
+   overflow-x en AMBOS html y body: la franja de ancho completo de "Solicita
+   información" usa width:100vw (100vw puede ser más ancho que el viewport visible
+   cuando hay scrollbar), así que solo con body no bastaba para evitar los 8px de
+   scroll horizontal fantasma. */
+html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 body { overflow-x: hidden; }
 img, iframe, video, svg { max-width: 100%; }
 
@@ -2290,67 +2312,67 @@ html { scroll-behavior: smooth; }
     </section>
 
     <!-- Sección Solicita información: form de captación de leads -->
-    <section class="lead-final">
-      <div class="wrap">
-        <div class="lead-cta" id="quiero-informacion">
-          <div class="lead-cta-grid">
-            <div class="lead-cta-copy">
-              <div class="lead-cta-eyebrow">Asesoría gratuita</div>
-              <h2>Empieza tu carrera universitaria hoy mismo</h2>
-              <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
-              <ul class="lead-cta-checks">
-                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Programas con registro calificado del Ministerio de Educación</li>
-                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Modalidad presencial, virtual y a distancia en 19 sedes</li>
-                <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Descuentos y créditos educativos disponibles</li>
-              </ul>
-              <div class="lead-cta-badge"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M440 120V200H760V484Q760 601 678.5 682.5Q597 764 480 764Q363 764 281.5 682.5Q200 601 200 484V240H80V469H120L123 522Q131 590 162.5 648Q194 706 241.5 749Q289 792 350.5 816Q412 840 480 840Q548 840 609 816Q670 792 718 749.5Q766 707 797 649Q828 591 837 523L840 469H880V240H840V120ZM360 400Q343 400 331.5 411.5Q320 423 320 440Q320 457 331.5 468.5Q343 480 360 480Q377 480 388.5 468.5Q400 457 400 440Q400 423 388.5 411.5Q377 400 360 400ZM600 400Q583 400 571.5 411.5Q560 423 560 440Q560 457 571.5 468.5Q583 480 600 480Q617 480 628.5 468.5Q640 457 640 440Q640 423 628.5 411.5Q617 400 600 400ZM241 462Q234 568 305 644Q376 720 482 720Q571 720 638.5 663.5Q706 607 720 519Q629 520 552.5 568Q476 616 435 698Q419 618 367.5 555.5Q316 493 241 462Z"/></svg> Asesoría personalizada, sin compromiso</div>
-            </div>
+    <section class="lead-final" id="quiero-informacion">
+      <div class="lead-final-grid">
+        <div class="lead-final-pitch">
+          <div class="lead-final-pitch-inner">
+            <div class="lead-final-eyebrow">Asesoría gratuita</div>
+            <h2>Empieza tu carrera universitaria hoy mismo</h2>
+            <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
+            <ul class="lead-final-checks">
+              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Programas con registro calificado del Ministerio de Educación</li>
+              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Modalidad presencial, virtual y a distancia en 19 sedes</li>
+              <li><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M424 296 706 578 650 634 424 408 310 522 254 466ZM480 80Q397 80 324 111.5Q251 143 197 197Q143 251 111.5 324Q80 397 80 480Q80 563 111.5 636Q143 709 197 763Q251 817 324 848.5Q397 880 480 880Q563 880 636 848.5Q709 817 763 763Q817 709 848.5 636Q880 563 880 480Q880 397 848.5 324Q817 251 763 197Q709 143 636 111.5Q563 80 480 80ZM480 160Q614 160 707 253Q800 346 800 480Q800 614 707 707Q614 800 480 800Q346 800 253 707Q160 614 160 480Q160 346 253 253Q346 160 480 160Z"/></svg> Descuentos y créditos educativos disponibles</li>
+            </ul>
+            <div class="lead-final-badge"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M440 120V200H760V484Q760 601 678.5 682.5Q597 764 480 764Q363 764 281.5 682.5Q200 601 200 484V240H80V469H120L123 522Q131 590 162.5 648Q194 706 241.5 749Q289 792 350.5 816Q412 840 480 840Q548 840 609 816Q670 792 718 749.5Q766 707 797 649Q828 591 837 523L840 469H880V240H840V120ZM360 400Q343 400 331.5 411.5Q320 423 320 440Q320 457 331.5 468.5Q343 480 360 480Q377 480 388.5 468.5Q400 457 400 440Q400 423 388.5 411.5Q377 400 360 400ZM600 400Q583 400 571.5 411.5Q560 423 560 440Q560 457 571.5 468.5Q583 480 600 480Q617 480 628.5 468.5Q640 457 640 440Q640 423 628.5 411.5Q617 400 600 400ZM241 462Q234 568 305 644Q376 720 482 720Q571 720 638.5 663.5Q706 607 720 519Q629 520 552.5 568Q476 616 435 698Q419 618 367.5 555.5Q316 493 241 462Z"/></svg> Asesoría personalizada, sin compromiso</div>
+          </div>
+        </div>
 
-            <div class="lead-cta-card">
-              <h3>Solicita información gratis</h3>
-              <p class="sub">Un asesor académico te contacta muy pronto.</p>
-              <form method="post" action="/solicitar-info" class="js-lead">
-                <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
-                <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
-                <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
-                <select name="programa" required aria-label="¿Qué te interesa estudiar?">
-                  <option value="">¿Qué te interesa estudiar?</option>
-                  <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
-                  <option value="Especialización">Especialización</option>
-                  <option value="Maestría">Maestría</option>
-                  <option value="Diplomados y educación continua">Diplomados y educación continua</option>
-                  <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
-                </select>
-                <select name="sede" class="wide" aria-label="Sede de tu interés">
-                  <option value="">Sede de tu interés (opcional)</option>
-                  <option value="Virtual / A distancia">Virtual / A distancia</option>
-                  <option>Apartadó</option>
-                  <option>Armenia</option>
-                  <option>Bucaramanga</option>
-                  <option>Cali</option>
-                  <option>Caucasia</option>
-                  <option>Cúcuta</option>
-                  <option>Ibagué</option>
-                  <option>Ipiales</option>
-                  <option>Manizales</option>
-                  <option>Medellín</option>
-                  <option>Montería</option>
-                  <option>Palmira</option>
-                  <option>Pasto</option>
-                  <option>Pereira</option>
-                  <option>Rionegro</option>
-                  <option>Sahagún</option>
-                  <option>Sincelejo</option>
-                  <option>Tuluá</option>
-                  <option>Yopal</option>
-                  <option value="No estoy seguro/a">No estoy seguro/a</option>
-                </select>
-                <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
-                <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
-                <button class="lead-cta-submit wide" type="submit">Quiero mi asesoría gratis</button>
-                <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
-              </form>
-            </div>
+        <div class="lead-final-form">
+          <div class="lead-final-form-inner">
+            <h3>Solicita información gratis</h3>
+            <p class="sub">Un asesor académico te contacta muy pronto.</p>
+            <form method="post" action="/solicitar-info" class="js-lead">
+              <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+              <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+              <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+              <select name="programa" required aria-label="¿Qué te interesa estudiar?">
+                <option value="">¿Qué te interesa estudiar?</option>
+                <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
+                <option value="Especialización">Especialización</option>
+                <option value="Maestría">Maestría</option>
+                <option value="Diplomados y educación continua">Diplomados y educación continua</option>
+                <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
+              </select>
+              <select name="sede" class="wide" aria-label="Sede de tu interés">
+                <option value="">Sede de tu interés (opcional)</option>
+                <option value="Virtual / A distancia">Virtual / A distancia</option>
+                <option>Apartadó</option>
+                <option>Armenia</option>
+                <option>Bucaramanga</option>
+                <option>Cali</option>
+                <option>Caucasia</option>
+                <option>Cúcuta</option>
+                <option>Ibagué</option>
+                <option>Ipiales</option>
+                <option>Manizales</option>
+                <option>Medellín</option>
+                <option>Montería</option>
+                <option>Palmira</option>
+                <option>Pasto</option>
+                <option>Pereira</option>
+                <option>Rionegro</option>
+                <option>Sahagún</option>
+                <option>Sincelejo</option>
+                <option>Tuluá</option>
+                <option>Yopal</option>
+                <option value="No estoy seguro/a">No estoy seguro/a</option>
+              </select>
+              <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
+              <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" class="hp-field">
+              <button class="lead-final-submit wide" type="submit">Quiero mi asesoría gratis</button>
+              <span class="pf-fine wide"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M160 80V640H280V720Q280 803 338.5 861.5Q397 920 480 920Q563 920 621.5 861.5Q680 803 680 720V640H800V80ZM240 160H720V560H240ZM560 360Q560 393 536.5 416.5Q513 440 480 440Q447 440 423.5 416.5Q400 393 400 360Q400 327 423.5 303.5Q447 280 480 280Q513 280 536.5 303.5Q560 327 560 360ZM360 640H600V720Q600 770 565 805Q530 840 480 840Q430 840 395 805Q360 770 360 720Z"/></svg> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+            </form>
           </div>
         </div>
       </div>
