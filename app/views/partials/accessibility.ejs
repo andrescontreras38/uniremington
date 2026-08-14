@@ -43,13 +43,6 @@
 
 .a11y-note{font-size:.74rem;color:#5b6b78;line-height:1.4;padding:0 2px}
 
-/* Aviso del traductor nativo (on-device): pequeño toast mientras descarga el modelo la
-   primera vez o mientras traduce la página. Los selectores .lang-select viven en el menú. */
-#siteTransStatus{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:400;
-  background:#00457c;color:#fff;font-weight:600;font-size:.8rem;padding:10px 16px;border-radius:999px;
-  box-shadow:0 8px 24px rgba(0,40,80,.3);opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s linear .2s}
-#siteTransStatus.show{opacity:1;visibility:visible;transition:opacity .2s ease}
-
 /* Resalta el bloque de texto que se está por leer (o leyendo) al pasar el mouse
    por encima, para que se vea claramente qué va a sonar. */
 .a11y-tts-hovering{outline:2px solid #00457c!important;outline-offset:2px;border-radius:3px}
@@ -392,102 +385,5 @@
     save(state);
     applyAll();
   });
-})();
-</script>
-
-<script>
-(function () {
-  // Traductor PROPIO, on-device: usa la API nativa de traducción del navegador
-  // (Translator). NO carga NADA externo — el navegador traduce en el dispositivo (el
-  // modelo lo baja el propio navegador una sola vez, como su corrector ortográfico). No
-  // hay peticiones a Google ni a ninguna nube por parte de la página. La traducción es
-  // 100% cliente sobre la MISMA URL: sin URLs alternas ni hreflang → los buscadores solo
-  // ven el español original, sin doble indexación. Y no cuesta nada a quien no lo usa.
-  var sels = document.querySelectorAll('.lang-select');
-  if (!sels.length) return;
-
-  // Sin API nativa (Safari, Firefox, navegadores antiguos, muchos móviles): se oculta el
-  // control para no ofrecer un botón que no funcionaría. Esos navegadores ofrecen su
-  // propio traductor integrado (la página declara lang="es").
-  if (!('Translator' in self)) {
-    sels.forEach(function (s) { var w = s.closest('.navbar-lang, .m-lang'); (w || s).style.display = 'none'; });
-    return;
-  }
-
-  var KEY = 'siteLang';
-  function stored() { try { return localStorage.getItem(KEY) || 'es'; } catch (e) { return 'es'; } }
-  function store(v) { try { v === 'es' ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, v); } catch (e) {} }
-
-  var originals = null;      // [{node, text}] con el español original de cada nodo de texto
-  var cacheByLang = {};      // lang -> Map(textoOriginal -> traducción) para no retraducir
-  var current = 'es';
-  var busy = false;
-
-  // Aviso flotante (descargando modelo la 1ª vez / traduciendo).
-  var statusEl = document.getElementById('siteTransStatus');
-  if (!statusEl) { statusEl = document.createElement('div'); statusEl.id = 'siteTransStatus'; document.body.appendChild(statusEl); }
-  function showStatus(txt) { statusEl.textContent = txt; statusEl.classList.add('show'); }
-  function hideStatus() { statusEl.classList.remove('show'); }
-
-  function syncSels(v) { sels.forEach(function (s) { s.value = v; }); }
-  function setDisabled(d) { sels.forEach(function (s) { s.disabled = d; }); }
-
-  function captureOriginals() {
-    if (originals) return;
-    originals = [];
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode: function (n) {
-        var v = n.nodeValue;
-        if (!v || !/\S/.test(v)) return NodeFilter.FILTER_REJECT;
-        var p = n.parentElement;
-        if (!p) return NodeFilter.FILTER_REJECT;
-        if (p.closest('script,style,noscript,code,pre,.notranslate,[translate="no"],.navbar-lang,.m-lang,#siteTransStatus')) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-    var n; while ((n = walker.nextNode())) originals.push({ node: n, text: n.nodeValue });
-  }
-
-  function restore() {
-    if (originals) originals.forEach(function (o) { o.node.nodeValue = o.text; });
-    document.documentElement.lang = 'es';
-    current = 'es';
-  }
-
-  async function translateTo(lang) {
-    if (busy) { syncSels(current); return; }
-    if (lang === 'es') { restore(); store('es'); syncSels('es'); return; }
-    busy = true; setDisabled(true);
-    try {
-      captureOriginals();
-      var avail = await Translator.availability({ sourceLanguage: 'es', targetLanguage: lang });
-      if (avail === 'unavailable') { showStatus('Idioma no disponible'); setTimeout(hideStatus, 2500); syncSels(current); return; }
-      showStatus(avail === 'available' ? 'Traduciendo…' : 'Descargando idioma…');
-      var translator = await Translator.create({
-        sourceLanguage: 'es', targetLanguage: lang,
-        monitor: function (m) { m.addEventListener('downloadprogress', function (e) { showStatus('Descargando idioma… ' + Math.round((e.loaded || 0) * 100) + '%'); }); }
-      });
-      showStatus('Traduciendo…');
-      var cache = cacheByLang[lang] || (cacheByLang[lang] = new Map());
-      // Siempre se traduce desde el español ORIGINAL (permite cambiar de idioma sin degradar).
-      for (var i = 0; i < originals.length; i++) {
-        var o = originals[i], src = o.text, tr = cache.get(src);
-        if (tr == null) { try { tr = await translator.translate(src); } catch (e) { tr = src; } cache.set(src, tr); }
-        o.node.nodeValue = tr;
-      }
-      document.documentElement.lang = lang;
-      current = lang; store(lang); syncSels(lang);
-    } catch (e) {
-      showStatus('No se pudo traducir'); setTimeout(hideStatus, 2500); syncSels(current);
-    } finally {
-      busy = false; setDisabled(false); if (statusEl.textContent.indexOf('Traduciendo') === 0 || statusEl.textContent.indexOf('Descargando') === 0) hideStatus();
-    }
-  }
-
-  syncSels(stored());
-  sels.forEach(function (s) { s.addEventListener('change', function () { translateTo(s.value); }); });
-
-  // Reaplica el idioma elegido al cargar cada página (persistencia al navegar por el sitio).
-  if (stored() !== 'es') translateTo(stored());
 })();
 </script>

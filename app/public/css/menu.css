@@ -364,51 +364,6 @@
       .navbar-a11y { display: none; }
     }
 
-    /* Selector de idioma (traductor on-device) en la barra: solo escritorio. */
-    .navbar-lang {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--blue);
-      border: 1px solid color-mix(in srgb, var(--blue) 22%, #fff);
-      border-radius: 999px;
-      padding: 3px 6px 3px 10px;
-      background: color-mix(in srgb, var(--blue) 6%, #fff);
-    }
-    .navbar-lang-ic { display: inline-flex; }
-    .navbar-lang-ic svg { width: 18px; height: 18px; display: block; }
-    .lang-select {
-      font: inherit;
-      font-size: .82rem;
-      font-weight: 600;
-      color: var(--blue);
-      background: transparent;
-      border: 0;
-      cursor: pointer;
-      padding: 2px;
-      outline: none;
-    }
-    .lang-select:disabled { opacity: .55; cursor: default; }
-    @media (max-width: 1360px) {
-      .navbar-lang { display: none; }
-    }
-
-    /* Selector de idioma dentro del cajón (móvil); en escritorio se usa el de la barra. */
-    .m-lang {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 12px 10px;
-      margin-top: 6px;
-      border-top: 1px solid #eef0f2;
-    }
-    .m-lang-label { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1rem; color: var(--dark); }
-    .m-lang-label svg { width: 20px; height: 20px; }
-    .m-lang .lang-select { font-size: .95rem; color: var(--dark); border: 1px solid #dbe3ec; background: #f5f8fa; border-radius: 8px; padding: 6px 8px; }
-    @media (min-width: 1361px) {
-      .m-lang { display: none; }
-    }
 
     .navbar-burger {
       display: flex;
