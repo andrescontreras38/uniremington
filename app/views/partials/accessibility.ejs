@@ -43,25 +43,13 @@
 
 .a11y-note{font-size:.74rem;color:#5b6b78;line-height:1.4;padding:0 2px}
 
-/* Botón flotante para leer en voz alta el texto que el usuario acaba de seleccionar
-   en cualquier parte del sitio (no solo formularios) — aparece junto a la selección. */
-.a11y-tts-fab{position:fixed;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;
-  background:#00457c;color:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,40,80,.4);
-  z-index:95;transition:background .15s,transform .15s}
-.a11y-tts-fab:hover{transform:scale(1.08)}
-.a11y-tts-fab svg{width:18px;height:18px}
-.a11y-tts-fab.speaking{background:#e30613}
-.a11y-tts-fab.speaking::after{content:"";position:absolute;inset:-4px;border-radius:50%;
-  border:2px solid rgba(227,6,19,.55);animation:a11yTtsPulse 1.4s infinite}
-@keyframes a11yTtsPulse{0%{transform:scale(1);opacity:.6}70%,100%{transform:scale(1.5);opacity:0}}
+/* Resalta el bloque de texto que se está por leer (o leyendo) al pasar el mouse
+   por encima, para que se vea claramente qué va a sonar. */
+.a11y-tts-hovering{outline:2px solid #00457c!important;outline-offset:2px;border-radius:3px}
 
 @media (max-width:480px){
   .a11y-widget{left:14px;bottom:86px}
   .a11y-panel{width:min(280px,calc(100vw - 28px))}
-}
-@media (prefers-reduced-motion:reduce){
-  .a11y-panel{transition:none}
-  .a11y-tts-fab.speaking::after{animation:none}
 }
 </style>
 
@@ -95,8 +83,8 @@
       <button type="button" class="a11y-toggle-btn" data-a11y="readable" aria-pressed="false">Espaciado de lectura</button>
       <button type="button" class="a11y-toggle-btn" data-a11y="nomotion" aria-pressed="false">Pausar animaciones</button>
       <button type="button" class="a11y-toggle-btn" id="a11yTtsPageBtn" aria-pressed="false">Leer esta página</button>
-      <button type="button" class="a11y-toggle-btn" id="a11yTtsSelectBtn" data-a11y="ttsSelect" aria-pressed="false">Leer texto seleccionado</button>
-      <p class="a11y-note" id="a11yTtsSelectNote">Con esto activo, selecciona cualquier texto del sitio y aparecerá un botón para escucharlo en voz alta.</p>
+      <button type="button" class="a11y-toggle-btn" id="a11yTtsHoverBtn" data-a11y="ttsHover" aria-pressed="false">Leer al pasar el mouse</button>
+      <p class="a11y-note" id="a11yTtsHoverNote">Con esto activo, pasa el mouse sobre cualquier texto del sitio y se lee solo, sin necesidad de hacer clic.</p>
     </div>
     <button type="button" class="a11y-reset" id="a11yReset">Restablecer todo</button>
   </div>
@@ -114,8 +102,8 @@
   var resetBtn = document.getElementById('a11yReset');
   var fsLabel = document.getElementById('a11yFsLabel');
   var FS_PCT = { 1: '100%', 2: '112%', 3: '125%', 4: '137%' };
-  var TOGGLE_KEYS = ['contrast', 'gray', 'underline', 'readable', 'nomotion', 'ttsSelect'];
-  var setTtsSelectEnabled = function () {}; // se reemplaza más abajo si el navegador soporta lectura en voz alta
+  var TOGGLE_KEYS = ['contrast', 'gray', 'underline', 'readable', 'nomotion', 'ttsHover'];
+  var setTtsHoverEnabled = function () {}; // se reemplaza más abajo si el navegador soporta lectura en voz alta
 
   function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
   function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
@@ -132,40 +120,26 @@
       if (btn) btn.setAttribute('aria-pressed', state[key] ? 'true' : 'false');
     });
     if (fsLabel) fsLabel.textContent = FS_PCT[state.fs];
-    setTtsSelectEnabled(!!state.ttsSelect);
+    setTtsHoverEnabled(!!state.ttsHover);
   }
 
   // ── Leer en voz alta (síntesis de voz nativa del navegador: sin librerías ni
   // peticiones de red). "Leer esta página" lee todo el contenido con un clic — para
-  // quien no puede seleccionar texto con el mouse. Con el interruptor "Leer texto
-  // seleccionado" activo, además, seleccionar cualquier texto del sitio muestra un
-  // botón para escucharlo solo a él. ──
+  // quien no puede pasar el mouse por texto específico. Con el interruptor "Leer al
+  // pasar el mouse" activo, pasar el cursor sobre cualquier texto del sitio (sin
+  // clic, sin seleccionar) lo lee automáticamente tras un breve instante. ──
   var TTS = window.speechSynthesis;
   var ttsPageBtn = document.getElementById('a11yTtsPageBtn');
-  var ttsSelectBtn = document.getElementById('a11yTtsSelectBtn');
-  var ttsSelectNote = document.getElementById('a11yTtsSelectNote');
+  var ttsHoverBtn = document.getElementById('a11yTtsHoverBtn');
+  var ttsHoverNote = document.getElementById('a11yTtsHoverNote');
   if (!TTS || typeof SpeechSynthesisUtterance === 'undefined') {
     // Sin soporte: se ocultan en vez de ofrecer botones que no van a funcionar.
     if (ttsPageBtn) ttsPageBtn.remove();
-    if (ttsSelectBtn) ttsSelectBtn.remove();
-    if (ttsSelectNote) ttsSelectNote.remove();
-    var idx = TOGGLE_KEYS.indexOf('ttsSelect');
+    if (ttsHoverBtn) ttsHoverBtn.remove();
+    if (ttsHoverNote) ttsHoverNote.remove();
+    var idx = TOGGLE_KEYS.indexOf('ttsHover');
     if (idx !== -1) TOGGLE_KEYS.splice(idx, 1);
   } else {
-    var selectBtn = document.createElement('button');
-    selectBtn.type = 'button';
-    selectBtn.className = 'a11y-tts-fab';
-    selectBtn.hidden = true;
-    selectBtn.setAttribute('aria-label', 'Leer en voz alta el texto seleccionado');
-    selectBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-      '<path d="M3 9v6h4l5 5V4L7 9H3z"/>' +
-      '<path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z"/>' +
-      '<path d="M14.5 4.35v2.06c2.89 1.06 5 3.9 5 7.24 0 3.34-2.11 6.18-5 7.24v2.06c4-1.1 7-4.9 7-9.3s-3-8.2-7-9.3z"/>' +
-      '</svg>';
-    document.body.appendChild(selectBtn);
-
-    var selectedText = '';
-
     // Voz latina en vez de la española por defecto del navegador: se busca entre
     // las voces instaladas, primero Colombia (sede de Uniremington), luego
     // cualquier otra variante latinoamericana. La lista de voces se carga async
@@ -181,13 +155,31 @@
     pickLatinVoice();
     if (TTS.addEventListener) TTS.addEventListener('voiceschanged', pickLatinVoice);
 
+    // innerText convierte cada <br> en un simple "\n" — si se trocea por cualquier
+    // salto de línea, una frase partida a mitad por un <br> (muy común en textos
+    // importados) sonaba con una pausa donde no debía haberla. Aquí un salto de
+    // línea SUELTO se trata como continuación de la misma frase (solo un espacio);
+    // únicamente un salto DOBLE (separación real entre párrafos/bloques) se trata
+    // como el fin de una idea y sí introduce una pausa.
+    function normalizeForSpeech(text) {
+      return text
+        .replace(/\r\n/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/\n{2,}/g, '. ')
+        .replace(/\n/g, ' ')
+        .replace(/ {2,}/g, ' ')
+        .trim();
+    }
+
     // Chrome corta los textos muy largos a los ~15s por un bug histórico del
-    // navegador si se manda todo de una sola vez — se trocea por frase y se
-    // encadenan varias utterances (la cola las reproduce en orden).
+    // navegador si se manda todo de una sola vez — se trocea por frase (por
+    // puntuación real, no por saltos de línea) y se encadenan varias utterances
+    // (la cola las reproduce en orden).
     function speak(text) {
       if (!text) return;
       TTS.cancel();
-      var chunks = text.match(/[^.!?\n]+[.!?\n]*/g) || [text];
+      text = normalizeForSpeech(text);
+      var chunks = text.match(/[^.!?]+[.!?]*/g) || [text];
       var queued = chunks.map(function (c) { return c.trim(); }).filter(Boolean);
       if (!queued.length) return;
       queued.forEach(function (chunk, i) {
@@ -203,11 +195,9 @@
     }
     function stopSpeaking() { TTS.cancel(); onSpeakEnd(); }
     function onSpeakStart() {
-      selectBtn.classList.add('speaking');
       if (ttsPageBtn) { ttsPageBtn.textContent = 'Detener lectura'; ttsPageBtn.setAttribute('aria-pressed', 'true'); }
     }
     function onSpeakEnd() {
-      selectBtn.classList.remove('speaking');
       if (ttsPageBtn) { ttsPageBtn.textContent = 'Leer esta página'; ttsPageBtn.setAttribute('aria-pressed', 'false'); }
     }
 
@@ -220,37 +210,57 @@
       });
     }
 
-    var ttsSelectActive = false;
-    function onSelectionDone() {
-      if (!ttsSelectActive) return;
-      var sel = window.getSelection();
-      var text = sel ? sel.toString().trim() : '';
-      if (!text || !sel.rangeCount) { selectBtn.hidden = true; return; }
-      var r = sel.getRangeAt(0).getBoundingClientRect();
-      if (!r.width && !r.height) { selectBtn.hidden = true; return; }
-      selectedText = text;
-      selectBtn.style.top = Math.max(4, r.top - 42) + 'px';
-      selectBtn.style.left = Math.max(4, r.left + r.width / 2 - 17) + 'px';
-      selectBtn.hidden = false;
+    // Se limita a elementos que típicamente contienen una unidad de texto legible
+    // (párrafo, ítem de lista, título, enlace...) y no a contenedores grandes tipo
+    // <div>/<section>, para no leer bloques enteros de golpe al pasar por encima.
+    var HOVER_SELECTOR = 'p,li,h1,h2,h3,h4,h5,h6,a,span,td,th,blockquote,figcaption,dt,dd,label,button,strong,em,small,caption';
+    var HOVER_DELAY = 450; // ms que el mouse debe quedarse quieto sobre el mismo bloque antes de leerlo
+    var ttsHoverActive = false, hoverTimer = null, hoverEl = null;
+
+    function closestReadable(el) {
+      while (el && el.nodeType === 1 && el !== document.body) {
+        if (widget.contains(el)) return null; // no leer los controles del propio widget
+        if (el.matches(HOVER_SELECTOR)) return el;
+        el = el.parentElement;
+      }
+      return null;
     }
-    function onPointerDown(e) {
-      if (e.target === selectBtn) return;
-      selectBtn.hidden = true;
+    function clearHoverVisual() {
+      if (hoverEl) hoverEl.classList.remove('a11y-tts-hovering');
+      hoverEl = null;
+    }
+    function onMouseOver(e) {
+      if (!ttsHoverActive) return;
+      var el = closestReadable(e.target);
+      if (!el || el === hoverEl) return;
+      clearTimeout(hoverTimer);
+      clearHoverVisual();
+      hoverEl = el;
+      el.classList.add('a11y-tts-hovering');
+      hoverTimer = setTimeout(function () {
+        var text = (el.innerText || el.textContent || '').trim();
+        if (text) speak(text);
+      }, HOVER_DELAY);
+    }
+    function onMouseOut(e) {
+      if (!ttsHoverActive) return;
+      var el = closestReadable(e.target);
+      if (el === hoverEl && (!e.relatedTarget || closestReadable(e.relatedTarget) !== el)) {
+        clearTimeout(hoverTimer);
+        clearHoverVisual();
+      }
+    }
+    function onClickWhileHover() {
+      if (ttsHoverActive) stopSpeaking();
     }
 
-    selectBtn.addEventListener('click', function () {
-      if (TTS.speaking) { stopSpeaking(); return; }
-      speak(selectedText);
-    });
-
-    setTtsSelectEnabled = function (on) {
-      ttsSelectActive = on;
-      if (!on) selectBtn.hidden = true;
+    setTtsHoverEnabled = function (on) {
+      ttsHoverActive = on;
+      if (!on) { clearTimeout(hoverTimer); clearHoverVisual(); stopSpeaking(); }
     };
-    document.addEventListener('mouseup', onSelectionDone);
-    document.addEventListener('touchend', onSelectionDone);
-    document.addEventListener('keyup', function (e) { if (e.shiftKey) onSelectionDone(); });
-    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('mouseover', onMouseOver);
+    document.addEventListener('mouseout', onMouseOut);
+    document.addEventListener('mousedown', onClickWhileHover);
   }
 
   applyAll();
