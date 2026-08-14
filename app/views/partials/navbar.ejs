@@ -142,18 +142,21 @@
     <% }) %>
   </div>
 
-  <!-- SOY / públicos objetivo: SIEMPRE visible (también en escritorio, al abrir la hamburguesa) -->
+  <!-- SOY / públicos objetivo: en MÓVIL se muestran aquí (la barra horizontal está oculta);
+       en ESCRITORIO se ocultan porque ya están en la barra horizontal (.drawer-soy en el CSS). -->
   <% var soy = menuItems.find(function(x){ return (x.label || '').trim().toUpperCase() === 'SOY'; }); %>
   <% if (soy && soy.children && soy.children.length){ %>
-  <span class="mega-eyebrow"><%= soy.label %></span>
-  <div class="m-soy-list">
-    <% soy.children.forEach(function(c){ %>
-    <a class="m-soy" href="<%= c.href %>"<%- attrs(c) %>>
-      <span class="m-soy-ic"><%- iconSvg(navIcon(c.label, soy.label)) %></span>
-      <span class="m-soy-tx"><%= c.label %></span>
-      <%- iconSvg('arrow_forward', 'm-soy-go') %>
-    </a>
-    <% }) %>
+  <div class="drawer-soy">
+    <span class="mega-eyebrow"><%= soy.label %></span>
+    <div class="m-soy-list">
+      <% soy.children.forEach(function(c){ %>
+      <a class="m-soy" href="<%= c.href %>"<%- attrs(c) %>>
+        <span class="m-soy-ic"><%- iconSvg(navIcon(c.label, soy.label)) %></span>
+        <span class="m-soy-tx"><%= c.label %></span>
+        <%- iconSvg('arrow_forward', 'm-soy-go') %>
+      </a>
+      <% }) %>
+    </div>
   </div>
   <% } %>
 

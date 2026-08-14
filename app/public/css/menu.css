@@ -519,7 +519,10 @@
     }
 
     @media (min-width: 1361px) {
-      .drawer-main-menu {
+      /* En escritorio la hamburguesa muestra las secciones grandes (INSTITUCIONAL,
+         VIDA ACADÉMICA, etc.); los públicos SOY ya viven en la barra horizontal,
+         así que aquí se ocultan para no repetirlos. */
+      .drawer-soy {
         display: none;
       }
     }
