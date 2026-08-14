@@ -204,11 +204,11 @@
         if (latinVoice) { u.voice = latinVoice; u.lang = latinVoice.lang; }
         else { u.lang = 'es-MX'; }
         u.volume = 1;
-        // Solo un poco más lento, para que suene pausada/elocuente sin arrastrarse.
-        // El tono se deja en su valor natural: forzarlo más alto sonaba bien en
+        // Un poco más rápida que el ritmo por defecto, para que no se sienta lenta
+        // de escuchar. El tono se deja en su valor natural: forzarlo sonaba bien en
         // voces locales robóticas, pero en una voz de red ya natural (ver arriba)
         // ese ajuste manual se nota como un artificio y la hace sonar peor.
-        u.rate = 0.96;
+        u.rate = 1.12;
         if (i === 0) u.onstart = onSpeakStart;
         if (i === queued.length - 1) { u.onend = onSpeakEnd; u.onerror = onSpeakEnd; }
         TTS.speak(u);
