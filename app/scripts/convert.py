@@ -1136,11 +1136,19 @@ def _menu_target(it):
         raw = (PROD + p['orig_path']) if (p and p.get('orig_path')) else ''
     return raw
 
+# Renombrados de etiquetas del menú: el título original del WordPress no siempre es
+# el deseado (p.ej. "EMPLEADO UNIREMINGTON" se muestra como "ADMINISTRATIVO").
+_MENU_LABEL_OVERRIDE = {
+    'EMPLEADO UNIREMINGTON': 'ADMINISTRATIVO',
+}
+
 def _menu_label(it):
     if it['title']:
-        return it['title']
-    p = _post_by_id.get(it.get('object_id'))
-    return (p['title'] if p else '').strip()
+        raw = it['title']
+    else:
+        p = _post_by_id.get(it.get('object_id'))
+        raw = (p['title'] if p else '').strip()
+    return _MENU_LABEL_OVERRIDE.get(raw.strip().upper(), raw)
 
 def _resolve_href(raw):
     """(href, external). Local si la página existe; si no, producción/externo."""

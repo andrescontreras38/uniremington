@@ -406,10 +406,24 @@
       font-weight: 700;
       font-size: 1rem;
       color: var(--dark);
-      padding: 14px 4px;
+      padding: 14px 10px;
+      border-radius: 10px;
       cursor: pointer;
       text-align: left;
+      transition: background-color .18s ease, color .18s ease;
     }
+
+    /* Hover/foco del encabezado de sección: fila resaltada, mismo lenguaje que .m-soy */
+    .m-acc:hover,
+    .m-acc:focus-visible {
+      background: color-mix(in srgb, var(--blue) 7%, #fff);
+      color: var(--blue);
+    }
+    .m-acc .chevron {
+      transition: transform .25s ease, color .18s ease;
+    }
+    .m-acc.open,
+    .m-acc.open .chevron { color: var(--blue); }
 
     .m-acc.open .chevron {
       transform: rotate(180deg);
@@ -420,6 +434,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      gap: 1px;
       transition: max-height 0.3s ease;
     }
 
@@ -428,23 +443,56 @@
     }
 
     .m-acc-panel a {
-      padding: 10px 4px 10px 14px;
+      position: relative;
+      padding: 10px 4px 10px 16px;
       font-size: 0.92rem;
       font-weight: 500;
       color: var(--muted);
+      border-radius: 8px;
+      transition: background-color .16s ease, color .16s ease, padding-left .16s ease;
     }
 
-    .m-acc-panel a:hover {
+    /* Punto-guía a la izquierda que se ilumina al pasar el cursor */
+    .m-acc-panel a::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .35;
+      transform: translateY(-50%);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .m-acc-panel a:hover,
+    .m-acc-panel a:focus-visible {
       color: var(--blue);
+      background: color-mix(in srgb, var(--blue) 6%, #fff);
+      padding-left: 20px;
+    }
+    .m-acc-panel a:hover::before,
+    .m-acc-panel a:focus-visible::before {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.6);
     }
 
     .m-link {
       display: block;
-      padding: 14px 4px;
+      padding: 14px 10px;
       font-weight: 700;
       font-size: 1rem;
       color: var(--dark);
       border-bottom: 1px solid #eef0f2;
+      border-radius: 10px;
+      transition: background-color .18s ease, color .18s ease;
+    }
+    .m-link:hover,
+    .m-link:focus-visible {
+      background: color-mix(in srgb, var(--blue) 7%, #fff);
+      color: var(--blue);
     }
 
     .m-cta {
@@ -697,6 +745,7 @@
 @keyframes miIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){
   .nav-panel,.nav-panel--menu a.mi,.mi-ic,.mi-go{transition:none;animation:none}
+  .m-acc,.m-acc .chevron,.m-acc-panel a,.m-acc-panel a::before,.m-link{transition:none}
 }
 
 /* Drawer móvil: subtítulos de grupo + más altura para listas largas (sedes) */
