@@ -32,6 +32,24 @@
     });
     backdrop.addEventListener("click", cerrarMenu);
 
+    // Accesibilidad desde el menú: cierra el cajón y abre el mismo panel del botón
+    // flotante (reutiliza toda su lógica). La apertura se difiere un instante para no
+    // chocar con el cierre por "clic fuera" que ese panel registra al abrirse.
+    const drawerA11y = document.getElementById("drawerA11y");
+    if (drawerA11y) {
+      const a11yToggle = document.getElementById("a11yToggle");
+      if (!a11yToggle) {
+        drawerA11y.remove(); // sin widget de accesibilidad en la página: no dejar un botón muerto
+      } else {
+        drawerA11y.addEventListener("click", () => {
+          cerrarMenu();
+          if (a11yToggle.getAttribute("aria-expanded") !== "true") {
+            setTimeout(() => a11yToggle.click(), 60);
+          }
+        });
+      }
+    }
+
     // Cerrar menú al hacer clic en un enlace del drawer
     drawer.querySelectorAll("a").forEach(link => {
       link.addEventListener("click", cerrarMenu);

@@ -160,6 +160,19 @@
   </div>
   <% } %>
 
+  <!-- Accesibilidad: abre el mismo panel del botón flotante (reutiliza toda su lógica). -->
+  <button type="button" class="m-a11y" id="drawerA11y" aria-haspopup="dialog">
+    <span class="m-a11y-ic">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="12" cy="7.4" r="1.7"/>
+        <path d="M12 9.6c-2.7 0-5.2.7-5.2 1.8 0 .68.87 1.27 2.18 1.58l.5 2.02-1.66 4.28a1 1 0 0 0 1.86.73l1.55-4h1.58l1.55 4a1 1 0 0 0 1.86.73L14.54 15l.5-2.02c1.31-.31 2.18-.9 2.18-1.58 0-1.1-2.5-1.8-5.22-1.8Z"/>
+      </svg>
+    </span>
+    <span class="m-a11y-tx">Accesibilidad</span>
+    <%- iconSvg('arrow_forward', 'm-a11y-go') %>
+  </button>
+
   <a class="m-cta" href="/programas">Explorar Programas &rarr;</a>
   <a class="m-cta m-cta--secondary" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete Ahora</a>
 </div>

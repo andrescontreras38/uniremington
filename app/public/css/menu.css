@@ -495,6 +495,42 @@
       color: var(--blue);
     }
 
+    /* Acceso a las herramientas de accesibilidad desde el propio menú */
+    .m-a11y {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--blue) 22%, #fff);
+      background: color-mix(in srgb, var(--blue) 6%, #fff);
+      color: var(--blue);
+      font: inherit;
+      font-weight: 700;
+      font-size: .95rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color .18s ease, border-color .18s ease;
+    }
+    .m-a11y:hover,
+    .m-a11y:focus-visible {
+      background: color-mix(in srgb, var(--blue) 12%, #fff);
+      border-color: var(--blue);
+    }
+    .m-a11y-ic {
+      flex: none;
+      width: 34px; height: 34px;
+      display: grid; place-items: center;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+    }
+    .m-a11y-ic svg { width: 20px; height: 20px; display: block; }
+    .m-a11y-tx { flex: 1; min-width: 0; }
+    .m-a11y-go { flex: none; opacity: .6; }
+
     .m-cta {
       display: block;
       text-align: center;
@@ -745,7 +781,7 @@
 @keyframes miIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){
   .nav-panel,.nav-panel--menu a.mi,.mi-ic,.mi-go{transition:none;animation:none}
-  .m-acc,.m-acc .chevron,.m-acc-panel a,.m-acc-panel a::before,.m-link{transition:none}
+  .m-acc,.m-acc .chevron,.m-acc-panel a,.m-acc-panel a::before,.m-link,.m-a11y{transition:none}
 }
 
 /* Drawer móvil: subtítulos de grupo + más altura para listas largas (sedes) */
