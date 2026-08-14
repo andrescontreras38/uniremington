@@ -1,5 +1,6 @@
 import express from 'express';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { adminRouter } from './admin/router.js';
@@ -630,6 +631,25 @@ const nav = [
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
+
+// Versión de estáticos para cache-busting: los CSS/JS locales NO tienen hash en el
+// nombre y se sirven con caché de 1h, así que tras un deploy el navegador (y el edge
+// de Vercel) podían seguir ejecutando la versión vieja hasta una hora. Se calcula un
+// hash del contenido de los assets mutables; las plantillas lo añaden como ?v=<hash>
+// a sus URLs, de modo que cualquier cambio genera una URL nueva y se sirve fresco al
+// instante (el HTML se entrega con must-revalidate). Cambia solo cuando cambia el
+// contenido, así que es estable entre instancias del mismo despliegue.
+const ASSET_V = (() => {
+  const files = ['css/fonts.css', 'css/menu.css', 'css/site.css',
+                 'js/menu.js', 'js/lead.js', 'js/video.js',
+                 'js/filtros.js', 'js/prog-carousel.js'];
+  const h = createHash('md5');
+  for (const f of files) {
+    try { h.update(readFileSync(join(__dirname, 'public', f))); } catch { /* asset opcional */ }
+  }
+  return h.digest('hex').slice(0, 10);
+})();
+app.locals.ASSET_V = ASSET_V;
 // Detrás del proxy de Vercel: sin esto, req.ip devuelve la IP interna del proxy
 // (igual para todas las visitas), lo que rompería el límite de tasa por IP del chat.
 app.set('trust proxy', 1);

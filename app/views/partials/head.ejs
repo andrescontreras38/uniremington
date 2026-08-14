@@ -22,9 +22,9 @@
      con el LCP en móvil bajo conexiones lentas (medido con PageSpeed Insights real).
      El navegador la descubre igual en cuanto el CSS pide @font-face — solo entra un
      instante después en vez de con máxima prioridad desde el primer byte. -->
-<link rel="stylesheet" href="/css/fonts.css">
-<link rel="stylesheet" href="/css/menu.css">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/fonts.css?v=<%= ASSET_V %>">
+<link rel="stylesheet" href="/css/menu.css?v=<%= ASSET_V %>">
+<link rel="stylesheet" href="/css/site.css?v=<%= ASSET_V %>">
 <%- include('analytics') %>
 <script>
 // Aplica las preferencias de accesibilidad guardadas (partials/accessibility.ejs) ANTES
