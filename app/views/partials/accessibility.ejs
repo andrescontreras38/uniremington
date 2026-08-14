@@ -140,36 +140,26 @@
     var idx = TOGGLE_KEYS.indexOf('ttsHover');
     if (idx !== -1) TOGGLE_KEYS.splice(idx, 1);
   } else {
-    // Elige la voz en español más natural entre las instaladas, por puntaje:
-    // - Motor por red (localService:false, p. ej. las voces "Google") o con
-    //   nombre que sugiere calidad ("Enhanced"/"Premium"/"Neural"/"Google") suena
-    //   muy por encima de las voces locales tipo SAPI de Windows — es el factor
-    //   que más pesa, porque afecta más lo natural que suena que el acento.
-    // - Se prefiere una variante latinoamericana sobre la de España (es-CO
-    //   primero, sede de Uniremington), pero sin descartar una voz de red de
-    //   mejor calidad solo por no ser exactamente Latinoamérica.
-    // - Entre empates, se favorece un nombre de voz femenino (suele sonar más
-    //   cercano en los motores más comunes).
-    // La lista de voces se carga async en algunos navegadores, por eso se
-    // recalcula también en "voiceschanged".
-    var QUALITY_NAME_HINTS = /google|natural|neural|enhanced|premium|online/i;
+    // Voz latina en vez de la española por defecto del navegador: se busca entre
+    // las voces instaladas, primero Colombia (sede de Uniremington), luego
+    // cualquier otra variante latinoamericana. Entre varias candidatas del mismo
+    // nivel, se prioriza una voz de nombre femenino conocido (Sabina, Paulina...)
+    // — resultó sonar más familiar/cercana que dejar que gane la de mejor calidad
+    // técnica (p. ej. una voz de Google), aunque esa suene más "natural" en
+    // aislado. La lista de voces se carga async en algunos navegadores, por eso
+    // se recalcula también en "voiceschanged".
     var FEMALE_NAME_HINTS = /sabina|paulina|mónica|monica|elena|lucía|lucia|camila|valentina|isabela|maría|maria|paloma|female/i;
     var latinVoice = null;
     function pickLatinVoice() {
-      var esVoices = (TTS.getVoices() || []).filter(function (v) { return /^es/i.test(v.lang); });
-      if (!esVoices.length) { latinVoice = null; return; }
-      function score(v) {
-        var s = 0;
-        if (/^es-CO/i.test(v.lang)) s += 40;
-        else if (!/^es-ES/i.test(v.lang)) s += 25;
-        if (v.localService === false) s += 20;
-        if (QUALITY_NAME_HINTS.test(v.name)) s += 20;
-        if (FEMALE_NAME_HINTS.test(v.name)) s += 8;
-        return s;
-      }
-      latinVoice = esVoices.reduce(function (best, v) {
-        return !best || score(v) > score(best) ? v : best;
-      }, null);
+      var voices = TTS.getVoices() || [];
+      var esVoices = voices.filter(function (v) { return /^es/i.test(v.lang); });
+      var tier = function (re) { return esVoices.filter(function (v) { return re.test(v.lang); }); };
+      var candidates = tier(/^es-CO/i);
+      if (!candidates.length) candidates = tier(/^es-(MX|US|AR|CL|PE|VE|EC|UY|PY|BO|GT|CR|PA|DO|HN|SV|NI|419)/i);
+      if (!candidates.length) candidates = esVoices.filter(function (v) { return !/^es-ES/i.test(v.lang); });
+      if (!candidates.length) candidates = esVoices;
+      var female = candidates.find(function (v) { return FEMALE_NAME_HINTS.test(v.name); });
+      latinVoice = female || candidates[0] || null;
     }
     pickLatinVoice();
     if (TTS.addEventListener) TTS.addEventListener('voiceschanged', pickLatinVoice);
