@@ -166,6 +166,21 @@
 
     var selectedText = '';
 
+    // Voz latina en vez de la española por defecto del navegador: se busca entre
+    // las voces instaladas, primero Colombia (sede de Uniremington), luego
+    // cualquier otra variante latinoamericana. La lista de voces se carga async
+    // en algunos navegadores, por eso se recalcula también en "voiceschanged".
+    var latinVoice = null;
+    function pickLatinVoice() {
+      var voices = TTS.getVoices() || [];
+      var byLang = function (re) { return voices.find(function (v) { return re.test(v.lang); }); };
+      latinVoice = byLang(/^es-CO/i) ||
+        byLang(/^es-(MX|US|AR|CL|PE|VE|EC|UY|PY|BO|GT|CR|PA|DO|HN|SV|NI|419)/i) ||
+        byLang(/^es(?!-ES)/i) || null;
+    }
+    pickLatinVoice();
+    if (TTS.addEventListener) TTS.addEventListener('voiceschanged', pickLatinVoice);
+
     // Chrome corta los textos muy largos a los ~15s por un bug histórico del
     // navegador si se manda todo de una sola vez — se trocea por frase y se
     // encadenan varias utterances (la cola las reproduce en orden).
@@ -177,7 +192,8 @@
       if (!queued.length) return;
       queued.forEach(function (chunk, i) {
         var u = new SpeechSynthesisUtterance(chunk);
-        u.lang = 'es-ES';
+        if (latinVoice) { u.voice = latinVoice; u.lang = latinVoice.lang; }
+        else { u.lang = 'es-MX'; }
         u.volume = 1;
         u.rate = 1;
         if (i === 0) u.onstart = onSpeakStart;
