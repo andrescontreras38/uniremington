@@ -660,12 +660,15 @@ app.set('trust proxy', 1);
 // <object>/plugins, y limita a qué orígenes puede conectarse/incrustar el navegador.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-  "style-src 'self' 'unsafe-inline'",
+  // Google Translate (widget de traducción en la misma página, como EAFIT): sus recursos
+  // (translate.google.com, translate.googleapis.com, translate-pa.googleapis.com,
+  // www.gstatic.com) solo se descargan si el usuario elige un idioma.
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://www.gstatic.com",
+  "style-src 'self' 'unsafe-inline' https://www.gstatic.com",
   "img-src 'self' data: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://api.rss2json.com https://webmasteruniremington-oss.github.io https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com",
-  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://apps.clientify.net https://www.uniremington.edu.co https://uniremington.edu.co https://www.google.com https://view.genial.ly https://view.genially.com https://remingtonedu-my.sharepoint.com",
+  "font-src 'self' data: https://www.gstatic.com https://fonts.gstatic.com",
+  "connect-src 'self' https://api.rss2json.com https://webmasteruniremington-oss.github.io https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://www.google.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
+  "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://apps.clientify.net https://www.uniremington.edu.co https://uniremington.edu.co https://www.google.com https://translate.google.com https://view.genial.ly https://view.genially.com https://remingtonedu-my.sharepoint.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
