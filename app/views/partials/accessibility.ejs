@@ -142,15 +142,22 @@
   } else {
     // Voz latina en vez de la española por defecto del navegador: se busca entre
     // las voces instaladas, primero Colombia (sede de Uniremington), luego
-    // cualquier otra variante latinoamericana. La lista de voces se carga async
-    // en algunos navegadores, por eso se recalcula también en "voiceschanged".
+    // cualquier otra variante latinoamericana. Entre varias candidatas del mismo
+    // nivel, se prioriza una voz de nombre femenino — suelen sonar más cercanas y
+    // menos mecánicas en los motores de síntesis más comunes. La lista de voces
+    // se carga async en algunos navegadores, por eso se recalcula en "voiceschanged".
+    var FEMALE_NAME_HINTS = /sabina|paulina|mónica|monica|elena|lucía|lucia|camila|valentina|isabela|maría|maria|paloma|female/i;
     var latinVoice = null;
     function pickLatinVoice() {
       var voices = TTS.getVoices() || [];
-      var byLang = function (re) { return voices.find(function (v) { return re.test(v.lang); }); };
-      latinVoice = byLang(/^es-CO/i) ||
-        byLang(/^es-(MX|US|AR|CL|PE|VE|EC|UY|PY|BO|GT|CR|PA|DO|HN|SV|NI|419)/i) ||
-        byLang(/^es(?!-ES)/i) || null;
+      var esVoices = voices.filter(function (v) { return /^es/i.test(v.lang); });
+      var tier = function (re) { return esVoices.filter(function (v) { return re.test(v.lang); }); };
+      var candidates = tier(/^es-CO/i);
+      if (!candidates.length) candidates = tier(/^es-(MX|US|AR|CL|PE|VE|EC|UY|PY|BO|GT|CR|PA|DO|HN|SV|NI|419)/i);
+      if (!candidates.length) candidates = esVoices.filter(function (v) { return !/^es-ES/i.test(v.lang); });
+      if (!candidates.length) candidates = esVoices;
+      var female = candidates.find(function (v) { return FEMALE_NAME_HINTS.test(v.name); });
+      latinVoice = female || candidates[0] || null;
     }
     pickLatinVoice();
     if (TTS.addEventListener) TTS.addEventListener('voiceschanged', pickLatinVoice);
@@ -187,7 +194,10 @@
         if (latinVoice) { u.voice = latinVoice; u.lang = latinVoice.lang; }
         else { u.lang = 'es-MX'; }
         u.volume = 1;
-        u.rate = 1;
+        // Un poco más lento (más pausado, sin arrastrarse) y un tono levemente más
+        // alto: se percibe más cercano y menos mecánico que el ritmo/tono por defecto.
+        u.rate = 0.94;
+        u.pitch = 1.08;
         if (i === 0) u.onstart = onSpeakStart;
         if (i === queued.length - 1) { u.onend = onSpeakEnd; u.onerror = onSpeakEnd; }
         TTS.speak(u);
