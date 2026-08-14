@@ -1752,7 +1752,10 @@ app.get('/noticias', (req, res) => {
 app.get('/eventos', (req, res) => {
   const per = 20, page = Math.max(1, parseInt(req.query.p) || 1);
   const total = Math.ceil(eventsSorted.length / per);
-  const slice = eventsSorted.slice((page-1)*per, page*per);
+  // Listado de la agenda: más recientes primero (eventsSorted está en ascendente; se invierte
+  // solo aquí, como en /noticias). Así el contenido nuevo aparece arriba, no en la última página.
+  const ordered = [...eventsSorted].reverse();
+  const slice = ordered.slice((page-1)*per, page*per);
   res.render('list', { ...base, kind:'events',
     title: 'Agenda y eventos — Uniremington', heading: 'Agenda de eventos',
     canonical: SITE + '/eventos',
