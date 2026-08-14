@@ -51,6 +51,18 @@
   .a11y-widget{left:14px;bottom:86px}
   .a11y-panel{width:min(280px,calc(100vw - 28px))}
 }
+
+/* En ESCRITORIO (>=1361px) la accesibilidad se abre desde el botón del menú principal
+   (#navA11y): se oculta la burbuja flotante y el panel baja desde la esquina superior
+   derecha, junto a ese botón. En móvil/tablet se mantiene la burbuja flotante. */
+@media (min-width:1361px){
+  .a11y-widget{z-index:320}   /* por encima del navbar (300) para que el panel no quede detrás */
+  .a11y-toggle{display:none}
+  .a11y-panel{
+    position:fixed;top:72px;right:24px;left:auto;bottom:auto;
+    transform-origin:top right;
+  }
+}
 </style>
 
 <div class="a11y-widget" id="a11yWidget">
@@ -348,7 +360,9 @@
     if (returnFocus !== false) toggle.focus();
   }
   function onKey(e) { if (e.key === 'Escape') closePanel(); }
-  function onOutside(e) { if (!widget.contains(e.target)) closePanel(false); }
+  // El botón de accesibilidad del menú principal (#navA11y) vive fuera del widget;
+  // no debe contar como "clic fuera" o se cerraría y volvería a abrirse en bucle.
+  function onOutside(e) { if (!widget.contains(e.target) && !e.target.closest('#navA11y')) closePanel(false); }
 
   toggle.addEventListener('click', function () {
     if (panel.classList.contains('open')) closePanel(); else openPanel();

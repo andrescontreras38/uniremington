@@ -32,21 +32,19 @@
     });
     backdrop.addEventListener("click", cerrarMenu);
 
-    // Accesibilidad desde el menú: cierra el cajón y abre el mismo panel del botón
-    // flotante (reutiliza toda su lógica). La apertura se difiere un instante para no
-    // chocar con el cierre por "clic fuera" que ese panel registra al abrirse.
-    const drawerA11y = document.getElementById("drawerA11y");
-    if (drawerA11y) {
+    // Accesibilidad desde el menú principal (botón #navA11y, solo escritorio): abre el
+    // mismo panel del widget de accesibilidad reutilizando su lógica. La apertura se
+    // difiere un instante para no chocar con el cierre por "clic fuera" que ese panel
+    // registra al abrirse.
+    const navA11y = document.getElementById("navA11y");
+    if (navA11y) {
       const a11yToggle = document.getElementById("a11yToggle");
       if (!a11yToggle) {
-        drawerA11y.remove(); // sin widget de accesibilidad en la página: no dejar un botón muerto
+        navA11y.remove(); // sin widget de accesibilidad en la página: no dejar un botón muerto
       } else {
-        drawerA11y.addEventListener("click", () => {
-          cerrarMenu();
-          if (a11yToggle.getAttribute("aria-expanded") !== "true") {
-            setTimeout(() => a11yToggle.click(), 60);
-          }
-        });
+        // Togglea el mismo panel: abre si está cerrado, cierra si está abierto.
+        // (onOutside en accessibility.ejs ignora este botón, así que no hay rebote.)
+        navA11y.addEventListener("click", () => { a11yToggle.click(); });
       }
     }
 
