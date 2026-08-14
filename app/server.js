@@ -656,9 +656,7 @@ app.use((req, res, next) => {
   res.set('X-Frame-Options', 'SAMEORIGIN');
   res.set('X-Content-Type-Options', 'nosniff');
   res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // El micrófono sí se usa (dictado por voz del widget de accesibilidad), por eso se
-  // permite solo para el propio origen — geolocation/camera siguen sin usarse, bloqueados.
-  res.set('Permissions-Policy', 'geolocation=(), microphone=(self), camera=()');
+  res.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
   res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   res.set('Content-Security-Policy', CSP);
   next();
