@@ -87,6 +87,12 @@
     if (s.indexOf('SOY') === 0) return 'person';
     return 'chevron_right';
   }
+
+  // Idiomas para el traductor propio (on-device). El <select> lleva class notranslate para
+  // que sus nombres no se traduzcan. La lógica está en partials/accessibility.ejs.
+  var LANGS = [['es','Español'],['en','English'],['pt','Português'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['zh-Hans','中文']];
+  function langOptions(){ return LANGS.map(function(l){ return '<option value="' + l[0] + '">' + l[1] + '</option>'; }).join(''); }
+  var GLOBE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"></path></svg>';
 %>
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
@@ -112,6 +118,12 @@
     </div>
 
     <div class="navbar-actions">
+      <!-- Traductor propio (on-device): selector de idioma en la barra (solo escritorio);
+           en móvil va dentro del cajón hamburguesa. -->
+      <div class="navbar-lang" title="Traducir / Translate">
+        <span class="navbar-lang-ic"><%- GLOBE_SVG %></span>
+        <select class="lang-select notranslate" translate="no" aria-label="Traducir la página a otro idioma"><%- langOptions() %></select>
+      </div>
       <!-- Accesibilidad en el menú principal (solo escritorio); en móvil se usa la burbuja flotante.
            Abre el mismo panel del widget de accesibilidad reutilizando su lógica. -->
       <button type="button" class="navbar-a11y" id="navA11y" aria-haspopup="dialog"
@@ -169,6 +181,12 @@
     </div>
   </div>
   <% } %>
+
+  <!-- Traductor propio (on-device): selector de idioma en la hamburguesa (móvil). -->
+  <div class="m-lang">
+    <span class="m-lang-label"><%- GLOBE_SVG %> Idioma</span>
+    <select class="lang-select notranslate" translate="no" aria-label="Traducir la página a otro idioma"><%- langOptions() %></select>
+  </div>
 
   <a class="m-cta" href="/programas">Explorar Programas &rarr;</a>
   <a class="m-cta m-cta--secondary" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete Ahora</a>

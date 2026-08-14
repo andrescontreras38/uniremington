@@ -43,18 +43,12 @@
 
 .a11y-note{font-size:.74rem;color:#5b6b78;line-height:1.4;padding:0 2px}
 
-/* Selector de idioma (traducir). El widget de Google se mantiene oculto y se maneja por
-   cookie; aquí solo va nuestro <select> con el estilo del panel. */
-.a11y-lang{font:inherit;font-size:.82rem;padding:6px 26px 6px 10px;border:1px solid #dbe3ec;border-radius:8px;
-  background:#f5f8fa;color:#1c2b38;cursor:pointer;max-width:150px}
-.a11y-lang:hover{background:#e9eef5}
-#google_translate_element{display:none!important}
-/* Ocultar la barra superior de Google Translate y que NO desplace la página; y quitar el
-   resaltado que Google aplica al texto traducido. */
-.goog-te-banner-frame,.goog-te-gadget-icon,.goog-tooltip,.goog-te-balloon-frame{display:none!important}
-.goog-te-gadget{height:0;overflow:hidden}
-body{top:0!important;position:static!important}
-.goog-text-highlight{background:none!important;box-shadow:none!important}
+/* Aviso del traductor nativo (on-device): pequeño toast mientras descarga el modelo la
+   primera vez o mientras traduce la página. Los selectores .lang-select viven en el menú. */
+#siteTransStatus{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:400;
+  background:#00457c;color:#fff;font-weight:600;font-size:.8rem;padding:10px 16px;border-radius:999px;
+  box-shadow:0 8px 24px rgba(0,40,80,.3);opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s linear .2s}
+#siteTransStatus.show{opacity:1;visibility:visible;transition:opacity .2s ease}
 
 /* Resalta el bloque de texto que se está por leer (o leyendo) al pasar el mouse
    por encima, para que se vea claramente qué va a sonar. */
@@ -94,18 +88,6 @@ body{top:0!important;position:static!important}
       <button type="button" class="a11y-close" id="a11yClose" aria-label="Cerrar herramientas de accesibilidad">&#10005;</button>
     </div>
     <div class="a11y-body">
-      <div class="a11y-row a11y-lang-row">
-        <span>Traducir</span>
-        <select id="a11yLang" class="a11y-lang notranslate" translate="no" aria-label="Traducir la página a otro idioma">
-          <option value="es">Español</option>
-          <option value="en">English</option>
-          <option value="pt">Português</option>
-          <option value="fr">Français</option>
-          <option value="de">Deutsch</option>
-          <option value="it">Italiano</option>
-          <option value="zh-CN">中文</option>
-        </select>
-      </div>
       <div class="a11y-row">
         <span>Tamaño de texto</span>
         <div class="a11y-stepper">
@@ -125,8 +107,6 @@ body{top:0!important;position:static!important}
     </div>
     <button type="button" class="a11y-reset" id="a11yReset">Restablecer todo</button>
   </div>
-  <!-- Host del traductor de Google (oculto): se rellena solo si el usuario elige idioma. -->
-  <div id="google_translate_element" aria-hidden="true"></div>
 </div>
 
 <script>
@@ -417,50 +397,97 @@ body{top:0!important;position:static!important}
 
 <script>
 (function () {
-  // Traducción bajo demanda con Google Translate. No se descarga NADA salvo que el
-  // usuario elija un idioma (se guarda en la cookie googtrans). Los buscadores no activan
-  // esto, así que solo indexan el español original; la traducción es 100% en el navegador
-  // sobre la MISMA URL (sin URLs alternas, hreflang ni doble indexación) y sin coste de
-  // carga para quien no la usa.
-  var sel = document.getElementById('a11yLang');
-  if (!sel) return;
+  // Traductor PROPIO, on-device: usa la API nativa de traducción del navegador
+  // (Translator). NO carga NADA externo — el navegador traduce en el dispositivo (el
+  // modelo lo baja el propio navegador una sola vez, como su corrector ortográfico). No
+  // hay peticiones a Google ni a ninguna nube por parte de la página. La traducción es
+  // 100% cliente sobre la MISMA URL: sin URLs alternas ni hreflang → los buscadores solo
+  // ven el español original, sin doble indexación. Y no cuesta nada a quien no lo usa.
+  var sels = document.querySelectorAll('.lang-select');
+  if (!sels.length) return;
 
-  function getCookie(n) { var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : ''; }
-  function currentLang() { var m = getCookie('googtrans').match(/\/(?:es|auto)\/([\w-]+)/); return m ? m[1] : 'es'; }
-  function setGoogtrans(lang) {
-    var val = lang ? ('/es/' + lang) : '';
-    var expire = lang ? '' : 'expires=Thu, 01 Jan 1970 00:00:00 GMT;';
-    document.cookie = 'googtrans=' + val + ';path=/;' + expire;
-    var parts = location.hostname.split('.');
-    if (parts.length > 2) {
-      var root = '.' + parts.slice(-2).join('.');
-      document.cookie = 'googtrans=' + val + ';path=/;domain=' + root + ';' + expire;
+  // Sin API nativa (Safari, Firefox, navegadores antiguos, muchos móviles): se oculta el
+  // control para no ofrecer un botón que no funcionaría. Esos navegadores ofrecen su
+  // propio traductor integrado (la página declara lang="es").
+  if (!('Translator' in self)) {
+    sels.forEach(function (s) { var w = s.closest('.navbar-lang, .m-lang'); (w || s).style.display = 'none'; });
+    return;
+  }
+
+  var KEY = 'siteLang';
+  function stored() { try { return localStorage.getItem(KEY) || 'es'; } catch (e) { return 'es'; } }
+  function store(v) { try { v === 'es' ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, v); } catch (e) {} }
+
+  var originals = null;      // [{node, text}] con el español original de cada nodo de texto
+  var cacheByLang = {};      // lang -> Map(textoOriginal -> traducción) para no retraducir
+  var current = 'es';
+  var busy = false;
+
+  // Aviso flotante (descargando modelo la 1ª vez / traduciendo).
+  var statusEl = document.getElementById('siteTransStatus');
+  if (!statusEl) { statusEl = document.createElement('div'); statusEl.id = 'siteTransStatus'; document.body.appendChild(statusEl); }
+  function showStatus(txt) { statusEl.textContent = txt; statusEl.classList.add('show'); }
+  function hideStatus() { statusEl.classList.remove('show'); }
+
+  function syncSels(v) { sels.forEach(function (s) { s.value = v; }); }
+  function setDisabled(d) { sels.forEach(function (s) { s.disabled = d; }); }
+
+  function captureOriginals() {
+    if (originals) return;
+    originals = [];
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var v = n.nodeValue;
+        if (!v || !/\S/.test(v)) return NodeFilter.FILTER_REJECT;
+        var p = n.parentElement;
+        if (!p) return NodeFilter.FILTER_REJECT;
+        if (p.closest('script,style,noscript,code,pre,.notranslate,[translate="no"],.navbar-lang,.m-lang,#siteTransStatus')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var n; while ((n = walker.nextNode())) originals.push({ node: n, text: n.nodeValue });
+  }
+
+  function restore() {
+    if (originals) originals.forEach(function (o) { o.node.nodeValue = o.text; });
+    document.documentElement.lang = 'es';
+    current = 'es';
+  }
+
+  async function translateTo(lang) {
+    if (busy) { syncSels(current); return; }
+    if (lang === 'es') { restore(); store('es'); syncSels('es'); return; }
+    busy = true; setDisabled(true);
+    try {
+      captureOriginals();
+      var avail = await Translator.availability({ sourceLanguage: 'es', targetLanguage: lang });
+      if (avail === 'unavailable') { showStatus('Idioma no disponible'); setTimeout(hideStatus, 2500); syncSels(current); return; }
+      showStatus(avail === 'available' ? 'Traduciendo…' : 'Descargando idioma…');
+      var translator = await Translator.create({
+        sourceLanguage: 'es', targetLanguage: lang,
+        monitor: function (m) { m.addEventListener('downloadprogress', function (e) { showStatus('Descargando idioma… ' + Math.round((e.loaded || 0) * 100) + '%'); }); }
+      });
+      showStatus('Traduciendo…');
+      var cache = cacheByLang[lang] || (cacheByLang[lang] = new Map());
+      // Siempre se traduce desde el español ORIGINAL (permite cambiar de idioma sin degradar).
+      for (var i = 0; i < originals.length; i++) {
+        var o = originals[i], src = o.text, tr = cache.get(src);
+        if (tr == null) { try { tr = await translator.translate(src); } catch (e) { tr = src; } cache.set(src, tr); }
+        o.node.nodeValue = tr;
+      }
+      document.documentElement.lang = lang;
+      current = lang; store(lang); syncSels(lang);
+    } catch (e) {
+      showStatus('No se pudo traducir'); setTimeout(hideStatus, 2500); syncSels(current);
+    } finally {
+      busy = false; setDisabled(false); if (statusEl.textContent.indexOf('Traduciendo') === 0 || statusEl.textContent.indexOf('Descargando') === 0) hideStatus();
     }
   }
 
-  var loaded = false;
-  window.googleTranslateElementInit = function () {
-    try { new google.translate.TranslateElement({ pageLanguage: 'es', autoDisplay: false }, 'google_translate_element'); } catch (e) {}
-  };
-  function loadGT() {
-    if (loaded) return; loaded = true;
-    var s = document.createElement('script');
-    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    s.async = true;
-    document.body.appendChild(s);
-  }
+  syncSels(stored());
+  sels.forEach(function (s) { s.addEventListener('change', function () { translateTo(s.value); }); });
 
-  sel.value = currentLang();
-  sel.addEventListener('change', function () {
-    var lang = sel.value;
-    setGoogtrans(lang === 'es' ? '' : lang);
-    // Recargar: al cargar, el widget lee la cookie y aplica (o revierte) la traducción.
-    // Es la vía más fiable y mantiene el idioma elegido al navegar por el resto del sitio.
-    location.reload();
-  });
-
-  // Si en una visita previa se eligió idioma (cookie presente), aplica la traducción en
-  // esta página cargando el widget. Solo para quien optó; nunca para los buscadores.
-  if (currentLang() !== 'es') loadGT();
+  // Reaplica el idioma elegido al cargar cada página (persistencia al navegar por el sitio).
+  if (stored() !== 'es') translateTo(stored());
 })();
 </script>
