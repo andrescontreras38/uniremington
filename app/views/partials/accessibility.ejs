@@ -56,6 +56,14 @@
   border:2px solid rgba(227,6,19,.55);animation:a11yMicPulse 1.4s infinite}
 @keyframes a11yMicPulse{0%{transform:scale(1);opacity:.6}70%,100%{transform:scale(1.5);opacity:0}}
 
+/* Aviso breve cuando el dictado falla (permiso denegado, sin micrófono, etc.) — antes
+   fallaba en silencio y desde afuera se veía igual que "no pasa nada al hacer clic". */
+.a11y-mic-msg{position:fixed;z-index:96;background:#1c2b38;color:#fff;font-size:.72rem;
+  line-height:1.35;padding:7px 11px;border-radius:8px;max-width:220px;
+  box-shadow:0 8px 22px rgba(0,20,40,.35);opacity:0;visibility:hidden;
+  transition:opacity .15s ease,visibility 0s linear .15s;pointer-events:none}
+.a11y-mic-msg.show{opacity:1;visibility:visible;transition:opacity .15s ease}
+
 @media (max-width:480px){
   .a11y-widget{left:14px;bottom:86px}
   .a11y-panel{width:min(280px,calc(100vw - 28px))}
@@ -162,6 +170,28 @@
       '<line x1="8" y1="23" x2="16" y2="23"/></svg>';
     document.body.appendChild(micBtn);
 
+    var msgEl = document.createElement('div');
+    msgEl.className = 'a11y-mic-msg';
+    msgEl.setAttribute('role', 'status');
+    document.body.appendChild(msgEl);
+    var msgTimer = null;
+    var ERROR_MSG = {
+      'not-allowed': 'Permiso de micrófono bloqueado. Revísalo en los permisos del sitio de tu navegador.',
+      'service-not-allowed': 'Permiso de micrófono bloqueado. Revísalo en los permisos del sitio de tu navegador.',
+      'no-speech': 'No se detectó voz. Intenta de nuevo.',
+      'audio-capture': 'No se encontró un micrófono disponible.',
+      'network': 'Sin conexión para reconocer la voz. Intenta de nuevo.'
+    };
+    function showMicMsg(text) {
+      msgEl.textContent = text;
+      var r = micBtn.getBoundingClientRect();
+      msgEl.style.top = Math.max(4, r.top - 40) + 'px';
+      msgEl.style.left = Math.max(4, Math.min(window.innerWidth - 230, r.left - 90)) + 'px';
+      msgEl.classList.add('show');
+      clearTimeout(msgTimer);
+      msgTimer = setTimeout(function () { msgEl.classList.remove('show'); }, 3200);
+    }
+
     var dictateActive = false, activeField = null, recognition = null;
 
     function isTextField(el) {
@@ -210,7 +240,11 @@
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
       recognition.onstart = function () { micBtn.classList.add('listening'); };
-      recognition.onerror = function () { micBtn.classList.remove('listening'); recognition = null; };
+      recognition.onerror = function (e) {
+        micBtn.classList.remove('listening');
+        recognition = null;
+        showMicMsg(ERROR_MSG[e && e.error] || 'No se pudo iniciar el dictado. Intenta de nuevo.');
+      };
       recognition.onend = function () { micBtn.classList.remove('listening'); recognition = null; };
       recognition.onresult = function (e) {
         var text = e.results[0][0].transcript;
