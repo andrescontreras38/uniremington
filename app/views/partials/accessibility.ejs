@@ -47,9 +47,12 @@
    cookie desde los selectores .lang-select del menú. Se oculta también la barra superior
    de Google y se evita que empuje el body, y el resaltado del texto traducido. */
 #google_translate_element{display:none!important}
-.goog-te-banner-frame,.goog-te-gadget-icon,.goog-tooltip,.goog-te-balloon-frame{display:none!important}
+/* La barra superior de Google cambia de clase entre versiones; se oculta por su clase
+   estable "skiptranslate" (hija directa de body) además de los nombres clásicos. */
+body>.skiptranslate,iframe.skiptranslate,.goog-te-banner-frame,.goog-te-gadget-icon,.goog-tooltip,.goog-te-balloon-frame,#goog-gt-tt{display:none!important}
 .goog-te-gadget{height:0;overflow:hidden}
 body{top:0!important;position:static!important}
+html.translated-ltr,html.translated-rtl{margin-top:0!important}
 .goog-text-highlight{background:none!important;box-shadow:none!important}
 
 /* Resalta el bloque de texto que se está por leer (o leyendo) al pasar el mouse
@@ -445,8 +448,29 @@ body{top:0!important;position:static!important}
     });
   });
 
+  // Refuerzo para ocultar la barra superior de Google (por si su clase varía) y evitar que
+  // empuje el header. Se ejecuta SOLO cuando la página está traducida, así que no cuesta
+  // nada a quien no usa el traductor ni a los buscadores.
+  function hideGoogleBanner() {
+    document.querySelectorAll('body > .skiptranslate, iframe.skiptranslate, .goog-te-banner-frame').forEach(function (el) {
+      el.style.setProperty('display', 'none', 'important');
+    });
+    if (document.body) document.body.style.setProperty('top', '0', 'important');
+  }
+
   // Si en una visita previa se eligió idioma (cookie presente), aplica la traducción en
   // esta página cargando el widget. Solo para quien optó; nunca para los buscadores.
-  if (cur !== 'es') loadGT();
+  if (cur !== 'es') {
+    loadGT();
+    hideGoogleBanner();
+    // El banner se inserta un instante después de traducir: se limpia unos segundos y con
+    // un observer acotado (hijos directos de body), que se desconecta enseguida. Barato.
+    var kills = 0, iv = setInterval(function () { hideGoogleBanner(); if (++kills > 24) clearInterval(iv); }, 250);
+    try {
+      var mo = new MutationObserver(hideGoogleBanner);
+      mo.observe(document.body, { childList: true });
+      setTimeout(function () { mo.disconnect(); }, 8000);
+    } catch (e) {}
+  }
 })();
 </script>
