@@ -178,16 +178,14 @@
         .trim();
     }
 
-    // Chrome corta los textos muy largos a los ~15s por un bug histórico del
-    // navegador si se manda todo de una sola vez — se trocea por frase (por
-    // puntuación real, no por saltos de línea) y se encadenan varias utterances
-    // (la cola las reproduce en orden).
-    function speak(text) {
-      if (!text) return;
-      TTS.cancel();
-      text = normalizeForSpeech(text);
-      var chunks = text.match(/[^.!?]+[.!?]*/g) || [text];
-      var queued = chunks.map(function (c) { return c.trim(); }).filter(Boolean);
+    // Trocea un texto por frase (puntuación real, no saltos de línea) — necesario
+    // porque Chrome corta los textos muy largos a los ~15s si se manda todo de una
+    // sola vez en un solo utterance.
+    function textToChunks(text) {
+      var norm = normalizeForSpeech(text);
+      return (norm.match(/[^.!?]+[.!?]*/g) || [norm]).map(function (c) { return c.trim(); }).filter(Boolean);
+    }
+    function queueChunks(queued) {
       if (!queued.length) return;
       queued.forEach(function (chunk, i) {
         var u = new SpeechSynthesisUtterance(chunk);
@@ -203,6 +201,54 @@
         TTS.speak(u);
       });
     }
+    // Lee un solo bloque de texto (lo que usa el hover: siempre una única unidad legible).
+    function speak(text) {
+      if (!text) return;
+      TTS.cancel();
+      queueChunks(textToChunks(text));
+    }
+    // Elementos que representan una unidad de contenido propia (párrafo, título,
+    // ítem de lista, celda...). Cada uno se lee como utterance(s) independiente(s),
+    // así que entre un bloque y el siguiente sí queda una pausa real — a diferencia
+    // de leer todo el <main> como un solo texto aplanado, donde esa frontera entre
+    // párrafos/secciones se perdía y todo sonaba corrido.
+    var BLOCK_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,dt,dd,td,th,caption';
+    function hasBlockAncestor(el, root) {
+      var p = el.parentElement;
+      while (p && p !== root) {
+        if (p.matches(BLOCK_SELECTOR)) return true;
+        p = p.parentElement;
+      }
+      return false;
+    }
+    function collectReadableBlocks(root) {
+      var blocks = [];
+      root.querySelectorAll(BLOCK_SELECTOR).forEach(function (el) {
+        if (widget.contains(el)) return;
+        if (hasBlockAncestor(el, root)) return; // ya se lee dentro de un bloque que lo contiene
+        var cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.visibility === 'hidden') return;
+        var text = (el.innerText || el.textContent || '').trim();
+        if (text) blocks.push(text);
+      });
+      return blocks;
+    }
+    // Lee varios bloques en orden, cada uno con su propia frontera de pausa.
+    function speakBlocks(texts) {
+      TTS.cancel();
+      var allChunks = [];
+      texts.forEach(function (t) {
+        var chunks = textToChunks(t);
+        if (!chunks.length) return;
+        // Cierra cada bloque con puntuación clara aunque el texto original no
+        // termine en punto (p. ej. un enlace corto como "Ver más"), para que la
+        // pausa entre bloques se note igual de bien en todos los casos.
+        var last = chunks[chunks.length - 1];
+        if (!/[.!?]$/.test(last)) chunks[chunks.length - 1] = last + '.';
+        allChunks = allChunks.concat(chunks);
+      });
+      queueChunks(allChunks);
+    }
     function stopSpeaking() { TTS.cancel(); onSpeakEnd(); }
     function onSpeakStart() {
       if (ttsPageBtn) { ttsPageBtn.textContent = 'Detener lectura'; ttsPageBtn.setAttribute('aria-pressed', 'true'); }
@@ -216,7 +262,8 @@
       ttsPageBtn.addEventListener('click', function () {
         if (TTS.speaking) { stopSpeaking(); return; }
         var main = document.querySelector('main') || document.body;
-        speak(main.innerText);
+        var blocks = collectReadableBlocks(main);
+        speakBlocks(blocks.length ? blocks : [main.innerText]);
       });
     }
 
