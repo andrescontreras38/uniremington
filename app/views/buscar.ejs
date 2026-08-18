@@ -11,7 +11,7 @@
 
 <section class="blk"><div class="wrap">
   <% if (q && results.length){ %>
-    <p class="search-count"><%= results.length %> resultado<%= results.length === 1 ? '' : 's' %> para &ldquo;<%= q %>&rdquo;</p>
+    <p class="search-count"><%= total %> resultado<%= total === 1 ? '' : 's' %> para &ldquo;<%= q %>&rdquo;<% if (total > results.length){ %> · mostrando los primeros <%= results.length %><% } %></p>
     <div class="search-results">
       <% results.forEach(function(r){ %>
         <a class="sr" href="<%= r.url %>">

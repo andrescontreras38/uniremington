@@ -642,7 +642,7 @@ app.set('views', join(__dirname, 'views'));
 const ASSET_V = (() => {
   const files = ['css/fonts.css', 'css/menu.css', 'css/site.css',
                  'js/menu.js', 'js/lead.js', 'js/video.js',
-                 'js/filtros.js', 'js/prog-carousel.js'];
+                 'js/filtros.js', 'js/prog-carousel.js', 'js/search.js'];
   const h = createHash('md5');
   for (const f of files) {
     try { h.update(readFileSync(join(__dirname, 'public', f))); } catch { /* asset opcional */ }
@@ -1795,7 +1795,9 @@ function getSearchIndex() {
   _searchIndex = idx; _searchKey = key;
   return idx;
 }
-function siteSearch(q, limit = 60) {
+// Devuelve TODAS las coincidencias ordenadas por relevancia (los callers deciden cuántas
+// mostrar). Cubre todo el contenido del índice: páginas, programas, noticias y eventos.
+function siteSearch(q) {
   const nq = _norm(q);
   const terms = nq.split(/\s+/).filter((t) => t.length >= 2);
   if (!terms.length) return [];
@@ -1809,17 +1811,25 @@ function siteSearch(q, limit = 60) {
     out.push({ title: e.title, url: e.url, tag: e.tag, snippet: e.snippet, date: e.date, score });
   }
   out.sort((a, b) => b.score - a.score || (b.date || '').localeCompare(a.date || ''));
-  return out.slice(0, limit);
+  return out;
 }
 app.get('/buscar', (req, res) => {
   const q = (req.query.q || '').toString().trim().slice(0, 100);
-  const results = q ? siteSearch(q) : [];
+  const all = q ? siteSearch(q) : [];
   res.render('buscar', {
-    ...base, q, results,
+    ...base, q, results: all.slice(0, 300), total: all.length,
     title: q ? `Resultados para “${q}” — Uniremington` : 'Buscar — Uniremington',
     desc: 'Busca programas, noticias, eventos y páginas en el sitio de la Corporación Universitaria Remington.',
     canonical: SITE + '/buscar', noindex: true,
   });
+});
+// Sugerencias en vivo (autocompletado) para la barra de búsqueda: JSON con las primeras
+// coincidencias de TODO el contenido y el total, para el desplegable de /js/search.js.
+app.get('/buscar/sugerencias', (req, res) => {
+  const q = (req.query.q || '').toString().trim().slice(0, 100);
+  const all = q ? siteSearch(q) : [];
+  res.set('Cache-Control', 'no-store');
+  res.json({ q, total: all.length, results: all.slice(0, 8).map((r) => ({ title: r.title, url: r.url, tag: r.tag })) });
 });
 
 // Render de noticia/evento (reutilizado por la URL original y las rutas antiguas)
