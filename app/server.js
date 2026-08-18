@@ -828,6 +828,23 @@ const ORG_JSONLD = {
     availableLanguage: 'es',
   },
 };
+// WebSite + SearchAction: habilita el "sitelinks searchbox" de Google — una caja de
+// búsqueda del propio sitio directamente en los resultados de la marca (apunta a /buscar).
+const WEBSITE_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': SITE + '/#website',
+  url: SITE + '/',
+  name: 'Corporación Universitaria Remington',
+  alternateName: 'Uniremington',
+  inLanguage: 'es',
+  publisher: { '@id': ORG_ID },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: SITE + '/buscar?q={search_term_string}' },
+    'query-input': 'required name=search_term_string',
+  },
+};
 // correo/teléfono limpios extraídos del contenido de la sede (cuando existen)
 function sedeContacto(item){
   const text = (item.content_html || '').replace(/<[^>]+>/g, ' ');
@@ -1209,7 +1226,7 @@ app.get('/', (req, res) => {
   // La home es la maqueta del repositorio (standalone); su contenido dinámico
   // (Actualidad) se carga desde /api/actualidad.
   res.render('home', { ...base, canonical: SITE + '/',
-    jsonld: [ORG_JSONLD, faqJsonld(HOME_FAQ), newsItemListJsonld(postsByDate.slice(0, 5))], faqs: HOME_FAQ,
+    jsonld: [ORG_JSONLD, WEBSITE_JSONLD, faqJsonld(HOME_FAQ), newsItemListJsonld(postsByDate.slice(0, 5))], faqs: HOME_FAQ,
     desc: 'Más de 100 años formando profesionales en Colombia, con 19 sedes. Programas de pregrado, posgrado y educación continua, presenciales y a distancia.' });
 });
 
