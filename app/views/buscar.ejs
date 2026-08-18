@@ -14,7 +14,7 @@
     <p class="search-count"><%= total %> resultado<%= total === 1 ? '' : 's' %> para &ldquo;<%= q %>&rdquo;<% if (total > results.length){ %> · mostrando los primeros <%= results.length %><% } %></p>
     <div class="search-results">
       <% results.forEach(function(r){ %>
-        <a class="sr" href="<%= r.url %>">
+        <a class="sres" href="<%= r.url %>">
           <span class="sr-tag sr-<%= r.tag.toLowerCase() %>"><%= r.tag %></span>
           <span class="sr-bd">
             <h3><%= r.title %></h3>

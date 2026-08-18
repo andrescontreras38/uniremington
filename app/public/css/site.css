@@ -1524,9 +1524,9 @@ nav.main>ul>li.has:hover>a::after{transform:rotate(180deg)}
 .search-page-form button:hover{background:var(--azul-900)}
 .search-count{color:var(--suave);font-size:.92rem;margin:0 0 18px}
 .search-results{display:flex;flex-direction:column;gap:10px}
-.sr{display:flex;align-items:center;gap:14px;padding:16px 18px;background:#fff;border:1px solid var(--linea);
+.sres{display:flex;align-items:center;gap:14px;padding:16px 18px;background:#fff;border:1px solid var(--linea);
   border-radius:var(--radio-s);text-decoration:none;color:inherit;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
-.sr:hover{border-color:color-mix(in srgb,var(--azul) 40%,#fff);box-shadow:var(--sombra-s);transform:translateY(-1px)}
+.sres:hover{border-color:color-mix(in srgb,var(--azul) 40%,#fff);box-shadow:var(--sombra-s);transform:translateY(-1px)}
 .sr-tag{flex:none;align-self:flex-start;font-size:.7rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
   padding:4px 10px;border-radius:999px;color:#fff;background:var(--suave)}
 .sr-programa{background:var(--azul)} .sr-noticia{background:var(--rojo)}
@@ -1536,9 +1536,9 @@ nav.main>ul>li.has:hover>a::after{transform:rotate(180deg)}
 .sr-bd p{margin:4px 0 0;font-size:.9rem;color:var(--suave);line-height:1.5;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sr-go{flex:none;color:var(--azul);opacity:.5;transition:opacity .16s ease,transform .16s ease}
-.sr:hover .sr-go{opacity:1;transform:translateX(3px)}
+.sres:hover .sr-go{opacity:1;transform:translateX(3px)}
 .search-empty{text-align:center;color:var(--suave);padding:40px 20px}
 .search-empty .msi{font-size:2.6rem;color:var(--gris-2);display:block;margin-bottom:8px}
 .search-empty .hint{font-size:.9rem;margin-top:6px}
-@media (max-width:560px){ .search-page-form button{padding:10px 16px} .sr{padding:14px} }
-@media (prefers-reduced-motion:reduce){ .sr,.sr-go{transition:none} }
+@media (max-width:560px){ .search-page-form button{padding:10px 16px} .sres{padding:14px} }
+@media (prefers-reduced-motion:reduce){ .sres,.sr-go{transition:none} }
