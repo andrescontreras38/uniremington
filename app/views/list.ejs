@@ -1,6 +1,9 @@
 <%- include('partials/head') %>
 
 <div class="listhead"><div class="wrap">
+  <% var _k = (typeof kind !== 'undefined') ? kind : ''; %>
+  <% var eyebrow = _k === 'events' ? 'Agenda institucional' : (_k === 'news' ? 'Actualidad Uniremington' : ''); %>
+  <% if (eyebrow){ %><span class="listhead-eyebrow"><%= eyebrow %></span><% } %>
   <h1><%= heading %></h1>
   <% if (typeof sub !== 'undefined'){ %><p><%= sub %></p><% } %>
 </div></div>
@@ -37,7 +40,7 @@
     <% } %>
     <% if (typeof featured !== 'undefined' && featured){ %>
       <a class="feat" href="<%= featured.url %>">
-        <span class="feat-media"><% if (featured.img){ %><img src="<%= featured.img %>" alt="<%= featured.title %>" loading="eager" decoding="async"><% } else { %><span class="ph"><span class="msi">newspaper</span><b><%= featured.cat %></b></span><% } %></span>
+        <span class="feat-media"><% if (featured.img){ %><img src="<%= featured.img %>" alt="<%= featured.title %>" loading="eager" decoding="async"><% } else { %><span class="ph"><span class="msi">newspaper</span><b><%= featured.cat %></b></span><% } %><span class="feat-badge">Destacado</span></span>
         <span class="feat-bd">
           <span class="chips"><span class="chip"><%= featured.cat %></span><time datetime="<%= featured.iso %>"><%= featured.fecha %></time></span>
           <h2><%= featured.title %></h2>
