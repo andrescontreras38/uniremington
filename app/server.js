@@ -2684,8 +2684,11 @@ app.get('/robots.txt', (req, res) => {
   if (!isCanonicalHost(req)) {
     return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
   }
+  // /buscar (y su endpoint de sugerencias) se bloquean: es la página de resultados de la
+  // búsqueda interna — ya es noindex, pero además se evita que los crawlers gasten
+  // presupuesto de rastreo en infinitas variantes ?q=… (práctica estándar para búsquedas).
   res.type('text/plain').send(
-    `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE}/sitemap.xml\n# LLMs: ${SITE}/llms.txt\n`);
+    `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /buscar\n\nSitemap: ${SITE}/sitemap.xml\n# LLMs: ${SITE}/llms.txt\n`);
 });
 
 // GEO (motores generativos / IA): resumen legible por LLMs del sitio y su oferta.
