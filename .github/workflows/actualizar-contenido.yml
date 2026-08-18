@@ -1,0 +1,66 @@
+name: Actualizar noticias y eventos
+
+# Trae automáticamente el contenido NUEVO (noticias/eventos) del WordPress de producción,
+# lo añade a los JSON del sitio y, si hubo novedades, hace commit y dispara un deploy.
+# - Corre todos los días a las 11:00 UTC (~6:00 a. m. en Colombia).
+# - También se puede lanzar a mano desde la pestaña "Actions" (botón "Run workflow").
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-contenido
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependencias
+        working-directory: app
+        run: npm ci
+
+      - name: Escrapear contenido nuevo
+        working-directory: app
+        run: node scripts/scrape-new-content.mjs --apply
+
+      - name: Commit y push si hay contenido nuevo
+        id: commit
+        run: |
+          if [ -n "$(git status --porcelain app/data/post.json app/data/tribe_events.json)" ]; then
+            git config user.name "uniremington-content-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add app/data/post.json app/data/tribe_events.json
+            git commit -m "Contenido: noticias/eventos nuevos de producción (automático)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Se añadió contenido nuevo y se subió."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No hay contenido nuevo hoy."
+          fi
+
+      - name: Disparar deploy en Vercel
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$HOOK" ]; then
+            curl -sfS -X POST "$HOOK" > /dev/null && echo "Deploy en Vercel disparado."
+          else
+            echo "Aviso: no hay secret VERCEL_DEPLOY_HOOK. Si el proyecto de Vercel está"
+            echo "conectado a GitHub, el push anterior ya desplegó. Si no, crea el hook."
+          fi
