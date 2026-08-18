@@ -1,0 +1,41 @@
+<%- include('partials/head') %>
+
+<div class="listhead"><div class="wrap">
+  <h1>Buscar</h1>
+  <form class="search-page-form" action="/buscar" method="get" role="search">
+    <span class="msi" aria-hidden="true">search</span>
+    <input type="search" name="q" value="<%= q %>" placeholder="Buscar programas, noticias, eventos…" aria-label="Buscar en el sitio" autocomplete="off" <%= q ? '' : 'autofocus' %>>
+    <button type="submit">Buscar</button>
+  </form>
+</div></div>
+
+<section class="blk"><div class="wrap">
+  <% if (q && results.length){ %>
+    <p class="search-count"><%= results.length %> resultado<%= results.length === 1 ? '' : 's' %> para &ldquo;<%= q %>&rdquo;</p>
+    <div class="search-results">
+      <% results.forEach(function(r){ %>
+        <a class="sr" href="<%= r.url %>">
+          <span class="sr-tag sr-<%= r.tag.toLowerCase() %>"><%= r.tag %></span>
+          <span class="sr-bd">
+            <h3><%= r.title %></h3>
+            <% if (r.snippet){ %><p><%= r.snippet %></p><% } %>
+          </span>
+          <span class="msi sr-go" aria-hidden="true">arrow_forward</span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else if (q){ %>
+    <div class="search-empty">
+      <span class="msi" aria-hidden="true">search_off</span>
+      <p>No encontramos resultados para <strong>&ldquo;<%= q %>&rdquo;</strong>.</p>
+      <p class="hint">Prueba con otras palabras: el nombre de un programa, una facultad, una sede o un tema.</p>
+    </div>
+  <% } else { %>
+    <div class="search-empty">
+      <span class="msi" aria-hidden="true">search</span>
+      <p>Escribe algo para buscar en <strong>programas, noticias, eventos y páginas</strong> del sitio.</p>
+    </div>
+  <% } %>
+</div></section>
+
+<%- include('partials/foot') %>

@@ -118,6 +118,13 @@
     </div>
 
     <div class="navbar-actions">
+      <!-- Buscador del sitio (escritorio); en móvil va dentro del cajón hamburguesa. -->
+      <form class="navbar-search" action="/buscar" method="get" role="search">
+        <button type="submit" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </button>
+        <input type="search" name="q" placeholder="Buscar…" aria-label="Buscar en el sitio" autocomplete="off">
+      </form>
       <!-- Traductor (Google Translate en la misma página): selector en la barra (escritorio);
            en móvil va dentro del cajón hamburguesa. -->
       <div class="navbar-lang" title="Traducir / Translate">
@@ -141,6 +148,12 @@
 
 <!-- Drawer móvil -->
 <div class="drawer" id="drawer" aria-hidden="true" inert>
+  <!-- Buscador del sitio (móvil) -->
+  <form class="m-search" action="/buscar" method="get" role="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    <input type="search" name="q" placeholder="Buscar en el sitio…" aria-label="Buscar en el sitio" autocomplete="off">
+  </form>
+
   <div class="drawer-main-menu">
     <% menuItems.forEach(function(item){ %>
       <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY va en la sección siempre visible de abajo */ %>

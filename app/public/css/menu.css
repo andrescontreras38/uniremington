@@ -834,3 +834,23 @@
   color:var(--muted);
 }
 .m-acc-panel.open{max-height:1600px}
+
+/* ═══════════════ Buscador del sitio ═══════════════ */
+/* Barra en el navbar (solo escritorio; en móvil se usa la del cajón). */
+.navbar-search{display:inline-flex;align-items:center;gap:2px;border:1px solid color-mix(in srgb,var(--blue) 22%,#fff);
+  border-radius:999px;padding:2px 8px 2px 2px;background:color-mix(in srgb,var(--blue) 6%,#fff);
+  transition:border-color .18s ease,box-shadow .18s ease}
+.navbar-search:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 14%,#fff)}
+.navbar-search button{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;
+  background:none;color:var(--blue);cursor:pointer}
+.navbar-search button svg{width:18px;height:18px;display:block}
+.navbar-search input{width:128px;border:0;outline:0;background:none;font:inherit;font-size:.85rem;color:var(--dark);padding:5px 4px 5px 0}
+.navbar-search input::placeholder{color:var(--muted)}
+@media (max-width:1360px){ .navbar-search{display:none} }
+
+/* Barra dentro del cajón hamburguesa (móvil). */
+.m-search{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:11px 12px;border:1px solid #dbe3ec;
+  border-radius:12px;background:#f5f8fa}
+.m-search svg{width:20px;height:20px;flex:none;color:var(--blue)}
+.m-search input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;font-size:1rem;color:var(--dark)}
+@media (min-width:1361px){ .m-search{display:none} }

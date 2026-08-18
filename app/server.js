@@ -1765,6 +1765,63 @@ app.get('/eventos', (req, res) => {
   });
 });
 
+// ─── Búsqueda del sitio ────────────────────────────────────────────────────────────
+// Busca en TODO el contenido direccionable por URL (páginas, programas, noticias, eventos)
+// usando el índice maestro `contentIndex`. Es 100% del lado del servidor (sin librerías ni
+// peticiones externas) y el índice se arma una sola vez y se cachea; solo se reconstruye si
+// cambia el conteo de contenido (p. ej. tras editar en el panel), así que no pesa por request.
+const _norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+let _searchIndex = null, _searchKey = '';
+function getSearchIndex() {
+  const key = `${pages.length}:${posts.length}:${events.length}`;
+  if (_searchIndex && _searchKey === key) return _searchIndex;
+  const seen = new Set(), idx = [];
+  for (const k of Object.keys(contentIndex)) {
+    const entry = contentIndex[k];
+    if (!entry || !entry.item || !entry.item.url) continue;
+    const item = entry.item;
+    if (seen.has(item.url) || isJunk(item.url)) continue;
+    seen.add(item.url);
+    const tag = entry.kind === 'programa' ? 'Programa' : entry.kind === 'post' ? 'Noticia' : entry.kind === 'event' ? 'Evento' : 'Página';
+    const excerpt = _strip(item.excerpt || '') || _strip(item.content_html || '');
+    const extra = [item.nivel, item.modalidad, (item.categories || []).join(' ')].filter(Boolean).join(' ');
+    idx.push({
+      title: item.title || '', url: item.url, tag, date: item.date || '',
+      snippet: excerpt.slice(0, 155),
+      titleN: _norm(item.title || ''),
+      hay: _norm([item.title, extra, excerpt.slice(0, 700)].join(' ')),
+    });
+  }
+  _searchIndex = idx; _searchKey = key;
+  return idx;
+}
+function siteSearch(q, limit = 60) {
+  const nq = _norm(q);
+  const terms = nq.split(/\s+/).filter((t) => t.length >= 2);
+  if (!terms.length) return [];
+  const out = [];
+  for (const e of getSearchIndex()) {
+    if (!terms.every((t) => e.hay.includes(t))) continue;   // deben aparecer TODAS las palabras
+    let score = 0;
+    for (const t of terms) score += e.titleN.includes(t) ? 10 : 2;
+    if (e.titleN.includes(nq)) score += 12;                 // frase completa en el título
+    if (e.titleN.startsWith(terms[0])) score += 3;
+    out.push({ title: e.title, url: e.url, tag: e.tag, snippet: e.snippet, date: e.date, score });
+  }
+  out.sort((a, b) => b.score - a.score || (b.date || '').localeCompare(a.date || ''));
+  return out.slice(0, limit);
+}
+app.get('/buscar', (req, res) => {
+  const q = (req.query.q || '').toString().trim().slice(0, 100);
+  const results = q ? siteSearch(q) : [];
+  res.render('buscar', {
+    ...base, q, results,
+    title: q ? `Resultados para “${q}” — Uniremington` : 'Buscar — Uniremington',
+    desc: 'Busca programas, noticias, eventos y páginas en el sitio de la Corporación Universitaria Remington.',
+    canonical: SITE + '/buscar', noindex: true,
+  });
+});
+
 // Render de noticia/evento (reutilizado por la URL original y las rutas antiguas)
 function renderArticle(res, item, kind) {
   const esEvento = kind === 'event';
