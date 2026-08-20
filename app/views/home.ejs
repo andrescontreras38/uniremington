@@ -63,9 +63,10 @@
     /* Alto contraste SIN filter (un filter en <html> repinta toda la página en cada
        fotograma y frena el sitio): se elevan las variables de color de la home. */
     html.a11y-contrast{
-      --blue:#00335c;--blue-soft:#00335c;--dark:#000;--muted:#1f2937;
-      --accent:#c20510;--accent-dark:#8f040c
+      --blue:#002a4d;--blue-soft:#002a4d;--dark:#000;--muted:#000;
+      --accent:#b00000;--accent-dark:#7a0000
     }
+    html.a11y-contrast .post,html.a11y-contrast .ev,html.a11y-contrast .card{border:2px solid #000}
     html.a11y-gray{filter:grayscale(1)}
     html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
     html.a11y-readable body{letter-spacing:.02em;line-height:1.75}

@@ -55,11 +55,20 @@ html.a11y-fs4{font-size:137.5%}
    de color a valores de máximo contraste — misma legibilidad, sin coste de repintado.
    Cubre las variables de site.css Y las de menu.css (navbar) para que todo suba de contraste. */
 html.a11y-contrast{
-  --texto:#000;--tinta:#000;--suave:#1f2937;--linea:#111;--gris-2:#cfcfcf;
-  --dark:#000;--muted:#1f2937;
-  --azul:#00335c;--azul-2:#00335c;--azul-3:#00335c;--azul-900:#001b33;
-  --blue:#00335c;--blue-soft:#00335c;--rojo:#c20510;--oro:#c20510;--oro-2:#8f040c;--accent:#c20510
+  --texto:#000;--tinta:#000;--suave:#000;--linea:#000;--gris:#fff;--gris-2:#e4e4e4;
+  --dark:#000;--muted:#000;--light:#fff;
+  --azul:#002a4d;--azul-2:#002a4d;--azul-3:#002a4d;--azul-900:#001322;
+  --blue:#002a4d;--blue-soft:#002a4d;--rojo:#b00000;--oro:#b00000;--oro-2:#7a0000;--accent:#b00000
 }
+/* Refuerzos visibles del alto contraste (bg-agnósticos: NO alteran el texto claro de las
+   secciones oscuras, solo añaden bordes/subrayados y marcan el foco). */
+html.a11y-contrast .blog-body a,html.a11y-contrast .article a,html.a11y-contrast p a{text-decoration:underline;text-underline-offset:2px}
+html.a11y-contrast .card,html.a11y-contrast .post,html.a11y-contrast .ev,html.a11y-contrast .sres,
+html.a11y-contrast .pcard,html.a11y-contrast .recurso,html.a11y-contrast .feat{border:2px solid #000}
+html.a11y-contrast .cat-bar a{border:2px solid #000}
+html.a11y-contrast input,html.a11y-contrast select,html.a11y-contrast textarea{border:2px solid #000}
+html.a11y-contrast .navbar{border-bottom:2px solid #000}
+html.a11y-contrast :focus-visible{outline:3px solid #002a4d;outline-offset:2px}
 html.a11y-gray{filter:grayscale(1)}
 html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
 html.a11y-readable body{letter-spacing:.02em;line-height:1.75}
