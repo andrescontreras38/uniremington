@@ -60,9 +60,13 @@
     html.a11y-fs2{font-size:112.5%}
     html.a11y-fs3{font-size:125%}
     html.a11y-fs4{font-size:137.5%}
-    html.a11y-contrast{filter:contrast(1.3) brightness(1.04)}
+    /* Alto contraste SIN filter (un filter en <html> repinta toda la página en cada
+       fotograma y frena el sitio): se elevan las variables de color de la home. */
+    html.a11y-contrast{
+      --blue:#00335c;--blue-soft:#00335c;--dark:#000;--muted:#1f2937;
+      --accent:#c20510;--accent-dark:#8f040c
+    }
     html.a11y-gray{filter:grayscale(1)}
-    html.a11y-contrast.a11y-gray{filter:contrast(1.3) brightness(1.04) grayscale(1)}
     html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
     html.a11y-readable body{letter-spacing:.02em;line-height:1.75}
     html.a11y-readable p,html.a11y-readable li,html.a11y-readable td,html.a11y-readable dd{word-spacing:.06em}

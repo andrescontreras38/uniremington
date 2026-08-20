@@ -50,9 +50,17 @@ a{color:var(--azul-2)}
 html.a11y-fs2{font-size:112.5%}
 html.a11y-fs3{font-size:125%}
 html.a11y-fs4{font-size:137.5%}
-html.a11y-contrast{filter:contrast(1.3) brightness(1.04)}
+/* Alto contraste SIN `filter` en <html>: un filter en la raíz repinta toda la página en
+   cada fotograma (animaciones/scroll) y frena el sitio. En su lugar se elevan las variables
+   de color a valores de máximo contraste — misma legibilidad, sin coste de repintado.
+   Cubre las variables de site.css Y las de menu.css (navbar) para que todo suba de contraste. */
+html.a11y-contrast{
+  --texto:#000;--tinta:#000;--suave:#1f2937;--linea:#111;--gris-2:#cfcfcf;
+  --dark:#000;--muted:#1f2937;
+  --azul:#00335c;--azul-2:#00335c;--azul-3:#00335c;--azul-900:#001b33;
+  --blue:#00335c;--blue-soft:#00335c;--rojo:#c20510;--oro:#c20510;--oro-2:#8f040c;--accent:#c20510
+}
 html.a11y-gray{filter:grayscale(1)}
-html.a11y-contrast.a11y-gray{filter:contrast(1.3) brightness(1.04) grayscale(1)}
 html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
 html.a11y-readable body{letter-spacing:.02em;line-height:1.75}
 html.a11y-readable p,html.a11y-readable li,html.a11y-readable td,html.a11y-readable dd{word-spacing:.06em}
