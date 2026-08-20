@@ -76,9 +76,29 @@
     document.addEventListener('click', function (e) { if (!form.contains(e.target)) hide(); });
   }
 
+  // Buscador compacto del navbar: la lupa expande el input. Enter (o la lupa con texto)
+  // busca; Esc o un clic fuera lo cierra si está vacío.
+  function setupNavToggle() {
+    var form = document.querySelector('.navbar-search');
+    if (!form) return;
+    var toggle = form.querySelector('.navbar-search-toggle');
+    var inp = form.querySelector('input[name="q"]');
+    if (!toggle || !inp) return;
+    function open() { form.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); inp.setAttribute('tabindex', '0'); setTimeout(function () { inp.focus(); }, 30); }
+    function close() { form.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); inp.setAttribute('tabindex', '-1'); }
+    toggle.addEventListener('click', function () {
+      if (!form.classList.contains('open')) { open(); }
+      else if (inp.value.trim()) { form.submit(); }
+      else { close(); }
+    });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); inp.blur(); } });
+    document.addEventListener('click', function (e) { if (!form.contains(e.target) && !inp.value.trim()) close(); });
+  }
+
   function init() {
     var forms = document.querySelectorAll('.navbar-search, .m-search');
     for (var i = 0; i < forms.length; i++) setup(forms[i]);
+    setupNavToggle();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
