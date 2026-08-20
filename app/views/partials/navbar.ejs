@@ -106,14 +106,39 @@
     </a>
 
     <div class="navbar-links">
-      <%
-        // Menú principal (barra horizontal): públicos objetivo "SOY".
-        // Las secciones grandes (INSTITUCIONAL, SEDES, etc.) viven ahora solo en la hamburguesa.
-        var soyMenu = menuItems.find(function(x){ return (x.label || '').trim().toUpperCase() === 'SOY'; });
-        var soyLinks = (soyMenu && soyMenu.children && soyMenu.children.length) ? soyMenu.children : [];
-      %>
-      <% soyLinks.forEach(function(c){ %>
-        <a href="<%= c.href %>" class="nav-link"<%- attrs(c) %>><%= c.label %></a>
+      <% menuItems.forEach(function(item, i){ %>
+        <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY: solo en el menú hamburguesa */ %>
+        <% if (item.children && item.children.length){
+             var cols = item.children.length > 12 ? 3 : (item.children.length > 5 ? 2 : 1);
+             var meta = sectionMeta(item.label); %>
+        <div class="nav-dropdown" data-dd="dd<%= i %>">
+          <button class="nav-btn" aria-haspopup="true" aria-expanded="false"><%= item.label %><%- chevron %></button>
+          <div class="nav-panel nav-panel--menu<%= meta ? ' has-aside' : '' %>" role="menu">
+            <% if (meta){ %>
+            <div class="mega-aside">
+              <span class="mega-aside-ic"><%- iconSvg(meta.icon) %></span>
+              <span class="mega-aside-title"><%= item.label %></span>
+              <p class="mega-aside-desc"><%= meta.desc %></p>
+              <% if (meta.cta){ %><a class="mega-aside-cta" href="<%= meta.cta.href %>"><%= meta.cta.label %><%- iconSvg('arrow_forward') %></a><% } %>
+            </div>
+            <% } %>
+            <div class="mega-links" style="--cols:<%= cols %>">
+              <% item.children.forEach(function(c){ %>
+                <% if (c.children && c.children.length){ %>
+                  <span class="mega-eyebrow"><%= c.label %></span>
+                  <% c.children.forEach(function(g){ %>
+                    <a class="mi" href="<%= g.href %>" role="menuitem"<%- attrs(g) %>><span class="mi-ic"><%- iconSvg(navIcon(g.label, item.label)) %></span><span class="mi-tx"><%= g.label %></span><%- iconSvg('arrow_forward', 'mi-go') %></a>
+                  <% }) %>
+                <% } else { %>
+                  <a class="mi" href="<%= c.href %>" role="menuitem"<%- attrs(c) %>><span class="mi-ic"><%- iconSvg(navIcon(c.label, item.label)) %></span><span class="mi-tx"><%= c.label %></span><%- iconSvg('arrow_forward', 'mi-go') %></a>
+                <% } %>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <% } else { %>
+        <a href="<%= item.href %>" class="nav-link"<%- attrs(item) %>><%= item.label %></a>
+        <% } %>
       <% }) %>
     </div>
 

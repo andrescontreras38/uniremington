@@ -642,10 +642,9 @@
     }
 
     @media (min-width: 1361px) {
-      /* En escritorio la hamburguesa muestra las secciones grandes (INSTITUCIONAL,
-         VIDA ACADÉMICA, etc.); los públicos SOY ya viven en la barra horizontal,
-         así que aquí se ocultan para no repetirlos. */
-      .drawer-soy {
+      /* En escritorio las 7 secciones grandes viven en la barra horizontal, así que en la
+         hamburguesa se ocultan para no repetirlas; ahí queda solo el bloque SOY (públicos). */
+      .drawer-main-menu {
         display: none;
       }
     }
