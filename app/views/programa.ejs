@@ -115,15 +115,18 @@
         </dl>
         <% if (_multiReg){ %>
         <div class="regsede">
-          <p class="regsede-note">Este programa tiene registro calificado independiente por sede:</p>
-          <table class="regsede-tabla">
-            <thead><tr><th>Sede</th><th>SNIES</th><th>Resolución</th></tr></thead>
-            <tbody>
-            <% ficha.registros.forEach(function(r){ %>
-              <tr><td><%= r.sedes.join(', ') %></td><td><%= r.snies || '—' %></td><td><%= r.resolucion || '—' %></td></tr>
-            <% }); %>
-            </tbody>
-          </table>
+          <p class="regsede-note">Registro calificado por sede</p>
+          <div class="regsede-list">
+          <% ficha.registros.forEach(function(r){ %>
+            <div class="regsede-item">
+              <div class="regsede-sedes"><%= r.sedes.join(', ') %></div>
+              <div class="regsede-meta">
+                <span class="regsede-snies">SNIES <%= r.snies || 'pendiente' %></span>
+                <% if (r.resolucion){ %><span class="regsede-reso"><%= r.resolucion %></span><% } %>
+              </div>
+            </div>
+          <% }); %>
+          </div>
         </div>
         <% } %>
         <% if (_txt.length > 40){ %>
