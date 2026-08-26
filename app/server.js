@@ -2503,8 +2503,8 @@ const CHAT_ALLOWED_HOST = new URL(SITE).hostname;
 // alimentan el resto del sitio (nunca queda desactualizado a mano, y no depende de que
 // alguien recuerde editar el prompt cuando cambie la oferta, las noticias o la agenda).
 function catalogoProgramasPorModalidad() {
-  const limpiar = (t) => t.replace(/\s*-?\s*(Virtual|Presencial|Distancia)\s*$/i, '').trim();
-  const modalidades = ['Virtual', 'Presencial', 'Distancia'];
+  const limpiar = (t) => t.replace(/\s*-?\s*(Virtual|Presencial|Distancia|Combinada|Híbrida)\s*$/i, '').trim();
+  const modalidades = ['Virtual', 'Presencial', 'Distancia', 'Combinada', 'Híbrida'];
   const niveles = ['Tecnología', 'Pregrado', 'Posgrado'];
   return modalidades.map((mod) => {
     const items = programas.filter((p) => p.modalidad === mod);
@@ -2516,12 +2516,20 @@ function catalogoProgramasPorModalidad() {
         const datos = [];
         if (f.duracion) datos.push(`duración: ${f.duracion}`);
         if (f.titulo) datos.push(`título otorgado: ${f.titulo}`);
-        if (f.snies) datos.push(`SNIES: ${f.snies}`);
-        if (f.resolucion) datos.push(f.resolucion);
+        // Algunos programas (varias sedes con registros distintos ante el MEN) no tienen
+        // un único SNIES/resolución válido para todas sus sedes — en ese caso se detalla
+        // por sede en vez de mostrar un dato que sería incorrecto para parte de ellas.
+        if (f.registros && f.registros.length > 1) {
+          datos.push(`registro calificado por sede: ${f.registros.map((r) => `${r.sedes.join('/')} (SNIES ${r.snies || 'pendiente'})`).join(', ')}`);
+        } else {
+          if (f.snies) datos.push(`SNIES: ${f.snies}`);
+          if (f.resolucion) datos.push(f.resolucion);
+        }
         if (f.registro_unico) datos.push(f.registro_unico);
-        // La sede solo aporta información real en modalidad Presencial (Virtual/Distancia
-        // se ofrecen prácticamente en todas las sedes por igual, listarla ahí es ruido).
-        if (mod === 'Presencial' && p.sedes?.length) datos.push(`sede(s): ${p.sedes.join(', ')}`);
+        // La sede solo aporta información real en modalidades ligadas a una ciudad concreta
+        // (Presencial/Combinada/Híbrida); Virtual/Distancia se ofrecen prácticamente en
+        // todas las sedes por igual, listarla ahí es ruido.
+        if (['Presencial', 'Combinada', 'Híbrida'].includes(mod) && p.sedes?.length) datos.push(`sede(s): ${p.sedes.join(', ')}`);
         datos.push(`pensum/plan de estudios (con botón para descargar PDF): ${SITE}/plan/${p.slug}`);
         return `    - ${nombre}${datos.length ? ' — ' + datos.join('; ') : ''}`;
       });

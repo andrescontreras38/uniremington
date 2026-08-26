@@ -52,6 +52,12 @@
   .body-head .rule{width:64px;height:3px;background:var(--rojo);margin:10px 0 4px;border-radius:2px}
   .body-head p{margin:0;color:var(--suave);font-size:.9rem}
 
+  .regsede{margin:24px 0 0;padding:16px 18px;background:var(--gris);border:1px solid var(--linea);border-radius:9px}
+  .regsede-title{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--suave);font-weight:800;margin-bottom:8px}
+  .regsede-tabla{width:100%;border-collapse:collapse;font-size:.88rem}
+  .regsede-tabla th{text-align:left;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--suave);padding:4px 10px 4px 0;border-bottom:1px solid var(--linea)}
+  .regsede-tabla td{padding:6px 10px 6px 0;border-bottom:1px solid var(--linea);color:var(--tinta)}
+  .regsede-tabla tr:last-child td{border-bottom:0}
   .sede-tag{margin:30px 0 6px;display:inline-block;font-weight:700;color:var(--c);font-size:1.02rem;
     border-left:4px solid var(--rojo);padding:2px 0 2px 12px;letter-spacing:.01em}
   .sede-tag + .sem{margin-top:10px}
@@ -105,12 +111,27 @@
       </div>
     </header>
 
+    <% var _multiReg = ficha.registros && ficha.registros.length > 1; %>
     <div class="facts">
       <% if (item.nivel){ %><div class="f"><div class="k">Nivel</div><div class="v"><%= item.nivel %></div></div><% } %>
       <% if (item.modalidad){ %><div class="f"><div class="k">Modalidad</div><div class="v"><%= item.modalidad %></div></div><% } %>
       <% if (ficha.duracion){ %><div class="f"><div class="k">Duración</div><div class="v"><%= ficha.duracion %></div></div><% } %>
-      <% if (ficha.snies){ %><div class="f"><div class="k">Código SNIES</div><div class="v"><%= ficha.snies %></div></div><% } %>
+      <% if (_multiReg){ %><div class="f"><div class="k">Código SNIES</div><div class="v">Varía por sede ↓</div></div>
+      <% } else if (ficha.snies){ %><div class="f"><div class="k">Código SNIES</div><div class="v"><%= ficha.snies %></div></div><% } %>
     </div>
+    <% if (_multiReg){ %>
+    <div class="regsede">
+      <div class="regsede-title">Registro calificado por sede</div>
+      <table class="regsede-tabla">
+        <thead><tr><th>Sede</th><th>SNIES</th><th>Resolución</th></tr></thead>
+        <tbody>
+        <% ficha.registros.forEach(function(r){ %>
+          <tr><td><%= r.sedes.join(', ') %></td><td><%= r.snies || '—' %></td><td><%= r.resolucion || '—' %></td></tr>
+        <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
 
     <main class="body">
       <div class="body-head">
@@ -137,7 +158,7 @@
 
     <footer class="docfoot">
       <div class="brand"><b>Corporación Universitaria Remington</b></div>
-      Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional (Vigilada Mineducación).<% if (ficha.snies){ %> SNIES <%= ficha.snies %>.<% } %><% if (ficha.resolucion){ %><br><strong>Registro calificado:</strong> <%= ficha.resolucion %>.<% } %>
+      Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional (Vigilada Mineducación).<% if (_multiReg){ %> Este programa cuenta con registro calificado independiente en cada sede — ver detalle por sede arriba.<% } else { %><% if (ficha.snies){ %> SNIES <%= ficha.snies %>.<% } %><% if (ficha.resolucion){ %><br><strong>Registro calificado:</strong> <%= ficha.resolucion %>.<% } %><% } %>
     </footer>
   </div>
   <script>

@@ -2,6 +2,7 @@
 <% var col = (typeof color !== 'undefined' ? color : '#00457c'); var col2 = (typeof colorDark !== 'undefined' ? colorDark : '#012a50'); %>
 <% var inscUrl = (ficha && ficha.inscripcion) ? ficha.inscripcion : inscripcionUrl; %>
 <% var _txt = (item.content_html || '').replace(/<[^>]+>/g, '').trim(); %>
+<% var _multiReg = ficha && ficha.registros && ficha.registros.length > 1; %>
 
 <div class="crumbs"><div class="wrap">
   <a href="/">Inicio</a> › <a href="/programas">Programas</a> ›
@@ -19,7 +20,8 @@
       <% if (item.nivel){ %><span class="pbadge"><span class="msi">school</span> <%= item.nivel %></span><% } %>
       <% if (item.modalidad){ %><span class="pbadge"><span class="msi">computer</span> <%= item.modalidad %></span><% } %>
       <% if (ficha && ficha.duracion){ %><span class="pbadge"><span class="msi">schedule</span> <%= ficha.duracion %></span><% } %>
-      <% if (ficha && ficha.snies){ %><span class="pbadge"><span class="msi">label</span> SNIES <%= ficha.snies %></span><% } %>
+      <% if (_multiReg){ %><span class="pbadge"><span class="msi">label</span> Registro calificado por sede</span>
+      <% } else if (ficha && ficha.snies){ %><span class="pbadge"><span class="msi">label</span> SNIES <%= ficha.snies %></span><% } %>
     </div>
     <p class="phero-pitch">Forma parte de una institución con más de 110 años de historia y registro calificado del Ministerio de Educación. Da el primer paso hacia tu futuro profesional.</p>
     <div class="phero-cta">
@@ -56,7 +58,8 @@
   <% if (item.modalidad){ %><div class="pfact"><span class="pf-ico"><span class="msi">computer</span></span><span class="pf-k">Modalidad</span><span class="pf-v"><%= item.modalidad %></span></div><% } %>
   <% if (ficha && ficha.duracion){ %><div class="pfact"><span class="pf-ico"><span class="msi">schedule</span></span><span class="pf-k">Duración</span><span class="pf-v"><%= ficha.duracion %></span></div><% } %>
   <% if (item.sedes && item.sedes.length){ %><div class="pfact"><span class="pf-ico"><span class="msi">location_on</span></span><span class="pf-k">Sedes</span><span class="pf-v"><%= item.sedes.length %> <%= item.sedes.length === 1 ? 'ciudad' : 'ciudades' %></span></div><% } %>
-  <% if (ficha && ficha.snies){ %><div class="pfact"><span class="pf-ico"><span class="msi">label</span></span><span class="pf-k">Código SNIES</span><span class="pf-v"><%= ficha.snies %></span></div><% } %>
+  <% if (_multiReg){ %><div class="pfact"><span class="pf-ico"><span class="msi">label</span></span><span class="pf-k">Código SNIES</span><span class="pf-v">Varía por sede</span></div>
+  <% } else if (ficha && ficha.snies){ %><div class="pfact"><span class="pf-ico"><span class="msi">label</span></span><span class="pf-k">Código SNIES</span><span class="pf-v"><%= ficha.snies %></span></div><% } %>
 </div></div>
 
 <!-- ══════════ POR QUÉ UNIREMINGTON ══════════ -->
@@ -101,15 +104,28 @@
         </div>
         <% } %>
         <dl>
-          <% if (ficha.snies){ %><dt>Código SNIES</dt><dd class="snies"><%= ficha.snies %></dd><% } %>
+          <% if (!_multiReg && ficha.snies){ %><dt>Código SNIES</dt><dd class="snies"><%= ficha.snies %></dd><% } %>
           <% if (item.nivel){ %><dt>Nivel de formación</dt><dd><%= item.nivel %></dd><% } %>
           <% if (item.modalidad){ %><dt>Modalidad</dt><dd><%= item.modalidad %></dd><% } %>
           <% if (ficha.duracion){ %><dt>Duración</dt><dd><%= ficha.duracion %></dd><% } %>
           <% if (facultadNombre){ %><dt>Facultad</dt><dd><%= facultadNombre %></dd><% } %>
-          <% if (ficha.resolucion){ %><dt>Registro calificado (MEN)</dt><dd class="reso"><%= ficha.resolucion %></dd><% } %>
-          <% if (ficha.registro_unico){ %><dt>Registro único</dt><dd class="reso"><%= ficha.registro_unico %></dd><% } %>
-          <% if (ficha.resolucion_pdf){ %><dd><a class="pdf" href="<%= ficha.resolucion_pdf %>" target="_blank" rel="noopener"><span class="msi">picture_as_pdf</span> Ver resolución (PDF)</a></dd><% } %>
+          <% if (!_multiReg && ficha.resolucion){ %><dt>Registro calificado (MEN)</dt><dd class="reso"><%= ficha.resolucion %></dd><% } %>
+          <% if (!_multiReg && ficha.registro_unico){ %><dt>Registro único</dt><dd class="reso"><%= ficha.registro_unico %></dd><% } %>
+          <% if (!_multiReg && ficha.resolucion_pdf){ %><dd><a class="pdf" href="<%= ficha.resolucion_pdf %>" target="_blank" rel="noopener"><span class="msi">picture_as_pdf</span> Ver resolución (PDF)</a></dd><% } %>
         </dl>
+        <% if (_multiReg){ %>
+        <div class="regsede">
+          <p class="regsede-note">Este programa tiene registro calificado independiente por sede:</p>
+          <table class="regsede-tabla">
+            <thead><tr><th>Sede</th><th>SNIES</th><th>Resolución</th></tr></thead>
+            <tbody>
+            <% ficha.registros.forEach(function(r){ %>
+              <tr><td><%= r.sedes.join(', ') %></td><td><%= r.snies || '—' %></td><td><%= r.resolucion || '—' %></td></tr>
+            <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
         <% if (_txt.length > 40){ %>
         <a class="ficha-dl" href="/plan/<%= item.slug %>?print=1" target="_blank" rel="noopener"><span class="msi">picture_as_pdf</span> Descargar plan de estudios</a>
         <% } %>

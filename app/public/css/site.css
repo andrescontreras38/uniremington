@@ -365,6 +365,12 @@ section.blk.alt{background:var(--gris)}
 .ficha dd.reso{font-size:.85rem;color:var(--texto);line-height:1.45;padding:9px 12px;background:var(--gris);border-left:3px solid var(--oro);border-radius:0 8px 8px 0;margin-top:5px}
 .ficha .pdf{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:.86rem;font-weight:700;color:var(--azul-2);text-decoration:none}
 .ficha .pdf:hover{text-decoration:underline}
+.ficha .regsede{margin:0 18px 16px;padding:12px 14px;background:var(--gris);border:1px solid var(--linea);border-radius:10px}
+.ficha .regsede-note{font-size:.8rem;color:var(--texto);margin:0 0 8px}
+.ficha table.regsede-tabla{width:100%;border-collapse:collapse;font-size:.82rem}
+.ficha table.regsede-tabla th{text-align:left;font-size:.64rem;letter-spacing:.04em;text-transform:uppercase;color:var(--suave,var(--texto));padding:3px 8px 3px 0;border-bottom:1px solid var(--linea)}
+.ficha table.regsede-tabla td{padding:5px 8px 5px 0;border-bottom:1px solid var(--linea);color:var(--tinta)}
+.ficha table.regsede-tabla tr:last-child td{border-bottom:0}
 .ficha-dl{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 18px 16px;padding:11px 14px;border-radius:10px;background:var(--azul);color:#fff;font-weight:800;font-size:.88rem;text-decoration:none;transition:background .15s,transform .15s}
 .ficha-dl:hover{background:var(--azul-2);transform:translateY(-1px)}
 .ficha-dl .msi{font-size:1.2em}
