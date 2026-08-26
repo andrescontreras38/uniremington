@@ -2702,8 +2702,7 @@ app.post('/api/chat', async (req, res) => {
       return res.status(429).json({ reply: 'El asistente está muy solicitado en este momento. Intenta de nuevo en unos minutos, o escríbenos por WhatsApp.' });
     }
     console.error('Error llamando a Claude:', err?.status, err?.name, err?.message, err?.error ? JSON.stringify(err.error) : '');
-    // TEMPORAL — para diagnosticar el 502 en producción; se revierte apenas se confirme la causa.
-    res.status(502).json({ reply: `[debug] ${err?.status || ''} ${err?.name || ''}: ${err?.message || String(err)}` });
+    res.status(502).json({ reply: 'Hay un problema de conexión con el asistente. Intenta de nuevo en unos segundos.' });
   }
 });
 
