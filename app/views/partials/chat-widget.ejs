@@ -30,12 +30,18 @@
 .chat-close:hover{background:rgba(255,255,255,.15)}
 
 .chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f4f8fb}
-.chat-msg{max-width:82%;padding:9px 13px;border-radius:14px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.chat-msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:.88rem;line-height:1.5;word-break:break-word}
 .chat-msg-model{align-self:flex-start;background:#fff;color:#1c2b38;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,40,80,.1)}
 .chat-msg-model a{color:#00457c;font-weight:600;text-decoration:underline;word-break:break-all}
 .chat-msg-model a:hover{color:#e30613}
+.chat-msg-model p{margin:0 0 8px}
+.chat-msg-model p:last-child{margin-bottom:0}
+.chat-msg-model ul.chat-list{margin:2px 0 8px;padding:0;list-style:none}
+.chat-msg-model ul.chat-list:last-child{margin-bottom:0}
+.chat-msg-model ul.chat-list li{position:relative;padding-left:15px;margin:4px 0}
+.chat-msg-model ul.chat-list li::before{content:'';position:absolute;left:1px;top:.6em;width:5px;height:5px;border-radius:50%;background:#00457c}
+.chat-msg-user{align-self:flex-end;background:#00457c;color:#fff;border-bottom-right-radius:4px;white-space:pre-wrap}
 .chat-msg-user a{color:#fff;text-decoration:underline;word-break:break-all}
-.chat-msg-user{align-self:flex-end;background:#00457c;color:#fff;border-bottom-right-radius:4px}
 .chat-typing{display:flex;gap:4px;align-items:center;padding:11px 14px}
 .chat-typing span{width:6px;height:6px;border-radius:50%;background:#9fb3c4;animation:chat-bounce 1.1s infinite ease-in-out}
 .chat-typing span:nth-child(2){animation-delay:.15s}
@@ -129,34 +135,69 @@
       .replace(/^\s*[-*]\s+/gm, '- ');
   }
 
-  // Convierte URLs en enlaces reales sin usar innerHTML con texto del modelo: se
-  // reconocen con una expresión regular y cada <a> se construye a mano (href/target/
+  // Convierte URLs y correos en enlaces reales sin usar innerHTML con texto del modelo:
+  // se reconocen con expresiones regulares y cada <a> se construye a mano (href/target/
   // rel fijos por nosotros), así que no hay forma de inyectar HTML arbitrario.
   const URL_RE = /(https?:\/\/[^\s<>"')]+)/g;
-  function renderMessageContent(row, text){
+  const EMAIL_RE = /([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
+  function linkifyInto(container, text){
     text.split(URL_RE).forEach((part, i) => {
-      if (i % 2 === 0) {
-        if (part) row.appendChild(document.createTextNode(part));
+      if (i % 2 === 1) {
+        let url = part;
+        const trailMatch = url.match(/[.,;:!?)]+$/);
+        const trail = trailMatch ? trailMatch[0] : '';
+        if (trail) url = url.slice(0, -trail.length);
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = url;
+        container.appendChild(a);
+        if (trail) container.appendChild(document.createTextNode(trail));
         return;
       }
-      let url = part;
-      const trailMatch = url.match(/[.,;:!?)]+$/);
-      const trail = trailMatch ? trailMatch[0] : '';
-      if (trail) url = url.slice(0, -trail.length);
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = url;
-      row.appendChild(a);
-      if (trail) row.appendChild(document.createTextNode(trail));
+      part.split(EMAIL_RE).forEach((sub, j) => {
+        if (j % 2 === 1) {
+          const a = document.createElement('a');
+          a.href = 'mailto:' + sub;
+          a.textContent = sub;
+          container.appendChild(a);
+        } else if (sub) {
+          container.appendChild(document.createTextNode(sub));
+        }
+      });
+    });
+  }
+
+  // Mensajes de Remi: en vez de un bloque de texto plano, se arma como párrafos y listas
+  // reales (una línea que empieza con "- " se agrupa en un <ul>), para que se vea
+  // organizado en vez de guiones sueltos. Los mensajes del usuario se muestran tal cual.
+  function renderModelContent(row, text){
+    let list = null;
+    let para = null;
+    text.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (/^-\s+/.test(trimmed)) {
+        if (!list) { list = document.createElement('ul'); list.className = 'chat-list'; row.appendChild(list); }
+        const li = document.createElement('li');
+        linkifyInto(li, trimmed.replace(/^-\s+/, ''));
+        list.appendChild(li);
+        para = null;
+        return;
+      }
+      list = null;
+      if (trimmed === '') { para = null; return; }
+      if (!para) { para = document.createElement('p'); row.appendChild(para); }
+      else { para.appendChild(document.createElement('br')); }
+      linkifyInto(para, line);
     });
   }
 
   function renderOne(role, text){
     const row = document.createElement('div');
     row.className = 'chat-msg chat-msg-' + role;
-    renderMessageContent(row, role === 'model' ? stripMarkdown(text) : text);
+    if (role === 'model') renderModelContent(row, stripMarkdown(text));
+    else linkifyInto(row, text);
     body.appendChild(row);
   }
 
