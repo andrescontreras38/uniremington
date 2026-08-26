@@ -1,4 +1,5 @@
 import express from 'express';
+import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -2488,13 +2489,15 @@ app.post('/contacto', async (req, res) => {
     seccion: null, relacionadas: [] });
 });
 
-// ---------- Chat de orientación (proxy seguro a Groq) ----------
-// La API key vive SOLO en la variable de entorno GROQ_API_KEY (Vercel → Project
+// ---------- Chat de orientación (proxy seguro a Claude / Anthropic) ----------
+// La API key vive SOLO en la variable de entorno ANTHROPIC_API_KEY (Vercel → Project
 // Settings → Environment Variables), nunca en el código ni en el bundle del navegador.
-// Groq expone una API compatible con el formato de OpenAI (chat/completions).
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const CHAT_MODEL = 'claude-sonnet-5';
+const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null;
+// Hostname real del sitio (para restringir las herramientas de búsqueda/lectura web de
+// Remi a páginas de Uniremington — nunca a la web abierta).
+const CHAT_ALLOWED_HOST = new URL(SITE).hostname;
 
 // Contexto amplio y siempre-actual para Remi, generado a partir de los mismos datos que
 // alimentan el resto del sitio (nunca queda desactualizado a mano, y no depende de que
@@ -2565,9 +2568,11 @@ function mapaDelSitio() {
 // asistente no invente cifras, sedes o enlaces.
 const CHAT_SYSTEM_PROMPT = `Te llamas Remi. Eres el asistente virtual de orientación de la Corporación Universitaria Remington (Uniremington), para aspirantes y estudiantes actuales. Tu nombre está inspirado en "Remi", el personaje 3D creado por la Facultad de Diseño de Uniremington y presentado en Comic Con Medellín 2025 como símbolo del talento creativo de sus estudiantes; si alguien pregunta por tu nombre o de dónde viene, puedes contarlo brevemente, pero no es tu tema principal.
 
-TONO: amable, profesional, claro y concreto. Preséntate como Remi solo en el primer mensaje de la conversación, no lo repitas en cada respuesta. Para preguntas simples, respuestas breves (4-5 líneas). Pero si te piden explícitamente una lista, un listado o "cuáles son" los programas de algo, SÍ enumera los ítems reales uno por uno (con el formato de guiones de la sección FORMATO) en vez de resumir o remitir solo al enlace del catálogo — el enlace es un complemento, no un reemplazo de la respuesta. SIEMPRE termina la idea que empezaste: nunca dejes una frase o una lista a medias. Nunca inventes datos que no tengas (precios, cupos, fechas exactas de matrícula, etc.): si no sabes algo con certeza, dilo, PERO nunca le digas al usuario que "visite el sitio web", "contacte la sede" o "averigüe" sin darle inmediatamente y en la misma respuesta el medio de contacto concreto y accionable (el número de WhatsApp, el teléfono o el correo, tal como aparecen en DATOS REALES DE LA INSTITUCIÓN más abajo) — nunca lo mandes a buscar esa información por su cuenta.
+TONO: habla como una persona real del equipo de admisiones, no como un bot que recita reglas — natural, cercana, sin relleno ni frases genéricas de cajón. Ve directo al punto: contesta primero lo que te preguntaron, en la menor cantidad de palabras que digan todo lo necesario, y solo agrega contexto extra si de verdad ayuda a decidir. Preséntate como Remi solo en el primer mensaje de la conversación, no lo repitas en cada respuesta. Para preguntas simples, respuestas cortas (2-5 líneas). Si te piden explícitamente una lista, un listado o "cuáles son" los programas de algo, SÍ enumera los ítems reales uno por uno (con el formato de guiones de la sección FORMATO) en vez de resumir o remitir solo al enlace del catálogo — el enlace es un complemento, no un reemplazo de la respuesta. SIEMPRE termina la idea que empezaste: nunca dejes una frase o una lista a medias. Nunca inventes datos que no tengas (precios, cupos, fechas exactas de matrícula, etc.): si no sabes algo con certeza y no lo puedes verificar con las herramientas de búsqueda (ver más abajo), dilo con naturalidad, PERO nunca le digas al usuario que "visite el sitio web", "contacte la sede" o "averigüe" sin darle inmediatamente y en la misma respuesta el medio de contacto concreto y accionable (el número de WhatsApp, el teléfono o el correo, tal como aparecen en DATOS REALES DE LA INSTITUCIÓN más abajo) — nunca lo mandes a buscar esa información por su cuenta.
 
 FORMATO: responde siempre en texto plano, sin markdown (nada de **negritas**, títulos con #, ni tablas). Si necesitas listar varias cosas, usa un guion simple "-" al inicio de cada línea, nunca asteriscos.
+
+ACCESO A INFORMACIÓN DEL SITIO: además del contexto pre-cargado más abajo (que cubre lo más consultado: programas, facultades, noticias, eventos, preguntas frecuentes), tienes herramientas de búsqueda y lectura web restringidas al dominio ${CHAT_ALLOWED_HOST}. Úsalas cuando te pregunten por algo específico que no esté en el contexto pre-cargado (detalles de una sede en particular, bienestar universitario, investigación, egresados, biblioteca, un programa o noticia que no aparezca abajo, etc.) en vez de decir que no tienes esa información — búscala primero. Si aun así no la encuentras, aplica la regla de "nunca mandar a averiguar por su cuenta" de arriba.
 
 DATOS REALES DE LA INSTITUCIÓN:
 - Más de 100 años de historia (fundada en 1915). Institución de educación superior vigilada por el Ministerio de Educación Nacional (SNIES).
@@ -2620,10 +2625,10 @@ function chatIpLimited(ip) {
   return hits.length > CHAT_IP_RATE_LIMIT;
 }
 
-// Límite GLOBAL: margen de seguridad conservador mientras se confirma la cuota real del
-// nivel gratuito de Groq para esta cuenta (bastante más alta que la de Gemini). Aproximación
-// en memoria: no es perfecta entre instancias serverless concurrentes de Vercel, pero cubre
-// el caso normal (poco tráfico, una instancia caliente sirviendo la mayoría de solicitudes).
+// Límite GLOBAL: margen de seguridad conservador para controlar el costo/abuso de la API.
+// Aproximación en memoria: no es perfecta entre instancias serverless concurrentes de
+// Vercel, pero cubre el caso normal (poco tráfico, una instancia caliente sirviendo la
+// mayoría de solicitudes).
 const CHAT_GLOBAL_RPM = 20;
 const CHAT_GLOBAL_RPD = 500;
 let chatGlobalMinuteHits = [];
@@ -2645,8 +2650,8 @@ app.post('/api/chat', async (req, res) => {
   if (chatGlobalLimited()) {
     return res.status(429).json({ reply: 'Remi está recibiendo muchas consultas de otros estudiantes en este momento. Intenta de nuevo en unos minutos, o escríbenos por WhatsApp.' });
   }
-  if (!GROQ_API_KEY) {
-    console.error('GROQ_API_KEY no está configurada.');
+  if (!anthropic) {
+    console.error('ANTHROPIC_API_KEY no está configurada.');
     return res.status(503).json({ reply: 'El chat de orientación no está disponible en este momento. Escríbenos por WhatsApp o revisa nuestra sección de preguntas frecuentes.' });
   }
 
@@ -2656,7 +2661,7 @@ app.post('/api/chat', async (req, res) => {
   // Historial: solo los últimos turnos, y solo con la forma esperada (evita inyectar
   // contenido arbitrario como "system" en la conversación). Se mantiene la misma forma
   // que ya envía el frontend (role: 'user'|'model', parts:[{text}]) y se traduce aquí
-  // al formato de mensajes estilo OpenAI que espera Groq (user/assistant).
+  // al formato de mensajes que espera la API de Claude (user/assistant).
   const history = Array.isArray(req.body?.history) ? req.body.history : [];
   const safeHistory = history
     .filter((h) => h && (h.role === 'user' || h.role === 'model') && Array.isArray(h.parts))
@@ -2667,31 +2672,36 @@ app.post('/api/chat', async (req, res) => {
     }));
 
   try {
-    const groqRes = await fetch(GROQ_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${GROQ_API_KEY}` },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: [{ role: 'system', content: CHAT_SYSTEM_PROMPT }, ...safeHistory, { role: 'user', content: message }],
-        temperature: 0.4,
-        max_tokens: 1000,
-      }),
+    const response = await anthropic.messages.create({
+      model: CHAT_MODEL,
+      max_tokens: 1500,
+      output_config: { effort: 'medium' },
+      system: [{ type: 'text', text: CHAT_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      // Búsqueda y lectura web restringidas al dominio del sitio: le dan a Remi acceso a
+      // cualquier página real de Uniremington, no solo al contexto pre-cargado abajo.
+      tools: [
+        { type: 'web_search_20260209', name: 'web_search', allowed_domains: [CHAT_ALLOWED_HOST] },
+        { type: 'web_fetch_20260209', name: 'web_fetch', allowed_domains: [CHAT_ALLOWED_HOST] },
+      ],
+      messages: [...safeHistory, { role: 'user', content: message }],
     });
 
-    if (groqRes.status === 429) {
-      return res.status(429).json({ reply: 'El asistente está muy solicitado en este momento. Intenta de nuevo en unos minutos, o escríbenos por WhatsApp.' });
-    }
-    if (!groqRes.ok) {
-      console.error('Groq error', groqRes.status, await groqRes.text().catch(() => ''));
-      return res.status(502).json({ reply: 'No pude procesar tu mensaje justo ahora. Intenta de nuevo en unos segundos.' });
+    if (response.stop_reason === 'refusal') {
+      return res.status(502).json({ reply: 'No puedo ayudarte con eso. ¿Hay algo más sobre Uniremington en lo que te pueda orientar?' });
     }
 
-    const data = await groqRes.json();
-    const reply = data?.choices?.[0]?.message?.content?.trim();
+    const reply = response.content
+      .filter((b) => b.type === 'text')
+      .map((b) => b.text)
+      .join('\n\n')
+      .trim();
     if (!reply) return res.status(502).json({ reply: 'No pude generar una respuesta. ¿Puedes reformular tu pregunta?' });
     res.json({ reply });
   } catch (err) {
-    console.error('Error llamando a Groq:', err);
+    if (err instanceof Anthropic.RateLimitError) {
+      return res.status(429).json({ reply: 'El asistente está muy solicitado en este momento. Intenta de nuevo en unos minutos, o escríbenos por WhatsApp.' });
+    }
+    console.error('Error llamando a Claude:', err);
     res.status(502).json({ reply: 'Hay un problema de conexión con el asistente. Intenta de nuevo en unos segundos.' });
   }
 });
