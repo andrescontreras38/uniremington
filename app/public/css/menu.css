@@ -18,36 +18,27 @@
     /* ═══════════════ Franja de utilidades (contacto + buscador/idioma/accesibilidad) ═══════
        Vive por encima de la barra principal, en flujo normal (NO sticky a propósito): se
        desplaza fuera de vista al hacer scroll y le devuelve ese espacio a la navegación, que
-       es la que hace falta siempre visible. Comparte la firma visual del megamenú (degradado
-       en ángulo + textura diagonal + insignias de vidrio esmerilado) en vez de un azul plano,
-       y proyecta una sombra de color hacia la barra blanca de abajo — el mismo recurso que ya
-       usa el CTA rojo (sombra teñida del propio acento) — para que se sienta con peso real y
-       no solo "pintada" encima. Se oculta entera en el punto de quiebre móvil (mismo que
-       .navbar-links): ahí el buscador/idioma ya viven en el cajón y la accesibilidad en la
-       burbuja flotante, así que no hace falta duplicarlos. */
+       es la que hace falta siempre visible. Azul institucional sólido y una línea de acento
+       fina al pie — nada de degradado en ángulo, textura de rayas ni sombra teñida (versión
+       anterior: se sentía cargada/anticuada). Se oculta entera en el punto de quiebre móvil
+       (mismo que .navbar-links): ahí el buscador/idioma ya viven en el cajón y la
+       accesibilidad en la burbuja flotante, así que no hace falta duplicarlos. */
     .navbar-utility {
       /* SIN isolation:isolate ni overflow:hidden a propósito: ambos atrapaban el
          desplegable de sugerencias del buscador (position:absolute, z-index alto) dentro
          del contexto de apilamiento de esta franja, quedando por debajo de .navbar aunque
-         su z-index fuera mayor — no aparecía. Los pseudo-elementos ::before/::after de
-         abajo ya están perfectamente acotados con inset:0, no necesitan esa contención. */
+         su z-index fuera mayor — no aparecía. El pseudo-elemento ::after de abajo ya está
+         perfectamente acotado con left/right/bottom, no necesita esa contención. */
       position: relative;
       color: #fff;
-      background: linear-gradient(100deg, #012a4d 0%, var(--blue) 48%, #0a5896 100%);
-      box-shadow: 0 8px 20px -8px rgba(227, 7, 21, .4);
+      background: #012a4d;
       transition: opacity .2s ease;
     }
-    .navbar-utility::before {
-      content: "";
-      position: absolute; inset: 0; z-index: -1;
-      background: repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 12px);
-    }
-    /* filete de marca al pie: el mismo degradado azul→accent que corona los paneles del
-       megamenú (.nav-panel::before), aquí como puente hacia la barra blanca de abajo. */
     .navbar-utility::after {
       content: "";
-      position: absolute; left: 0; right: 0; bottom: 0; height: 2px; z-index: 1;
-      background: linear-gradient(90deg, var(--blue) 0%, var(--blue-soft) 55%, var(--accent) 100%);
+      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: var(--accent);
+      opacity: .55;
     }
     .navbar-utility-inner {
       position: relative;
