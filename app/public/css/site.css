@@ -870,10 +870,11 @@ section.blk.alt{background:var(--gris)}
 .ver-mas-chevron{width:18px;height:18px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
 .ver-mas-btn[aria-expanded="true"] .ver-mas-chevron{transform:rotate(180deg)}
 
-/* Mapa mundi 3D (/donde-estamos/): globo terráqueo real en WebGL, ver globe-cobertura.js.
-   .co-globe es solo el lienzo/contenedor; toda la escena (esfera, atmósfera, estrellas,
-   pines) la monta ese script. Fondo oscuro tipo "espacio" para que combine con el brillo
-   del planeta y las estrellas en vez de flotar sobre blanco. */
+/* Mapa de cobertura nacional (/donde-estamos/): silueta de Colombia en SVG con
+   inclinación 3D real vía transform-style:preserve-3d — los pines son hijos del propio
+   plano inclinado y usan translateZ para "flotar" sobre él, así que giran consistentes
+   con el mapa sin necesitar WebGL ni ninguna librería. mapa-cobertura.js solo añade el
+   parallax al mover el mouse; sin JS o en touch, el tilt fijo de aquí ya se ve completo. */
 .co-map-section{padding:6px 0 8px;overflow-x:hidden}
 .co-map-head{max-width:620px;margin:0 auto 4px;padding:0 12px;box-sizing:border-box;text-align:center}
 .co-map-head .k{display:inline-block;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--oro-2);font-weight:800;margin-bottom:6px}
@@ -882,26 +883,42 @@ section.blk.alt{background:var(--gris)}
 .co-map-stat{display:inline-flex;align-items:baseline;gap:6px;background:var(--gris);border:1px solid var(--linea);border-radius:999px;padding:7px 16px;font-weight:700;color:var(--azul);font-size:.92rem}
 .co-map-stat b{font-size:1.25rem;color:var(--oro-2)}
 
-.co-globe{position:relative;width:min(640px,94%);aspect-ratio:4/3;margin:22px auto 8px;border-radius:22px;overflow:hidden;
-  background:radial-gradient(circle at 50% 40%,#0a2247 0%,#051429 60%,#020712 100%);
-  box-shadow:0 30px 60px -20px rgba(1,10,30,.6),inset 0 0 0 1px rgba(255,255,255,.06);cursor:grab}
-.co-globe:active{cursor:grabbing}
-.co-globe canvas{display:block;width:100%;height:100%}
-.co-globe-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);opacity:0;transition:opacity .3s ease;
-  background:rgba(1,20,45,.7);color:#dceaff;font-size:.72rem;font-weight:700;letter-spacing:.02em;padding:6px 14px;border-radius:999px;
-  pointer-events:none;backdrop-filter:blur(2px)}
-.co-globe.is-ready .co-globe-hint{opacity:.85}
-.co-globe-tip{position:absolute;transform:translate(-50%,-100%);top:0;left:0;opacity:0;pointer-events:none;
-  background:var(--azul-900);color:#fff;font-size:.78rem;font-weight:700;padding:5px 12px;border-radius:7px;white-space:nowrap;
-  transition:opacity .12s ease;box-shadow:0 6px 16px rgba(0,0,0,.35);z-index:3}
-.co-globe-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--azul-900)}
-.co-globe-tip.is-on{opacity:1}
+.co-map-stage{perspective:1600px;padding:38px 0 26px;display:flex;justify-content:center}
+.co-map-plate{position:relative;width:min(420px,88%);aspect-ratio:640/869;transform-style:preserve-3d;
+  transform:rotateX(50deg) rotateZ(-8deg);transition:transform .35s cubic-bezier(.16,1,.3,1);will-change:transform}
+.co-map-svg{position:absolute;inset:0;width:100%;height:100%;display:block;filter:drop-shadow(0 30px 26px rgba(1,42,80,.5))}
+.co-map-shape{fill:url(#coMapGrad);stroke:#e9f1fa;stroke-width:1.6;stroke-linejoin:round}
+
+/* .dep-content ul li trae bullets/relative/padding-left para listas de texto normales
+   (más específico que .co-map-pins solo) — se anula explícitamente con .dep-content
+   delante, si no los pines quedaban en position:relative (mal posicionados) con un
+   círculo de bullet suelto detrás. */
+.dep-content .co-map-pins{position:absolute;inset:0;list-style:none;margin:0;padding:0}
+.dep-content .co-map-pins li.co-pin{position:absolute;padding-left:0;margin:0;transform:translate(-50%,-100%) translateZ(40px);z-index:2}
+.dep-content .co-map-pins li.co-pin::before{content:none}
+.co-pin a{position:relative;display:flex;flex-direction:column;align-items:center;text-decoration:none;padding:7px;margin:-7px;cursor:pointer}
+.co-pin-mark{position:relative;width:20px;height:20px;color:var(--oro);filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));transition:transform .22s cubic-bezier(.34,1.56,.64,1)}
+.co-pin-mark svg{width:100%;height:100%;fill:currentColor;stroke:#fff;stroke-width:.6}
+.co-pin-pulse{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:var(--oro);opacity:.5;animation:coPulse 2.6s ease-out infinite}
+.co-pin:nth-child(3n+2) .co-pin-pulse{animation-delay:.5s}
+.co-pin:nth-child(3n) .co-pin-pulse{animation-delay:1s}
+@keyframes coPulse{0%{transform:scale(.5);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+.co-pin-tip{position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%) translateY(4px) scale(.94);opacity:0;pointer-events:none;
+  background:var(--azul-900);color:#fff;font-size:.74rem;font-weight:700;padding:5px 11px;border-radius:7px;white-space:nowrap;
+  transition:opacity .16s ease,transform .16s ease;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.co-pin-tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--azul-900)}
+.co-pin a:hover .co-pin-tip,.co-pin a:focus-visible .co-pin-tip{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+.co-pin a:hover .co-pin-mark,.co-pin a:focus-visible .co-pin-mark{transform:scale(1.35) translateY(-2px)}
 
 .co-map-list{max-width:820px;margin:4px auto 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:9px}
 .dep-content .co-map-list li{position:static;padding-left:0;margin:0}
 .dep-content .co-map-list li::before{content:none}
 .co-map-list a{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:999px;border:1px solid var(--linea);background:#fff;color:var(--azul);font-size:.82rem;font-weight:700;text-decoration:none;transition:background .16s ease,color .16s ease,border-color .16s ease}
 .co-map-list a:hover{background:var(--azul);border-color:var(--azul);color:#fff}
+
+@media (max-width:640px){
+  .co-map-plate{transform:rotateX(42deg) rotateZ(-6deg)}
+}
 
 /* CTA final: refuerzos */
 .lead-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:.86rem;color:#cfe0f2}

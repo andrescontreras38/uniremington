@@ -2095,52 +2095,68 @@ function renderPrograma(res, item) {
 // solo en su página. El del directorio consume un JSON externo (GitHub Pages).
 const PAGE_SCRIPTS = {
   '/directorio-telefonico-de-empleados-uniremington/': '/js/directorio-empleados.js',
+  '/donde-estamos/': '/js/mapa-cobertura.js',
 };
 
-// Mapa mundi 3D (/donde-estamos/): globo terráqueo real en WebGL (three.js, auto-alojado
-// en /vendor — sin CDN externo) con las 19 sedes ubicadas por lat/lon real. La escena vive
-// en globe-cobertura.js (type=module); acá solo se genera el HTML del contenedor + el JSON
-// de sedes que ese script consume, y una lista de texto plano como respaldo accesible/SEO
-// (sin JS, o si WebGL no está disponible, esta lista sigue siendo un mapa del sitio útil).
+// Mapa de cobertura nacional (/donde-estamos/): silueta de Colombia proyectada a partir
+// de coordenadas geográficas reales (equirectangular, precisión de grado — de sobra para
+// un mapa ilustrativo) y suavizada con Catmull-Rom para una silueta más limpia. Coordenadas
+// de las 19 sedes también proyectadas al mismo viewBox, en % para posicionar los pines.
+const COLOMBIA_MAP_VIEWBOX = '0 0 640 869';
+const COLOMBIA_MAP_PATH = 'M199.17,643.62 C195.64,641.66 185.55,636.58 177.96,631.89 C170.38,627.20 160.05,616.90 153.65,615.48 C147.26,614.06 148.94,623.19 139.59,623.36 C130.24,623.53 106.57,621.18 97.56,616.49 C88.54,611.79 89.04,598.60 85.49,595.18 C81.94,591.76 86.05,600.55 76.26,595.97 C66.46,591.39 36.10,574.96 26.72,567.68 C17.34,560.41 18.04,555.49 20.00,552.30 C21.96,549.12 35.76,553.34 38.48,548.59 C41.19,543.83 34.72,530.90 36.29,523.77 C37.86,516.65 41.87,509.38 47.90,505.83 C53.93,502.29 64.90,508.25 72.47,502.51 C80.04,496.77 86.69,480.90 93.32,471.38 C99.96,461.86 112.16,451.69 112.28,445.39 C112.40,439.10 95.51,440.36 94.03,433.61 C92.54,426.85 103.68,417.20 103.37,404.86 C103.07,392.51 92.29,369.26 92.20,359.54 C92.10,349.82 102.35,355.69 102.82,346.54 C103.28,337.39 99.64,316.02 95.00,304.64 C90.35,293.26 77.23,286.67 74.94,278.25 C72.66,269.84 77.57,257.60 81.29,254.18 C85.01,250.76 93.04,259.59 97.25,257.73 C101.47,255.87 106.95,250.33 106.59,243.01 C106.23,235.69 96.01,219.90 95.09,213.83 C94.18,207.76 95.84,207.54 101.10,206.59 C106.37,205.65 116.24,213.66 126.69,208.16 C137.15,202.66 154.26,180.23 163.85,173.58 C173.45,166.94 180.77,171.92 184.25,168.31 C187.73,164.70 183.14,161.63 184.74,151.93 C186.34,142.22 187.61,120.88 193.86,110.07 C200.12,99.26 212.33,91.07 222.27,87.08 C232.21,83.10 247.62,88.02 253.48,86.14 C259.34,84.27 250.30,76.85 257.42,75.82 C264.53,74.79 283.22,83.43 296.17,79.95 C309.13,76.47 325.43,60.95 335.15,54.94 C344.86,48.92 347.23,49.69 354.44,43.86 C361.66,38.04 371.50,23.47 378.42,20.00 C385.34,16.53 390.87,20.36 395.96,23.03 C401.05,25.71 408.40,31.11 408.96,36.07 C409.52,41.02 406.25,48.58 399.34,52.74 C392.44,56.91 374.93,55.54 367.53,61.05 C360.14,66.56 360.26,79.32 354.97,85.81 C349.68,92.31 341.39,94.58 335.80,100.02 C330.20,105.45 324.81,109.47 321.40,118.42 C318.00,127.38 318.64,143.05 315.35,153.77 C312.05,164.49 299.64,177.36 301.61,182.74 C303.58,188.12 321.86,181.71 327.18,186.06 C332.50,190.40 330.65,203.22 333.53,208.83 C336.41,214.44 341.98,214.59 344.45,219.73 C346.93,224.87 348.69,233.29 348.37,239.67 C348.04,246.05 343.17,253.23 342.48,258.01 C341.79,262.79 341.90,265.94 344.23,268.35 C346.55,270.76 352.42,268.91 356.42,272.48 C360.41,276.04 355.63,287.67 368.21,289.75 C380.79,291.84 416.49,284.73 431.90,284.99 C447.31,285.25 450.07,283.15 460.67,291.30 C471.28,299.46 486.39,327.71 495.53,333.93 C504.68,340.15 506.27,329.07 515.55,328.63 C524.83,328.19 540.57,331.78 551.22,331.28 C561.87,330.78 571.83,325.16 579.45,325.63 C587.07,326.11 595.53,328.28 596.96,334.15 C598.40,340.01 591.37,353.61 588.04,360.83 C584.72,368.04 579.48,368.76 576.99,377.46 C574.50,386.15 572.10,401.58 573.11,412.98 C574.13,424.39 579.07,437.96 583.08,445.90 C587.08,453.84 594.53,456.31 597.16,460.62 C599.79,464.92 602.76,465.75 598.86,471.71 C594.96,477.66 574.95,490.44 573.76,496.36 C572.57,502.29 586.54,502.58 591.73,507.28 C596.92,511.99 600.18,513.48 604.90,524.60 C609.61,535.72 619.04,564.75 620.00,574.00 C620.96,583.25 613.82,583.96 610.65,580.11 C607.49,576.25 604.90,558.37 601.00,550.89 C597.10,543.40 592.26,534.95 587.24,535.18 C582.22,535.40 589.67,549.59 570.86,552.25 C552.04,554.91 490.34,546.16 474.36,551.14 C458.38,556.13 470.03,576.12 474.97,582.14 C479.91,588.16 499.43,583.25 503.99,587.26 C508.55,591.28 504.25,603.93 502.32,606.23 C500.39,608.54 498.71,600.60 492.42,601.11 C486.12,601.61 469.21,601.91 464.52,609.27 C459.83,616.63 460.65,636.25 464.27,645.26 C467.89,654.27 481.29,655.59 486.24,663.33 C491.19,671.07 492.90,683.39 494.00,691.70 C495.09,700.00 496.73,686.96 492.83,713.18 C488.92,739.40 478.40,830.75 470.56,849.00 C462.72,867.25 452.37,827.25 445.78,822.67 C439.18,818.08 428.13,830.09 430.99,821.49 C433.85,812.89 463.93,783.35 462.93,771.08 C461.93,758.81 436.28,751.04 425.00,747.88 C413.73,744.73 403.22,752.86 395.28,752.14 C387.35,751.42 384.92,742.81 377.40,743.57 C369.87,744.32 360.80,755.52 350.10,756.67 C339.41,757.82 324.24,760.15 313.23,750.46 C302.22,740.77 292.73,709.31 284.05,698.53 C275.37,687.74 267.58,691.79 261.12,685.76 C254.67,679.74 253.44,670.19 245.31,662.38 C237.19,654.57 220.07,642.05 212.38,638.92 C204.69,635.79 201.37,642.84 199.17,643.62 C196.97,644.40 202.71,645.57 199.17,643.62Z';
 const SEDES_MAPA = [
-  { n: 'Apartadó', s: 'apartado', lat: 7.8839, lon: -76.6248 },
-  { n: 'Armenia', s: 'armenia', lat: 4.5339, lon: -75.6811 },
-  { n: 'Bucaramanga', s: 'bucaramanga', lat: 7.1254, lon: -73.1198 },
-  { n: 'Cali', s: 'cali', lat: 3.4516, lon: -76.5320 },
-  { n: 'Caucasia', s: 'caucasia', lat: 7.9889, lon: -75.1978 },
-  { n: 'Cúcuta', s: 'cucuta', lat: 7.8939, lon: -72.5078 },
-  { n: 'Ibagué', s: 'ibague', lat: 4.4389, lon: -75.2322 },
-  { n: 'Ipiales', s: 'ipiales', lat: 0.8283, lon: -77.6428 },
-  { n: 'Manizales', s: 'manizales', lat: 5.0689, lon: -75.5174 },
-  { n: 'Medellín', s: 'medellin', lat: 6.2442, lon: -75.5812 },
-  { n: 'Montería', s: 'monteria', lat: 8.7500, lon: -75.8814 },
-  { n: 'Palmira', s: 'palmira', lat: 3.5394, lon: -76.3036 },
-  { n: 'Pasto', s: 'pasto', lat: 1.2136, lon: -77.2811 },
-  { n: 'Pereira', s: 'pereira', lat: 4.8143, lon: -75.6946 },
-  { n: 'Rionegro', s: 'rionegro', lat: 6.1548, lon: -75.3752 },
-  { n: 'Sahagún', s: 'sahagun', lat: 8.9453, lon: -75.4423 },
-  { n: 'Sincelejo', s: 'sincelejo', lat: 9.3047, lon: -75.3978 },
-  { n: 'Tuluá', s: 'tulua', lat: 4.0847, lon: -76.1956 },
-  { n: 'Yopal', s: 'yopal', lat: 5.3378, lon: -72.3959 },
+  { n: 'Apartadó', s: 'apartado', x: 21.44, y: 28.26 },
+  { n: 'Armenia', s: 'armenia', x: 28.74, y: 47.35 },
+  { n: 'Bucaramanga', s: 'bucaramanga', x: 48.56, y: 32.58 },
+  { n: 'Cali', s: 'cali', x: 22.15, y: 53.52 },
+  { n: 'Caucasia', s: 'caucasia', x: 32.48, y: 27.66 },
+  { n: 'Cúcuta', s: 'cucuta', x: 53.3, y: 28.2 },
+  { n: 'Ibagué', s: 'ibague', x: 32.21, y: 47.89 },
+  { n: 'Ipiales', s: 'ipiales', x: 13.56, y: 68.48 },
+  { n: 'Manizales', s: 'manizales', x: 30, y: 44.3 },
+  { n: 'Medellín', s: 'medellin', x: 29.51, y: 37.6 },
+  { n: 'Montería', s: 'monteria', x: 27.19, y: 23.32 },
+  { n: 'Palmira', s: 'palmira', x: 23.92, y: 53.02 },
+  { n: 'Pasto', s: 'pasto', x: 16.36, y: 66.28 },
+  { n: 'Pereira', s: 'pereira', x: 28.63, y: 45.75 },
+  { n: 'Rionegro', s: 'rionegro', x: 31.11, y: 38.11 },
+  { n: 'Sahagún', s: 'sahagun', x: 30.59, y: 22.21 },
+  { n: 'Sincelejo', s: 'sincelejo', x: 30.93, y: 20.16 },
+  { n: 'Tuluá', s: 'tulua', x: 24.76, y: 49.91 },
+  { n: 'Yopal', s: 'yopal', x: 54.16, y: 42.77 },
 ];
+// Ícono de pin (Material "location_on"), en línea: el subset de íconos auto-alojado del
+// sitio no incluye este glifo — inline evita repetir el bug de read-more.js (ver commit
+// "Fix broken icon...") donde el ligature caía a texto plano por faltar en el subset.
+const CO_PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
 function mapaCoberturaHtml() {
+  const pins = SEDES_MAPA.map(p =>
+    `<li class="co-pin" style="left:${p.x}%;top:${p.y}%"><a href="/${p.s}/" aria-label="Sede Uniremington en ${p.n}">` +
+    `<span class="co-pin-pulse" aria-hidden="true"></span><span class="co-pin-mark">${CO_PIN_SVG}</span>` +
+    `<span class="co-pin-tip">${p.n}</span></a></li>`
+  ).join('');
   const list = SEDES_MAPA.slice().sort((a, b) => a.n.localeCompare(b.n, 'es'))
     .map(p => `<li><a href="/${p.s}/">${p.n}</a></li>`).join('');
-  const sedesJson = JSON.stringify(SEDES_MAPA.map(p => ({ n: p.n, s: p.s, lat: p.lat, lon: p.lon })))
-    .replace(/</g, '\\u003c'); // por si algún nombre trajera '<' — no lo hay, pero evita cerrar el <script> por accidente
   return `<section class="co-map-section">
   <div class="co-map-head">
     <span class="k">Cobertura nacional</span>
     <h2>Estudia cerca de ti</h2>
-    <p>Presencia en las principales ciudades del país, desde el Caribe hasta el sur andino. Arrastra el globo para rotarlo y toca un pin para ir a esa sede.</p>
+    <p>Presencia en las principales ciudades del país, desde el Caribe hasta el sur andino. Pasa el cursor (o toca) cada punto del mapa para ir a esa sede.</p>
     <span class="co-map-stat"><b>${SEDES_MAPA.length}</b> sedes en Colombia</span>
   </div>
-  <div id="co-globe" class="co-globe"><span class="co-globe-hint">Arrastra para rotar</span></div>
+  <div class="co-map-stage">
+    <div class="co-map-plate">
+      <svg class="co-map-svg" viewBox="${COLOMBIA_MAP_VIEWBOX}" aria-hidden="true">
+        <defs><linearGradient id="coMapGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#1e73be"/><stop offset="55%" stop-color="#0a5aa8"/><stop offset="100%" stop-color="#012a50"/>
+        </linearGradient></defs>
+        <path class="co-map-shape" d="${COLOMBIA_MAP_PATH}"/>
+      </svg>
+      <ul class="co-map-pins">${pins}</ul>
+    </div>
+  </div>
   <ul class="co-map-list">${list}</ul>
-</section>
-<script>window.__CO_SEDES__=${sedesJson};</script>
-<script type="importmap">{"imports":{"three":"/vendor/three.module.min.js"}}</script>
-<script type="module" src="/js/globe-cobertura.js?v=${ASSET_V}"></script>`;
+</section>`;
 }
 // Oscurece un color hex hacia negro conservando el factor k (0..1) de cada canal.
 const _h2r = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join('');
