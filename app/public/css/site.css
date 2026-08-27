@@ -68,6 +68,7 @@ html.a11y-contrast .pcard,html.a11y-contrast .recurso,html.a11y-contrast .feat{b
 html.a11y-contrast .cat-bar a{border:2px solid #000}
 html.a11y-contrast input,html.a11y-contrast select,html.a11y-contrast textarea{border:2px solid #000}
 html.a11y-contrast .navbar{border-bottom:2px solid #000}
+html.a11y-contrast .navbar-utility{border-bottom:2px solid #000}
 html.a11y-contrast :focus-visible{outline:3px solid #002a4d;outline-offset:2px}
 html.a11y-gray{filter:grayscale(1)}
 html.a11y-underline a{text-decoration:underline!important;text-underline-offset:2px}
