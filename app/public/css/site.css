@@ -1217,7 +1217,13 @@ a.doc-pdf + a.doc-pdf{margin-left:0}
 
 /* ── Fachada ligera de YouTube (miniatura + botón play; el iframe carga al hacer clic) ── */
 .video-embed.yt-facade{position:relative;cursor:pointer;padding:0}
-.yt-facade .yt-thumb{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;display:block;
+/* .dep-content img (arriba) fuerza width/height:auto con !important para las fotos sueltas
+   del contenido — como esta miniatura también es un <img>, heredaba esa regla y quedaba a su
+   tamaño intrínseco (480×360 de hqdefault.jpg) flotando centrada dentro de la caja de 16:9,
+   en vez de llenarla: el "video se ve más chico que su contenedor" reportado en el sitio.
+   Se reafirma acá con más especificidad + !important para que sí ocupe todo el ancho. */
+.yt-facade .yt-thumb{width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;
+  aspect-ratio:16/9;object-fit:cover;display:block;margin:0!important;box-shadow:none!important;
   transition:transform .6s cubic-bezier(.22,.61,.36,1),opacity .3s ease}
 .yt-facade:hover .yt-thumb{transform:scale(1.06);opacity:.9}
 .yt-facade .yt-play{position:absolute;inset:0;margin:auto;width:74px;height:52px;border:0;border-radius:16px;
