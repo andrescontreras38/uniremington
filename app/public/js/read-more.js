@@ -38,11 +38,34 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'ver-mas-btn';
-    btn.textContent = 'Ver más';
     btn.setAttribute('aria-expanded', 'false');
+
+    var label = document.createElement('span');
+    label.className = 'ver-mas-label';
+    label.textContent = 'Ver más';
+    btn.appendChild(label);
+
+    // Flecha como SVG en línea (no depende de la fuente de íconos del sitio, que es un
+    // subset auto-alojado y no incluye el glifo "expand_more" — con ese ligature caía al
+    // texto plano "expand_more" en vez del ícono).
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'ver-mas-chevron');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    var path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', 'M6 9l6 6 6-6');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '2.4');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
+    btn.appendChild(svg);
+
     btn.addEventListener('click', function () {
       var expanded = wrap.classList.toggle('ver-mas-open');
-      btn.textContent = expanded ? 'Ver menos' : 'Ver más';
+      label.textContent = expanded ? 'Ver menos' : 'Ver más';
       btn.setAttribute('aria-expanded', String(expanded));
       if (!expanded) wrap.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });

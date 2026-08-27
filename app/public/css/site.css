@@ -864,11 +864,11 @@ section.blk.alt{background:var(--gris)}
    aplica solo cuando la sección realmente supera la altura visible. */
 .ver-mas-wrap{position:relative;overflow:hidden;max-height:var(--vm-max,260px);transition:max-height .4s cubic-bezier(.16,1,.3,1)}
 .ver-mas-wrap.ver-mas-open{max-height:3000px}
-.ver-mas-wrap.ver-mas-clamped:not(.ver-mas-open)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 80%);pointer-events:none}
-.ver-mas-btn{display:inline-flex;align-items:center;gap:7px;margin:8px 0 20px;padding:9px 18px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--azul);font-weight:800;font-size:.85rem;font-family:var(--sans);cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
-.ver-mas-btn:hover{background:var(--azul);border-color:var(--azul);color:#fff;box-shadow:0 6px 16px -4px rgba(0,69,124,.4)}
-.ver-mas-btn::after{content:"expand_more";font-family:'Material Symbols Sharp';font-size:1.15em;transition:transform .3s cubic-bezier(.16,1,.3,1)}
-.ver-mas-btn[aria-expanded="true"]::after{transform:rotate(180deg)}
+.ver-mas-wrap.ver-mas-clamped:not(.ver-mas-open)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:80px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 75%);pointer-events:none}
+.ver-mas-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:2px 0 22px;padding:13px 20px;border-radius:12px;border:1.5px solid var(--azul);background:var(--gris);color:var(--azul);font-weight:800;font-size:.94rem;font-family:var(--sans);letter-spacing:.01em;cursor:pointer;transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
+.ver-mas-btn:hover{background:var(--azul);color:#fff;box-shadow:0 8px 20px -6px rgba(0,69,124,.45);transform:translateY(-1px)}
+.ver-mas-chevron{width:18px;height:18px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.ver-mas-btn[aria-expanded="true"] .ver-mas-chevron{transform:rotate(180deg)}
 
 /* CTA final: refuerzos */
 .lead-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:.86rem;color:#cfe0f2}
