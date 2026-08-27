@@ -27,7 +27,7 @@ import { OrbitControls } from '/vendor/OrbitControls.js';
   // --- Escena base ---------------------------------------------------------
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-  camera.position.set(0, 0, 5.4);
+  camera.position.set(0, 0, 4.2);
 
   let renderer;
   try {
@@ -42,11 +42,13 @@ import { OrbitControls } from '/vendor/OrbitControls.js';
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.enablePan = false;
-  controls.minDistance = 3.1;
-  controls.maxDistance = 9;
+  controls.minDistance = 3;
+  controls.maxDistance = 8;
+  controls.zoomSpeed = 1.1;
   controls.autoRotate = !reduceMotion;
-  controls.autoRotateSpeed = 0.55;
+  controls.autoRotateSpeed = 1.3;
   controls.rotateSpeed = 0.55;
+  controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
 
   // --- Tierra ----------------------------------------------------------------
   const earthGroup = new THREE.Group();
@@ -100,32 +102,41 @@ import { OrbitControls } from '/vendor/OrbitControls.js';
   sun.position.set(5, 2, 4);
   scene.add(sun);
 
-  // --- Pines de las sedes ------------------------------------------------
-  function pinTexture() {
+  // --- Pines de las sedes: isologo institucional (no un punto genérico) sobre un halo
+  // suave pulsante. Escala pequeña a propósito: 19 sedes caen en un área muy chica del
+  // globo (Colombia), un pin grande las hace ver amontonadas en una sola mancha.
+  function glowTexture() {
     const c = document.createElement('canvas');
-    c.width = 64; c.height = 64;
+    c.width = c.height = 128;
     const ctx = c.getContext('2d');
-    ctx.beginPath();
-    ctx.arc(32, 26, 15, 0, Math.PI * 2);
-    ctx.fillStyle = '#e30613';
-    ctx.fill();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#fff';
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(32, 26, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff';
-    ctx.fill();
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(227,6,19,.35)');
+    g.addColorStop(0.55, 'rgba(227,6,19,.1)');
+    g.addColorStop(1, 'rgba(227,6,19,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
     return new THREE.CanvasTexture(c);
   }
-  const pinMap = pinTexture();
-  const pinMaterial = new THREE.SpriteMaterial({ map: pinMap, depthTest: true, transparent: true });
+  const pinMaterial = new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load('/img/isologo-pin.png'), depthTest: true, transparent: true });
+  const glowTex = glowTexture();
 
-  const pins = sedes.map((s) => {
+  const PIN_SCALE = 0.088;
+  const glows = [];
+  const pins = sedes.map((s, i) => {
     const pos = latLonToVector3(s.lat, s.lon, RADIUS * 1.012);
+
+    // Material propio por pin (misma textura, instancia de material distinta) para que
+    // cada halo pulse con su propia opacidad — si comparten material, todos parpadean a la vez.
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    glow.position.copy(pos);
+    glow.scale.set(PIN_SCALE * 1.9, PIN_SCALE * 1.9, 1);
+    glow.userData = { pulseOffset: (i / sedes.length) * Math.PI * 2 };
+    earthGroup.add(glow);
+    glows.push(glow);
+
     const sprite = new THREE.Sprite(pinMaterial);
     sprite.position.copy(pos);
-    sprite.scale.set(0.26, 0.26, 1);
+    sprite.scale.set(PIN_SCALE, PIN_SCALE, 1);
     sprite.userData = s;
     earthGroup.add(sprite);
     return sprite;
@@ -177,9 +188,17 @@ import { OrbitControls } from '/vendor/OrbitControls.js';
   resize();
 
   // --- Loop -------------------------------------------------------------
-  function animate() {
+  function animate(t) {
     requestAnimationFrame(animate);
     controls.update();
+    if (!reduceMotion) {
+      const s = (t || 0) / 1000;
+      glows.forEach((g) => {
+        const p = 0.7 + 0.3 * Math.sin(s * 1.8 + g.userData.pulseOffset);
+        g.scale.set(PIN_SCALE * (1.5 + p * 0.6), PIN_SCALE * (1.5 + p * 0.6), 1);
+        g.material.opacity = 0.4 + p * 0.3;
+      });
+    }
     if (hovered) {
       const p = hovered.position.clone().applyMatrix4(earthGroup.matrixWorld).project(camera);
       const r = renderer.domElement.getBoundingClientRect();
