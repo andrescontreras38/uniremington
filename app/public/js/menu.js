@@ -7,6 +7,18 @@
     backdrop.classList.add("drawer-backdrop");
     document.body.appendChild(backdrop);
 
+    // Secciones del header que se desvanecen mientras el cajón está abierto (ver
+    // .menu-open en menu.css): en los anchos donde la navegación de escritorio y el
+    // cajón coexisten, se quedaban ahí compitiendo con el cajón recién abierto — se
+    // veían "mezcladas" con él en vez de un efecto claro de superposición. `inert`
+    // les retira el foco/tabulación mientras están ocultas (mismo patrón que ya usa
+    // el propio cajón), independientemente de si existen en esta página.
+    const headerSecciones = [
+      document.querySelector(".navbar-utility"),
+      document.querySelector(".navbar-links"),
+      document.querySelector(".navbar-actions"),
+    ].filter(Boolean);
+
     function abrirMenu() {
       drawer.classList.add("open");
       drawer.setAttribute("aria-hidden", "false");
@@ -15,6 +27,8 @@
       hamburger.classList.add("active");
       hamburger.setAttribute("aria-expanded", "true");
       document.body.style.overflow = "hidden";
+      document.body.classList.add("menu-open");
+      headerSecciones.forEach((el) => { el.inert = true; });
     }
 
     function cerrarMenu() {
@@ -25,6 +39,8 @@
       hamburger.classList.remove("active");
       hamburger.setAttribute("aria-expanded", "false");
       document.body.style.overflow = "";
+      document.body.classList.remove("menu-open");
+      headerSecciones.forEach((el) => { el.inert = false; });
     }
 
     hamburger.addEventListener("click", () => {

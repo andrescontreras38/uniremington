@@ -32,6 +32,7 @@
       color: #fff;
       background: linear-gradient(100deg, #012a4d 0%, var(--blue) 48%, #0a5896 100%);
       box-shadow: 0 8px 20px -8px rgba(227, 7, 21, .4);
+      transition: opacity .2s ease;
     }
     .navbar-utility::before {
       content: "";
@@ -153,6 +154,7 @@
       gap: 2px;
       flex: 1;
       justify-content: center;
+      transition: opacity .2s ease;
     }
 
     .nav-dropdown {
@@ -410,6 +412,7 @@
       align-items: center;
       gap: 14px;
       flex-shrink: 0;
+      transition: opacity .2s ease;
     }
 
     .navbar-cta {
@@ -521,14 +524,11 @@
       flex-shrink: 0;
       position: relative;
     }
-    /* No tenía punto de quiebre propio: quedaba visible y clicable incluso con la
-       navegación de escritorio ya desplegada (>=1441px), donde el cajón que abre además
-       solo trae el bloque SOY (ver .drawer-main-menu más abajo) — un cajón casi vacío
-       que además se superponía con la franja de utilidades al no tener en cuenta su
-       alto. En ese ancho la navegación horizontal ya cubre todo, así que se oculta. */
-    @media (min-width: 1441px) {
-      .navbar-burger { display: none; }
-    }
+    /* OJO: se probó ocultar este botón en escritorio (>=1441px) asumiendo que era
+       redundante con la navegación horizontal — error: es la ÚNICA entrada a "SOY"
+       (Aspirante/Estudiante/Egresados/Profesor/Administrativo, ver .drawer-soy más abajo),
+       que nunca aparece en la barra horizontal. Debe seguir visible en todo ancho. El
+       problema real de superposición está en el cajón/telón de fondo, no en este botón. */
 
     .navbar-burger svg {
       width: 22px;
@@ -738,6 +738,20 @@
     .drawer-backdrop.active {
       opacity: 1;
       visibility: visible;
+    }
+
+    /* Con el cajón abierto, el header se simplifica a logo + botón de cerrar: sin esto,
+       en los anchos donde la navegación de escritorio y el cajón conviven, la barra
+       completa (secciones + CTA + franja de utilidades) seguía ahí compitiendo con el
+       cajón recién abierto — se veía "mezclada" con él en vez de un efecto claro de
+       superposición. El logo y el botón (que pasa a ×) se quedan fijos como ancla.
+       El foco/tabulación de estos elementos se retira vía `inert` en menu.js (mismo
+       patrón que ya usa el propio cajón), así que aquí solo hace falta el desvanecido
+       visual — sin el truco de retrasar `visibility` para no complicar la transición. */
+    body.menu-open .navbar-utility,
+    body.menu-open .navbar-links,
+    body.menu-open .navbar-actions {
+      opacity: 0;
     }
 
     /* Punto de quiebre a menú móvil: antes 1360px, insuficiente para el contenido real de la
