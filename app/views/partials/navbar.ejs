@@ -111,13 +111,13 @@
       </span>
     </a>
     <div class="navbar-utility-tools">
-      <!-- Buscador del sitio (escritorio): ícono de lupa que se expande al pulsarlo.
+      <!-- Buscador del sitio (escritorio): siempre expandido, la lupa envía el formulario.
            En móvil va dentro del cajón hamburguesa. -->
       <form class="navbar-search" action="/buscar" method="get" role="search">
-        <button type="button" class="navbar-search-toggle" aria-label="Buscar" aria-expanded="false">
+        <button type="submit" class="navbar-search-toggle" aria-label="Buscar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
         </button>
-        <input type="search" name="q" placeholder="Buscar…" aria-label="Buscar en el sitio" autocomplete="off" tabindex="-1">
+        <input type="search" name="q" placeholder="Buscar…" aria-label="Buscar en el sitio" autocomplete="off">
       </form>
       <!-- Traductor (Google Translate en la misma página): selector en la barra (escritorio);
            en móvil va dentro del cajón hamburguesa. -->
