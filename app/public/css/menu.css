@@ -26,9 +26,12 @@
        .navbar-links): ahí el buscador/idioma ya viven en el cajón y la accesibilidad en la
        burbuja flotante, así que no hace falta duplicarlos. */
     .navbar-utility {
+      /* SIN isolation:isolate ni overflow:hidden a propósito: ambos atrapaban el
+         desplegable de sugerencias del buscador (position:absolute, z-index alto) dentro
+         del contexto de apilamiento de esta franja, quedando por debajo de .navbar aunque
+         su z-index fuera mayor — no aparecía. Los pseudo-elementos ::before/::after de
+         abajo ya están perfectamente acotados con inset:0, no necesitan esa contención. */
       position: relative;
-      overflow: hidden;
-      isolation: isolate;
       color: #fff;
       background: linear-gradient(100deg, #012a4d 0%, var(--blue) 48%, #0a5896 100%);
       box-shadow: 0 8px 20px -8px rgba(227, 7, 21, .4);
