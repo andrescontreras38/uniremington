@@ -23,13 +23,33 @@
        (mismo que .navbar-links): ahí el buscador/idioma ya viven en el cajón y la
        accesibilidad en la burbuja flotante, así que no hace falta duplicarlos. */
     .navbar-utility {
-      background: var(--blue);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
       color: #fff;
+      /* mismo degradado en ángulo + textura diagonal que el riel de marca del megamenú
+         (.mega-aside más abajo): la franja usa la firma visual ya establecida del navbar
+         en vez de un azul plano. */
+      background: linear-gradient(100deg, #012a4d 0%, var(--blue) 48%, #0a5896 100%);
+    }
+    .navbar-utility::before {
+      content: "";
+      position: absolute; inset: 0; z-index: -1;
+      background: repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 12px);
+    }
+    /* filete de marca al pie: el mismo degradado azul→accent que corona los paneles del
+       megamenú (.nav-panel::before), aquí como puente hacia la barra blanca de abajo. */
+    .navbar-utility::after {
+      content: "";
+      position: absolute; left: 0; right: 0; bottom: 0; height: 2px; z-index: 1;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--blue-soft) 55%, var(--accent) 100%);
+      opacity: .9;
     }
     .navbar-utility-inner {
+      position: relative;
       max-width: 1460px;
       margin: 0 auto;
-      padding: 7px 22px;
+      padding: 8px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -38,26 +58,53 @@
     .navbar-utility-phone {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 9px;
       color: #fff;
-      opacity: .9;
-      font-size: .78rem;
-      font-weight: 600;
-      letter-spacing: .01em;
       text-decoration: none;
-      transition: opacity .18s ease;
     }
-    .navbar-utility-phone:hover,
-    .navbar-utility-phone:focus-visible {
-      opacity: 1;
-      text-decoration: underline;
-      text-underline-offset: 3px;
+    .navbar-utility-phone-ic {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      flex: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .22);
+      backdrop-filter: blur(4px);
+      transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
     }
-    .navbar-utility-phone svg { width: 15px; height: 15px; flex: none; }
+    .navbar-utility-phone-ic svg { width: 13px; height: 13px; display: block; }
+    .navbar-utility-phone-tx { display: flex; flex-direction: column; line-height: 1.2; }
+    .navbar-utility-phone-label {
+      font-size: .64rem; text-transform: uppercase; letter-spacing: .07em;
+      color: rgba(255, 255, 255, .68); font-weight: 600;
+    }
+    .navbar-utility-phone-num { font-size: .82rem; font-weight: 700; }
+    .navbar-utility-phone:hover .navbar-utility-phone-ic,
+    .navbar-utility-phone:focus-visible .navbar-utility-phone-ic {
+      background: #fff; border-color: #fff; color: var(--blue); transform: scale(1.08);
+    }
+    .navbar-utility-phone:hover .navbar-utility-phone-num,
+    .navbar-utility-phone:focus-visible .navbar-utility-phone-num {
+      text-decoration: underline; text-underline-offset: 3px;
+    }
+    /* Los tres controles viven en una sola "pastilla" de vidrio esmerilado en vez de
+       flotar sueltos — mismo tratamiento que las insignias del megamenú (fondo blanco
+       translúcido + borde fino), con un divisor entre cada uno. */
     .navbar-utility-tools {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 2px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .16);
+    }
+    .navbar-utility-tools > *:not(:first-child) {
+      margin-left: 4px;
+      padding-left: 6px;
+      border-left: 1px solid rgba(255, 255, 255, .18);
     }
     @media (max-width: 1440px) {
       .navbar-utility { display: none; }
@@ -384,17 +431,16 @@
       background: var(--accent-dark);
     }
 
-    /* Botón de accesibilidad en la franja de utilidades (solo escritorio). Redondo, blanco
-       sobre el azul institucional de la franja. En móvil se oculta (se usa la burbuja
-       flotante). */
+    /* Botón de accesibilidad dentro de la pastilla de herramientas (solo escritorio).
+       En móvil se oculta (se usa la burbuja flotante). */
     .navbar-a11y {
       display: inline-grid;
       place-items: center;
-      width: 30px;
-      height: 30px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      border: 1px solid color-mix(in srgb, #fff 35%, transparent);
-      background: color-mix(in srgb, #fff 10%, transparent);
+      border: 1px solid transparent;
+      background: none;
       color: #fff;
       cursor: pointer;
       flex-shrink: 0;
@@ -411,22 +457,22 @@
     /* Solo escritorio: en la vista de hamburguesa se usa la burbuja flotante (la franja de
        utilidades que la contiene ya se oculta entera, ver .navbar-utility arriba). */
 
-    /* Idioma (Google Translate) en la franja de utilidades: ícono de globo blanco sobre el
-       azul; el <select> nativo va encima, transparente, para abrir la lista al pulsar.
-       Solo escritorio. */
+    /* Idioma (Google Translate) dentro de la pastilla de herramientas: ícono de globo; el
+       <select> nativo va encima, transparente, para abrir la lista al pulsar. Solo
+       escritorio. */
     .navbar-lang {
       position: relative;
       display: inline-grid;
       place-items: center;
-      width: 30px;
-      height: 30px;
+      width: 26px;
+      height: 26px;
       color: #fff;
-      border: 1px solid color-mix(in srgb, #fff 35%, transparent);
+      border: 1px solid transparent;
       border-radius: 50%;
-      background: color-mix(in srgb, #fff 10%, transparent);
-      transition: background .18s ease;
+      background: none;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
     }
-    .navbar-lang:hover { background: color-mix(in srgb, #fff 22%, transparent); }
+    .navbar-lang:hover { background: #fff; color: var(--blue); transform: scale(1.06); }
     .navbar-lang-ic { display: inline-grid; place-items: center; pointer-events: none; }
     .navbar-lang-ic svg { width: 16px; height: 16px; display: block; }
     .navbar-lang .lang-select {
@@ -888,12 +934,12 @@
   background:none;padding:0;transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
 .navbar-search.open{border-color:color-mix(in srgb,#fff 35%,transparent);background:color-mix(in srgb,#fff 12%,transparent);padding:2px 6px 2px 2px}
 .navbar-search.open:focus-within{border-color:#fff;box-shadow:0 0 0 3px color-mix(in srgb,#fff 25%,transparent)}
-.navbar-search-toggle{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;
-  border:1px solid color-mix(in srgb,#fff 35%,transparent);background:color-mix(in srgb,#fff 10%,transparent);
-  color:#fff;cursor:pointer;transition:background .18s ease,width .2s ease,height .2s ease,border-color .18s ease}
-.navbar-search-toggle:hover{background:color-mix(in srgb,#fff 22%,transparent)}
-.navbar-search.open .navbar-search-toggle{width:26px;height:26px;border-color:transparent;background:none}
-.navbar-search-toggle svg{width:16px;height:16px;display:block}
+.navbar-search-toggle{flex:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;
+  border:1px solid transparent;background:none;
+  color:#fff;cursor:pointer;transition:background .18s ease,color .18s ease,width .2s ease,height .2s ease,border-color .18s ease,transform .18s ease}
+.navbar-search-toggle:hover{background:#fff;color:var(--blue);transform:scale(1.06)}
+.navbar-search.open .navbar-search-toggle{width:24px;height:24px;border-color:transparent;background:none;color:#fff;transform:none}
+.navbar-search-toggle svg{width:14px;height:14px;display:block}
 .navbar-search input{width:0;border:0;outline:0;background:none;font:inherit;font-size:.82rem;color:#fff;
   padding:0;opacity:0;pointer-events:none;transition:width .25s ease,opacity .2s ease,padding .25s ease}
 .navbar-search.open input{width:150px;padding:5px 8px 5px 2px;opacity:1;pointer-events:auto}
