@@ -521,6 +521,14 @@
       flex-shrink: 0;
       position: relative;
     }
+    /* No tenía punto de quiebre propio: quedaba visible y clicable incluso con la
+       navegación de escritorio ya desplegada (>=1441px), donde el cajón que abre además
+       solo trae el bloque SOY (ver .drawer-main-menu más abajo) — un cajón casi vacío
+       que además se superponía con la franja de utilidades al no tener en cuenta su
+       alto. En ese ancho la navegación horizontal ya cubre todo, así que se oculta. */
+    @media (min-width: 1441px) {
+      .navbar-burger { display: none; }
+    }
 
     .navbar-burger svg {
       width: 22px;
