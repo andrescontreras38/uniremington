@@ -18,33 +18,29 @@
     /* ═══════════════ Franja de utilidades (contacto + buscador/idioma/accesibilidad) ═══════
        Vive por encima de la barra principal, en flujo normal (NO sticky a propósito): se
        desplaza fuera de vista al hacer scroll y le devuelve ese espacio a la navegación, que
-       es la que hace falta siempre visible. Azul institucional sólido y una línea de acento
-       fina al pie — nada de degradado en ángulo, textura de rayas ni sombra teñida (versión
-       anterior: se sentía cargada/anticuada). Se oculta entera en el punto de quiebre móvil
-       (mismo que .navbar-links): ahí el buscador/idioma ya viven en el cajón y la
-       accesibilidad en la burbuja flotante, así que no hace falta duplicarlos. */
+       es la que hace falta siempre visible. Clara, casi blanca — un tono apenas más oscuro
+       que la barra blanca de abajo — para que las dos lean como UN header con dos zonas, no
+       como dos barras encontradas (las versiones oscuras, con o sin degradado, se sentían
+       así). Se oculta entera en el punto de quiebre móvil (mismo que .navbar-links): ahí el
+       buscador/idioma ya viven en el cajón y la accesibilidad en la burbuja flotante, así
+       que no hace falta duplicarlos. */
     .navbar-utility {
       /* SIN isolation:isolate ni overflow:hidden a propósito: ambos atrapaban el
          desplegable de sugerencias del buscador (position:absolute, z-index alto) dentro
          del contexto de apilamiento de esta franja, quedando por debajo de .navbar aunque
-         su z-index fuera mayor — no aparecía. El pseudo-elemento ::after de abajo ya está
-         perfectamente acotado con left/right/bottom, no necesita esa contención. */
+         su z-index fuera mayor — no aparecía. El borde de abajo ya está perfectamente
+         acotado, no necesita esa contención. */
       position: relative;
-      color: #fff;
-      background: #012a4d;
+      color: var(--blue);
+      background: var(--light);
+      border-bottom: 1px solid #dce6f0;
       transition: opacity .2s ease;
-    }
-    .navbar-utility::after {
-      content: "";
-      position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
-      background: var(--accent);
-      opacity: .55;
     }
     .navbar-utility-inner {
       position: relative;
       max-width: 1460px;
       margin: 0 auto;
-      padding: 5px 22px;
+      padding: 6px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -54,7 +50,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: #fff;
+      color: var(--blue);
       text-decoration: none;
     }
     .navbar-utility-phone-ic {
@@ -64,9 +60,8 @@
       height: 24px;
       flex: none;
       border-radius: 50%;
-      background: rgba(255, 255, 255, .14);
-      border: 1px solid rgba(255, 255, 255, .22);
-      backdrop-filter: blur(4px);
+      background: #fff;
+      border: 1px solid #dce6f0;
       transition: background .22s cubic-bezier(.16,1,.3,1), border-color .22s cubic-bezier(.16,1,.3,1),
         color .22s cubic-bezier(.16,1,.3,1), transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s cubic-bezier(.16,1,.3,1);
     }
@@ -74,34 +69,29 @@
     .navbar-utility-phone-tx { display: flex; flex-direction: column; line-height: 1.1; }
     .navbar-utility-phone-label {
       font-size: .58rem; text-transform: uppercase; letter-spacing: .06em;
-      color: rgba(255, 255, 255, .68); font-weight: 600;
+      color: var(--muted); font-weight: 600;
     }
     .navbar-utility-phone-num { font-size: .78rem; font-weight: 700; }
     .navbar-utility-phone:hover .navbar-utility-phone-ic,
     .navbar-utility-phone:focus-visible .navbar-utility-phone-ic {
-      background: #fff; border-color: #fff; color: var(--blue); transform: scale(1.1);
-      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, .35);
+      background: var(--blue); border-color: var(--blue); color: #fff; transform: scale(1.1);
+      box-shadow: 0 4px 14px -2px rgba(0, 69, 124, .3);
     }
     .navbar-utility-phone:hover .navbar-utility-phone-num,
     .navbar-utility-phone:focus-visible .navbar-utility-phone-num {
       text-decoration: underline; text-underline-offset: 3px;
     }
-    /* Los tres controles viven en una sola "pastilla" de vidrio esmerilado en vez de
-       flotar sueltos — mismo tratamiento que las insignias del megamenú (fondo blanco
-       translúcido + borde fino), con un divisor entre cada uno. */
+    /* Los tres controles comparten una fila con divisores finos en vez de una "pastilla"
+       propia — sobre un fondo ya claro, un contenedor de vidrio esmerilado no se notaba. */
     .navbar-utility-tools {
       display: flex;
       align-items: center;
       gap: 3px;
-      padding: 3px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .16);
     }
     .navbar-utility-tools > *:not(:first-child) {
-      margin-left: 4px;
-      padding-left: 6px;
-      border-left: 1px solid rgba(255, 255, 255, .18);
+      margin-left: 7px;
+      padding-left: 10px;
+      border-left: 1px solid #dce6f0;
     }
     @media (max-width: 1440px) {
       .navbar-utility { display: none; }
@@ -440,25 +430,25 @@
       border-radius: 50%;
       border: 1px solid transparent;
       background: none;
-      color: #fff;
+      color: var(--blue);
       cursor: pointer;
       flex-shrink: 0;
       transition: background-color .22s cubic-bezier(.16,1,.3,1), border-color .22s cubic-bezier(.16,1,.3,1),
-        transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s cubic-bezier(.16,1,.3,1);
+        color .22s cubic-bezier(.16,1,.3,1), transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s cubic-bezier(.16,1,.3,1);
     }
     .navbar-a11y svg { width: 17px; height: 17px; display: block; }
     .navbar-a11y:hover,
     .navbar-a11y:focus-visible {
-      background: #fff;
-      border-color: #fff;
-      color: var(--blue);
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
       transform: scale(1.1);
-      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, .35);
+      box-shadow: 0 4px 14px -2px rgba(0, 69, 124, .3);
     }
     /* Solo escritorio: en la vista de hamburguesa se usa la burbuja flotante (la franja de
        utilidades que la contiene ya se oculta entera, ver .navbar-utility arriba). */
 
-    /* Idioma (Google Translate) dentro de la pastilla de herramientas: ícono de globo; el
+    /* Idioma (Google Translate) dentro de la fila de herramientas: ícono de globo; el
        <select> nativo va encima, transparente, para abrir la lista al pulsar. Solo
        escritorio. */
     .navbar-lang {
@@ -467,7 +457,7 @@
       place-items: center;
       width: 25px;
       height: 25px;
-      color: #fff;
+      color: var(--blue);
       border: 1px solid transparent;
       border-radius: 50%;
       background: none;
@@ -475,8 +465,8 @@
         transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s cubic-bezier(.16,1,.3,1);
     }
     .navbar-lang:hover {
-      background: #fff; color: var(--blue); transform: scale(1.1);
-      box-shadow: 0 4px 14px -2px rgba(0, 0, 0, .35);
+      background: var(--blue); color: #fff; transform: scale(1.1);
+      box-shadow: 0 4px 14px -2px rgba(0, 69, 124, .3);
     }
     .navbar-lang-ic { display: inline-grid; place-items: center; pointer-events: none; }
     .navbar-lang-ic svg { width: 15px; height: 15px; display: block; }
@@ -954,19 +944,19 @@
 /* Barra en el navbar (solo escritorio; en móvil se usa la del cajón). Siempre expandido
    (antes era una lupa que había que pulsar para revelar el input) — se ve mejor en la
    franja de utilidades y evita un paso extra para buscar. */
-.navbar-search{display:inline-flex;align-items:center;border:1px solid color-mix(in srgb,#fff 35%,transparent);
-  border-radius:999px;background:color-mix(in srgb,#fff 12%,transparent);padding:2px 6px 2px 2px;
+.navbar-search{display:inline-flex;align-items:center;border:1px solid #dce6f0;
+  border-radius:999px;background:#fff;padding:2px 6px 2px 2px;
   transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
-.navbar-search:focus-within{border-color:#fff;box-shadow:0 0 0 3px color-mix(in srgb,#fff 25%,transparent)}
+.navbar-search:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 14%,transparent)}
 .navbar-search-toggle{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
   border:1px solid transparent;background:none;
-  color:#fff;cursor:pointer;transition:background .22s cubic-bezier(.16,1,.3,1),color .22s cubic-bezier(.16,1,.3,1),
+  color:var(--blue);cursor:pointer;transition:background .22s cubic-bezier(.16,1,.3,1),color .22s cubic-bezier(.16,1,.3,1),
   border-color .22s cubic-bezier(.16,1,.3,1),transform .22s cubic-bezier(.16,1,.3,1),box-shadow .22s cubic-bezier(.16,1,.3,1)}
-.navbar-search-toggle:hover{background:#fff;color:var(--blue);transform:scale(1.1);box-shadow:0 4px 14px -2px rgba(0,0,0,.35)}
+.navbar-search-toggle:hover{background:var(--blue);color:#fff;transform:scale(1.1);box-shadow:0 4px 14px -2px rgba(0,69,124,.3)}
 .navbar-search-toggle svg{width:14px;height:14px;display:block}
-.navbar-search input{width:140px;border:0;outline:0;background:none;font:inherit;font-size:.76rem;color:#fff;
+.navbar-search input{width:140px;border:0;outline:0;background:none;font:inherit;font-size:.76rem;color:var(--dark);
   padding:3px 8px 3px 2px}
-.navbar-search input::placeholder{color:color-mix(in srgb,#fff 70%,transparent)}
+.navbar-search input::placeholder{color:var(--muted)}
 
 /* Barra dentro del cajón hamburguesa (móvil). */
 .m-search{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:11px 12px;border:1px solid #dbe3ec;
