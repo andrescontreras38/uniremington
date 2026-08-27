@@ -4,7 +4,10 @@
 // botón si de verdad es larga — funciona igual para cualquier programa presente o futuro.
 (function () {
   var MAX_HEIGHT = 260; // px visibles antes de recortar
-  var TARGET_TEXT = /perfil profesional|perfil ocupacional/i;
+  // El servidor reescribe "Perfil Profesional"/"Perfil Ocupacional" a un titular en
+  // formato beneficio (ver textoPerfilVendedor en server.js) antes de enviar el HTML,
+  // así que hay que buscar ese texto final, no el nombre institucional original.
+  var TARGET_TEXT = /perfil profesional|perfil ocupacional|te graduar[aá]s con estas habilidades|podr[aá]s ejercer estos cargos/i;
 
   function wrapSection(heading) {
     var wrap = document.createElement('div');

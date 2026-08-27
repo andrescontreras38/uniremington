@@ -643,7 +643,8 @@ app.set('views', join(__dirname, 'views'));
 const ASSET_V = (() => {
   const files = ['css/fonts.css', 'css/menu.css', 'css/site.css',
                  'js/menu.js', 'js/lead.js', 'js/video.js',
-                 'js/filtros.js', 'js/prog-carousel.js', 'js/search.js'];
+                 'js/filtros.js', 'js/prog-carousel.js', 'js/search.js',
+                 'js/read-more.js'];
   const h = createHash('md5');
   for (const f of files) {
     try { h.update(readFileSync(join(__dirname, 'public', f))); } catch { /* asset opcional */ }
