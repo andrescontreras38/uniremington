@@ -118,12 +118,9 @@
           <p class="regsede-note">Registro calificado por sede</p>
           <div class="regsede-list">
           <% ficha.registros.forEach(function(r){ %>
-            <div class="regsede-item">
-              <div class="regsede-sedes"><%= r.sedes.join(', ') %></div>
-              <div class="regsede-meta">
-                <span class="regsede-snies">SNIES <%= r.snies || 'pendiente' %></span>
-                <% if (r.resolucion){ %><span class="regsede-reso"><%= r.resolucion %></span><% } %>
-              </div>
+            <div class="regsede-item"<% if (r.resolucion){ %> title="<%= r.resolucion %>"<% } %>>
+              <span class="regsede-sedes"><%= r.sedes.join(', ') %></span>
+              <span class="regsede-snies"><%= r.snies || 'pendiente' %></span>
             </div>
           <% }); %>
           </div>

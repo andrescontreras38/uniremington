@@ -365,14 +365,14 @@ section.blk.alt{background:var(--gris)}
 .ficha dd.reso{font-size:.85rem;color:var(--texto);line-height:1.45;padding:9px 12px;background:var(--gris);border-left:3px solid var(--oro);border-radius:0 8px 8px 0;margin-top:5px}
 .ficha .pdf{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:.86rem;font-weight:700;color:var(--azul-2);text-decoration:none}
 .ficha .pdf:hover{text-decoration:underline}
-.ficha .regsede{margin:14px 18px 16px}
-.ficha .regsede-note{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--oro-2);font-weight:800;margin:0 0 8px}
-.ficha .regsede-list{display:flex;flex-direction:column;gap:8px}
-.ficha .regsede-item{padding:9px 11px;background:var(--gris);border-left:3px solid var(--oro);border-radius:0 8px 8px 0}
-.ficha .regsede-sedes{font-weight:700;color:var(--azul);font-size:.84rem;line-height:1.3;margin-bottom:3px}
-.ficha .regsede-meta{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px}
-.ficha .regsede-snies{font-family:var(--serif);font-weight:700;color:var(--azul);font-size:.86rem;background:#fff;border:1px solid var(--linea);border-radius:6px;padding:1px 8px;white-space:nowrap}
-.ficha .regsede-reso{font-size:.74rem;color:var(--suave,var(--texto));line-height:1.35}
+.ficha .regsede{margin:12px 18px 14px}
+.ficha .regsede-note{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--oro-2);font-weight:800;margin:0 0 6px}
+.ficha .regsede-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--linea);border-radius:8px;overflow:hidden}
+.ficha .regsede-item{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding:5px 9px;background:var(--gris);cursor:default}
+.ficha .regsede-item:nth-child(even){background:#fff}
+.ficha .regsede-sedes{font-weight:600;color:var(--tinta);font-size:.76rem;line-height:1.25}
+.ficha .regsede-snies{flex:none;font-family:var(--serif);font-weight:700;color:var(--azul);font-size:.74rem;white-space:nowrap}
 .ficha-dl{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 18px 16px;padding:11px 14px;border-radius:10px;background:var(--azul);color:#fff;font-weight:800;font-size:.88rem;text-decoration:none;transition:background .15s,transform .15s}
 .ficha-dl:hover{background:var(--azul-2);transform:translateY(-1px)}
 .ficha-dl .msi{font-size:1.2em}
@@ -835,7 +835,7 @@ section.blk.alt{background:var(--gris)}
    ubicación delante del nombre de cada sede, para que "elige tu sede" se lea de un vistazo y
    no se confunda con los acordeones de contenido (semestres, preguntas frecuentes, etc). */
 .article .unr-acordeon-sede{margin:20px 0 28px}
-.article details.unr-sede-item{border:1px solid var(--linea);border-left:4px solid var(--oro-2);border-radius:10px;
+.article details.unr-sede-item{border:1px solid var(--linea);border-radius:10px;
   margin:14px 0;background:#fff;overflow:hidden;box-shadow:var(--sombra-s)}
 .article details.unr-sede-item summary{cursor:pointer;list-style:none;padding:15px 48px 15px 18px;position:relative;
   display:flex;align-items:center;justify-content:flex-start;gap:10px;font-family:var(--serif);font-weight:700;
