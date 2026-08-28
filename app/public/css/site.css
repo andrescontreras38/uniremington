@@ -640,6 +640,10 @@ section.blk.alt{background:var(--gris)}
    acá el botón ya es un link de texto plano (fondo transparente, flecha "→" de abajo), así
    que ese compartimento quedaba flotando solo, sin fondo rojo que lo acompañe. */
 .hb-card .btn-oro::before{display:none}
+/* .btn-oro:hover reserva padding-right para ese compartimento (empataba en especificidad
+   con .padding:0 de arriba y ganaba por ir después en el archivo): al pasar el cursor el
+   link ganaba ~48px de golpe y el texto saltaba de línea dentro de la tarjeta angosta. */
+.hb-card .btn-oro:hover{padding-right:0}
 .hb-card .btn::after{content:"→";transition:transform .2s ease}
 .hb-card:hover .btn{color:var(--rojo)!important}
 .hb-card:hover .btn::after{transform:translateX(4px)}
