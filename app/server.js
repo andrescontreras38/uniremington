@@ -1247,7 +1247,10 @@ app.get('/api/actualidad/:tab', (req, res) => {
   const tab = req.params.tab;
   let list;
   if (tab === 'eventos') {
-    list = eventsSorted.slice(0, 5).map(e => toActualidad(e, 'Eventos'));
+    // eventsSorted está en ascendente (igual que en /eventos) — hay que invertirlo para
+    // mostrar los más recientes primero. Sin este reverse se mostraban los eventos más
+    // viejos del sitio (2019) en vez de los últimos publicados.
+    list = [...eventsSorted].reverse().slice(0, 5).map(e => toActualidad(e, 'Eventos'));
   } else if (tab === 'blog') {
     const blog = postsByDate.filter(p => (p.categories || []).some(c => /blog/i.test(c)));
     list = (blog.length ? blog : postsByDate).slice(0, 5).map(p => toActualidad(p, 'Blog'));
@@ -2559,7 +2562,9 @@ function noticiasRecientes(n = 6) {
 function proximosEventos(n = 6) {
   const ahora = Date.now();
   let prox = eventsSorted.filter((e) => (parseDate(e.date) || 0) >= ahora);
-  if (prox.length < n) prox = eventsSorted;
+  // Sin suficientes eventos futuros, se completa con los más recientes ya pasados (no los
+  // más viejos del sitio — eventsSorted está en ascendente, hay que invertirlo).
+  if (prox.length < n) prox = [...eventsSorted].reverse();
   return prox.slice(0, n).map((e) => `- "${e.title}" (${fechaCorta(e.date)}): ${SITE}${e.url}`).join('\n');
 }
 
