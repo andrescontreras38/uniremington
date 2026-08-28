@@ -636,6 +636,10 @@ section.blk.alt{background:var(--gris)}
 .hb-card .btn{margin:6px 18px 18px;padding:0;background:none!important;color:var(--azul-2)!important;
   font-weight:800;font-size:.92rem;display:inline-flex;align-items:center;gap:6px;width:fit-content;
   box-shadow:none!important;border:0!important;border-radius:0}
+/* .btn-oro (site-wide) trae un ::before con el compartimento azul de "Inscríbete aquí" —
+   acá el botón ya es un link de texto plano (fondo transparente, flecha "→" de abajo), así
+   que ese compartimento quedaba flotando solo, sin fondo rojo que lo acompañe. */
+.hb-card .btn-oro::before{display:none}
 .hb-card .btn::after{content:"→";transition:transform .2s ease}
 .hb-card:hover .btn{color:var(--rojo)!important}
 .hb-card:hover .btn::after{transform:translateX(4px)}
