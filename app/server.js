@@ -957,12 +957,30 @@ function sedeContent(html, sedeSlug) {
   // 1) Encabezado "Quiero ser contactado por un asesor" sin formulario debajo (se perdió
   //    en la extracción) → se quita. Quedaba como <h1-4> o como <p> suelto según la sede.
   html = html.replace(/<(h[1-4]|p)\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, '');
+  // 1 bis) Rionegro y Yopal meten foto de fachada + foto del director en el MISMO
+  //    ".fig-grid.logos" (2 <figure> sueltas), seguido de un <p> con el nombre/cargo. El paso
+  //    2 de abajo (global, sin noción de HTML) solo entiende una <figure> suelta por tarjeta:
+  //    al toparse con la segunda figura se comía el </div> de cierre del fig-grid como si fuera
+  //    parte de la leyenda, dejando el wrapper sin cerrar — el navegador seguía metiendo TODO lo
+  //    de más abajo (incluida "Dirección y canales de contacto") dentro de ese flex roto. Se
+  //    resuelve el par completo aquí primero, como una sola tarjeta de director (se descarta la
+  //    foto de fachada — el resto de sedes tampoco la muestra aparte).
+  html = html.replace(
+    /<div class="fig-grid logos">\s*<figure>\s*<img[^>]+>\s*<\/figure>\s*<figure>\s*<img([^>]+)>\s*<\/figure>\s*<\/div>\s*(?:<\/p>\s*)?<p[^>]*>\s*<strong>([\s\S]*?)<\/strong>([\s\S]*?)(?=<h[1-4]\b|<div class="map-embed)/i,
+    (m, imgAttrs, nameRaw, roleRaw) => {
+      const clean = s => s.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\s+/g, ' ').trim();
+      const name = clean(nameRaw);
+      const role = clean(roleRaw) || 'Dirección de sede';
+      return `<div class="sede-director"><figure><img${imgAttrs}></figure>`
+           + `<div class="sd-bd"><span class="sd-k">Dirección de sede</span>`
+           + `<strong>${name}</strong><span class="sd-role">${role}</span></div></div>`;
+    });
   // 2) Director/a de la sede. El grid de oferta ya está en .hb-card, así que el único <figure>
   //    suelto es la foto del director/a. Su leyenda (nombre + cargo) viene en 4+ formatos según
   //    la sede (<strong>, <h6>, <p> separados, con o sin <br>) → se toma todo el bloque desde la
   //    figura hasta el próximo <h1-4> y se reconstruye como tarjeta cuando menciona "director".
   html = html.replace(
-    /(<h[1-6][^>]*>[^<]*[Dd]irector[^<]*<\/h[1-6]>\s*)?<figure[^>]*>\s*<img([^>]+)>\s*<\/figure>([\s\S]*?)(?=<h[1-4]\b|<div class="map-embed|<figure|$)/gi,
+    /(<h[1-6][^>]*>[^<]*[Dd]irector[^<]*<\/h[1-6]>\s*)?<figure[^>]*>\s*<img([^>]+)>\s*<\/figure>(?!\s*<div class="sd-bd")([\s\S]*?)(?=<h[1-4]\b|<div class="map-embed|<figure|$)/gi,
     (m, before, imgAttrs, after) => {
       const ctx = (before || '') + (after || '');
       if (!/director/i.test(ctx)) return m;
