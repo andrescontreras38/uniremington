@@ -2134,6 +2134,7 @@ function renderPrograma(res, item) {
 const PAGE_SCRIPTS = {
   '/directorio-telefonico-de-empleados-uniremington/': '/js/directorio-empleados.js',
   '/biblioteca/': '/js/biblio.js',
+  '/convenios-uniremington/': '/js/convenios.js',
 };
 // Oscurece un color hex hacia negro conservando el factor k (0..1) de cada canal.
 const _h2r = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join('');

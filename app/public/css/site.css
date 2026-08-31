@@ -1346,6 +1346,83 @@ a.doc-pdf + a.doc-pdf{margin-left:0}
 .dep-content .grupo-card-go{margin-top:auto;padding-top:10px;color:var(--c);font-weight:700;font-size:.9rem}
 .dep-content .grupo-card:hover .grupo-card-go{text-decoration:underline}
 
+/* ---- Componente: convenios institucionales (.convenios-page) — tarjetas
+   filtrables por categoría/búsqueda; cada tarjeta es un <details> nativo:
+   el resumen es la cara de la tarjeta y el panel es la tabla original de
+   beneficios, así que no hace falta JS para expandir/contraer. ---- */
+.convenios-page{margin-top:6px}
+.convenios-page>h2{font-family:var(--serif);color:var(--azul);font-size:clamp(1.5rem,3vw,2rem);margin:0 0 12px}
+.convenios-page>ul{max-width:820px}
+.convenios-page>ul li{margin:0 0 6px}
+
+.conv-toolbar{display:flex;flex-direction:column;gap:14px;
+  margin:28px 0 6px;padding:16px 18px;background:var(--gris);border-radius:var(--radio);border:1px solid var(--linea)}
+.conv-search{position:relative;max-width:380px}
+.conv-search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--suave);pointer-events:none}
+.conv-search input{width:100%;box-sizing:border-box;padding:11px 14px 11px 38px;border-radius:999px;
+  border:1px solid var(--linea);background:#fff;font:inherit;font-size:.87rem;color:var(--texto)}
+.conv-search input:focus{outline:2px solid var(--azul-3);outline-offset:1px}
+.conv-search input::-webkit-search-cancel-button{cursor:pointer}
+.conv-chips{display:flex;flex-wrap:wrap;gap:8px}
+.conv-chip{--cc:#00457c;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--linea);
+  background:#fff;color:var(--texto);font:inherit;font-size:.77rem;font-weight:600;padding:7px 13px;
+  border-radius:999px;cursor:pointer;transition:.15s ease}
+.conv-chip:hover{border-color:var(--cc);color:var(--cc)}
+.conv-chip.is-active{background:var(--cc);border-color:var(--cc);color:#fff}
+.conv-chip.is-active .conv-chip-n{opacity:.9}
+.conv-chip-n{font-size:.7rem;opacity:.7;font-weight:700}
+
+.conv-count{margin:16px 2px 14px;font-size:.8rem;color:var(--suave);font-weight:600}
+
+.conv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.conv-empty{margin:30px 2px;color:var(--suave);font-size:.92rem}
+
+.conv-card{--cc:#00457c;list-style:none;border:1px solid var(--linea);border-radius:16px;background:#fff;
+  box-shadow:var(--sombra-s);transition:transform .2s ease,box-shadow .2s ease}
+.conv-card::-webkit-details-marker{display:none}
+.conv-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,40,80,.16)}
+.conv-card[open]{box-shadow:0 18px 40px rgba(0,40,80,.16)}
+.conv-card[hidden]{display:none}
+
+.conv-card-head{list-style:none;cursor:pointer;display:flex;flex-direction:column}
+.conv-card-head::-webkit-details-marker{display:none}
+.conv-card-head::marker{content:''}
+
+.conv-card-top{display:flex;align-items:center;justify-content:center;height:64px;
+  border-radius:15px 15px 0 0;
+  background:linear-gradient(135deg,var(--cc),color-mix(in srgb,var(--cc) 55%,#000))}
+.conv-logo{width:44px;height:44px;border-radius:50%;background:#fff;color:var(--cc);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;
+  letter-spacing:.02em;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+
+.conv-card-bd{padding:14px 18px 2px;display:flex;flex-direction:column;gap:7px}
+.conv-cat-tag{align-self:flex-start;font-size:.63rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;color:var(--cc);background:color-mix(in srgb,var(--cc) 12%,#fff);
+  padding:3px 9px;border-radius:999px}
+.conv-name{font-weight:700;color:var(--tinta);font-size:.96rem;line-height:1.32}
+.conv-pct{font-weight:800;font-size:1.28rem;color:var(--cc);line-height:1}
+.conv-pct small{font-weight:600;font-size:.6rem;text-transform:uppercase;letter-spacing:.03em;
+  color:var(--suave);margin-left:4px}
+
+.conv-toggle{display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 18px;margin-top:12px;border-top:1px solid var(--linea);
+  font-size:.76rem;font-weight:700;color:var(--cc)}
+.conv-toggle svg{transition:transform .2s ease;flex:none}
+.conv-card[open] .conv-toggle svg{transform:rotate(180deg)}
+.conv-card:not([open]) .conv-toggle:hover{background:color-mix(in srgb,var(--cc) 6%,#fff)}
+
+.conv-card-body{padding:2px 18px 20px;overflow-x:auto;animation:convFade .22s ease}
+.conv-card-body table{margin:0;font-size:.8rem;max-width:none}
+.conv-card-body th,.conv-card-body td{padding:9px 10px;border:1px solid var(--linea);text-align:left;vertical-align:top}
+.conv-card-body thead th{background:var(--gris);color:var(--azul);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
+.conv-card-body ul{margin:0;padding-left:18px}
+@keyframes convFade{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+@media (max-width:700px){
+  .conv-search{max-width:none}
+  .conv-grid{grid-template-columns:1fr}
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    UI/UX v2 — refinamiento editorial del sistema de contenido (.dep-*)
    Marca: PT Sans + azul institucional (--c) + rojo (--rojo). Firma: el hero.
