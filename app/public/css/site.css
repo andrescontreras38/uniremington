@@ -746,6 +746,31 @@ section.blk.alt{background:var(--gris)}
 .recurso .rarrow{flex:none;color:var(--c,var(--azul));font-size:1.15rem;opacity:0;transform:translateX(-6px);transition:.16s}
 .recurso:hover .rarrow{opacity:1;transform:translateX(0)}
 
+/* Buscador del Descubridor (EBSCO) embebido en el micrositio de Biblioteca: selector de
+   campo + campo de texto + botón, en una sola barra. */
+.biblio-search{display:flex;align-items:stretch;background:#fff;border-radius:12px;
+  padding:5px;box-shadow:0 6px 22px -6px rgba(0,40,80,.28);margin:18px 0 28px;
+  border:1px solid var(--linea)}
+.biblio-search select{appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background-color:var(--azul-900);color:#fff;border:0;border-radius:9px 0 0 9px;
+  padding:13px 34px 13px 16px;font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:14px}
+.biblio-search select:focus-visible{outline:2px solid var(--oro);outline-offset:-2px}
+.biblio-search input[type=search]{flex:1;min-width:0;border:0;padding:13px 14px;font:inherit;
+  font-size:1rem;color:var(--tinta);background:transparent;outline:none}
+.biblio-search button{border:0;border-radius:9px;
+  background:linear-gradient(135deg,#ff2f3f 0%,var(--oro) 45%,#a80410 100%);
+  color:#fff;font-weight:700;font-size:.92rem;letter-spacing:.03em;padding:0 26px;cursor:pointer;
+  transition:filter .15s ease}
+.biblio-search button:hover{filter:brightness(1.06)}
+@media (max-width:560px){
+  .biblio-search{flex-wrap:wrap}
+  .biblio-search select{border-radius:9px 9px 0 0;width:100%}
+  .biblio-search input[type=search]{width:100%}
+  .biblio-search button{border-radius:0 0 9px 9px;width:100%;padding:12px}
+}
+
 /* Lista de índice para enlaces sueltos del contenido: fila con ícono circular sutil + texto +
    flecha que aparece al pasar el mouse, separadas por una línea fina. Se lee como un índice de
    referencia bien organizado, no como una grilla de botones/tarjetas llamativas. */
