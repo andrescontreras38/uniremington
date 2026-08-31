@@ -1589,6 +1589,13 @@ input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:none;b
 .dep-content .fig-grid img{margin:0}
 .dep-content .fig-grid.logos img{max-height:92px!important;max-width:168px!important;box-shadow:none;border-radius:6px}
 .dep-content .fig-grid:not(.logos) img{max-height:280px!important;max-width:min(100%,420px)!important;border-radius:12px;box-shadow:var(--sombra-s)}
+/* Fotos de rector/presidente de sede: PNG con fondo transparente que ya trae el retrato
+   circular + nombre/cargo dibujados dentro de la imagen (no hay leyenda HTML aparte), así
+   que van sin recorte/sombra propios — solo un tamaño legible en vez del de un logo. */
+.dep-content .sede-leadership{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start;margin:28px 0}
+.dep-content .sede-leadership figure{margin:0}
+.dep-content .sede-leadership img{width:190px!important;height:auto!important;max-width:100%!important;
+  max-height:none!important;box-shadow:none;border-radius:0}
 /* Imagen suelta un poco más contenida = look más limpio */
 .dep-content img{max-height:380px}
 

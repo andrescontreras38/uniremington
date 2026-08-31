@@ -969,6 +969,15 @@ function sedeContent(html, sedeSlug) {
     });
   // limpiar <p> vacíos que queden alrededor de la tarjeta tras consumir la leyenda
   html = html.replace(/<p>\s*(?:<\/p>|(?=<div class="sede-director"))/gi, '');
+  // 2 bis) Algunas sedes (p. ej. Medellín) meten las fotos de rector/presidente en un
+  //    ".fig-grid.logos" justo antes de "Nuestra sede" — esa clase la usan otras 13 páginas
+  //    para logos de verdad y los limita a 92×168px, así que aquí el nombre/cargo (ya
+  //    incluido en el PNG del diseño) queda ilegible. Se detecta por posición (justo antes
+  //    del h2 "Nuestra sede") y se cambia a una clase propia con foto grande.
+  html = html.replace(
+    /<div class="fig-grid logos">((?:<figure>\s*<img[^>]+>\s*<\/figure>\s*){2,})<\/div>\s*(?=<h[1-4][^>]*>\s*Nuestra sede)/i,
+    '<div class="sede-leadership">$1</div>'
+  );
   // 3) Reestructurar la sección "Nuestra sede" en dos columnas: retrato del director/a (300×400)
   //    al INICIO a la izquierda + descripción a la derecha (.sede-intro, flex). Robusto y responsive.
   const cardRe = /<div class="sede-director">[\s\S]*?<\/div>\s*<\/div>/;
