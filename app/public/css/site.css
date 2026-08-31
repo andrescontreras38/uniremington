@@ -765,10 +765,12 @@ section.blk.alt{background:var(--gris)}
   transition:filter .15s ease}
 .biblio-search button:hover{filter:brightness(1.06)}
 @media (max-width:560px){
-  .biblio-search{flex-wrap:wrap}
-  .biblio-search select{border-radius:9px 9px 0 0;width:100%}
-  .biblio-search input[type=search]{width:100%}
-  .biblio-search button{border-radius:0 0 9px 9px;width:100%;padding:12px}
+  .biblio-search{flex-wrap:wrap;background:transparent;box-shadow:none;border:0;padding:0;gap:8px}
+  .biblio-search select{flex:none;width:auto;border-radius:8px;padding:7px 26px 7px 12px;
+    font-size:.76rem;line-height:1.2}
+  .biblio-search input[type=search]{flex:1 1 100%;width:100%;order:2;border-radius:9px;
+    border:1px solid var(--linea);background:#fff;padding:12px 14px}
+  .biblio-search button{flex:none;border-radius:9px;width:100%;order:3;padding:13px}
 }
 
 /* Micrositio de Biblioteca: hero con foto de fondo + buscador + fila de accesos rápidos en
