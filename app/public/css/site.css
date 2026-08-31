@@ -104,8 +104,6 @@ nav.main>ul>li.has>a::after{content:"▾";font-size:.7rem;margin-left:5px;color:
 nav.main>ul>li.has:hover .sub{opacity:1;visibility:visible;transform:none}
 .sub a{display:block;padding:9px 12px;border-radius:8px;text-decoration:none;color:var(--texto);font-size:.86rem;font-weight:500}
 .sub a:hover{background:var(--gris);color:var(--azul)}
-.header-cta{display:inline-block;background:var(--oro);color:#fff!important;padding:10px 20px;border-radius:9px;text-decoration:none;font-weight:800;font-size:.88rem;box-shadow:0 4px 12px rgba(227,6,19,.4);transition:.15s;white-space:nowrap}
-.header-cta:hover{background:var(--oro-2);color:#fff!important;transform:translateY(-1px)}
 .menu-tgl{display:none}
 
 /* ---------- hero ---------- */
@@ -119,8 +117,6 @@ nav.main>ul>li.has:hover .sub{opacity:1;visibility:visible;transform:none}
 .hero p.lead{margin:0 0 26px;max-width:56ch;color:#dbe9fb;font-size:1.12rem}
 .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
 .btn{display:inline-block;padding:13px 26px;border-radius:10px;text-decoration:none;font-weight:800;font-size:.95rem;transition:.15s;border:0;cursor:pointer}
-.btn-oro{background:var(--oro);color:#fff;box-shadow:0 5px 16px rgba(227,6,19,.42)}
-.btn-oro:hover{background:var(--oro-2);color:#fff;transform:translateY(-2px)}
 .btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.55)}
 .btn-ghost:hover{background:#fff;color:var(--azul)}
 
@@ -1054,7 +1050,6 @@ footer .legal{border-top:1px solid #2a3947;text-align:center;padding:16px;font-s
   .sub{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:0;padding:0 0 8px 12px;min-width:0}
   .menu-tgl{display:grid;place-items:center;margin-left:auto;background:var(--azul);color:#fff;border:0;border-radius:9px;width:44px;height:44px;font-size:1.3rem;cursor:pointer;z-index:70}
   #nav-open:checked ~ nav.main{transform:translateX(0)}
-  .header-cta{display:none}
 }
 @media(max-width:560px){
   footer .cols{grid-template-columns:1fr}
@@ -1556,11 +1551,8 @@ html{scroll-behavior:smooth}
   --sombra-lift:0 4px 12px rgba(3,58,104,.07), 0 34px 54px -26px rgba(0,69,124,.30);
   --foco:0 0 0 3px color-mix(in srgb,var(--azul) 38%,transparent);
 }
-/* Botones: cuerpo con degradado tenue + micro-interacción táctil consistente */
+/* Botones: micro-interacción táctil consistente (color/degradado del botón vivo más abajo) */
 .btn{transition:transform .16s cubic-bezier(.22,.61,.36,1),box-shadow .2s ease,filter .2s ease,background .2s ease}
-.btn-oro{background:linear-gradient(155deg,#f2192a 0%,var(--oro) 55%,#c00512 100%);box-shadow:0 10px 20px -10px rgba(227,6,19,.55)}
-.btn-oro:hover{transform:translateY(-2px);box-shadow:0 16px 26px -12px rgba(227,6,19,.62)}
-.btn-oro:active{transform:translateY(0)}
 /* Elevación de tarjetas UNIFICADA al pasar el cursor (mismo lenguaje en todas las plantillas) */
 .pcard:hover,.grupo-card:hover,.benef-card:hover,.card:hover,
 .dep-content a.gl-person:hover,.dep-content .video-card:hover,.doc-pdf:hover{box-shadow:var(--sombra-lift)}
