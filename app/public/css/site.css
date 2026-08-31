@@ -812,9 +812,9 @@ section.blk.alt{background:var(--gris)}
 .biblio-page .bc-dot.is-active{background:#fff;transform:scale(1.25)}
 
 .biblio-page .biblio-promo-row{display:grid;grid-template-columns:260px 1fr;gap:22px;
-  margin:0 0 30px;align-items:stretch}
+  margin:0 0 30px;align-items:start}
 @media (max-width:820px){.biblio-page .biblio-promo-row{grid-template-columns:1fr}}
-.biblio-page .bp-fer{display:block;line-height:0;border-radius:16px;height:100%;
+.biblio-page .bp-fer{display:block;line-height:0;border-radius:16px;aspect-ratio:1/1;
   overflow:hidden;box-shadow:0 8px 22px -10px rgba(0,30,60,.3)}
 .biblio-page .bp-right{display:flex;flex-direction:column;gap:22px}
 .biblio-page .bp-agenda a{display:block;line-height:0;border-radius:16px;aspect-ratio:802/212;
@@ -823,7 +823,6 @@ section.blk.alt{background:var(--gris)}
   max-width:none!important;object-fit:cover;display:block!important;margin:0!important;
   border-radius:0!important;box-shadow:none!important}
 .biblio-page .bp-agenda{margin:0}
-@media (max-width:820px){.biblio-page .bp-fer{height:220px}}
 
 .biblio-page .biblio-faq{border-top:1px solid var(--linea)}
 .biblio-page .biblio-faq details.acc{border:0;border-radius:0;margin:0;background:none;
