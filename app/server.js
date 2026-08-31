@@ -2098,6 +2098,7 @@ function renderPrograma(res, item) {
 // solo en su página. El del directorio consume un JSON externo (GitHub Pages).
 const PAGE_SCRIPTS = {
   '/directorio-telefonico-de-empleados-uniremington/': '/js/directorio-empleados.js',
+  '/biblioteca/': '/js/biblio.js',
 };
 // Oscurece un color hex hacia negro conservando el factor k (0..1) de cada canal.
 const _h2r = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join('');
