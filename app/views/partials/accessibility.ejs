@@ -80,10 +80,15 @@ html.translated-ltr,html.translated-rtl{margin-top:0!important}
 <div class="a11y-widget" id="a11yWidget">
   <button type="button" class="a11y-toggle" id="a11yToggle" aria-haspopup="dialog" aria-expanded="false"
           aria-controls="a11yPanel" aria-label="Herramientas de accesibilidad">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
-      <circle cx="12" cy="7.4" r="1.7"/>
-      <path d="M12 9.6c-2.7 0-5.2.7-5.2 1.8 0 .68.87 1.27 2.18 1.58l.5 2.02-1.66 4.28a1 1 0 0 0 1.86.73l1.55-4h1.58l1.55 4a1 1 0 0 0 1.86-.73L14.54 15l.5-2.02c1.31-.31 2.18-.9 2.18-1.58 0-1.1-2.5-1.8-5.22-1.8Z"/>
+    <!-- Mismo ícono de línea que la insignia del header (navbar.ejs, A11Y_SVG): antes era
+         una figura sólida rellena, inconsistente con el resto de íconos de línea del sitio. -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <circle cx="12" cy="8.2" r="1.15" fill="currentColor" stroke="none"></circle>
+      <path d="M8.3 10.6c1.15.55 2.4.85 3.7.85s2.55-.3 3.7-.85"></path>
+      <path d="M12 11.4v3.1"></path>
+      <path d="M12 14.5l-2.1 4.3"></path>
+      <path d="M12 14.5l2.1 4.3"></path>
     </svg>
   </button>
 

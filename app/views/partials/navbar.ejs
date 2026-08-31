@@ -92,7 +92,11 @@
   // de Google. El <select> lleva notranslate para que no se traduzcan sus propios nombres.
   var LANGS = [['es','Español'],['en','English'],['pt','Português'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['zh-CN','中文']];
   function langOptions(){ return LANGS.map(function(l){ return '<option value="' + l[0] + '">' + l[1] + '</option>'; }).join(''); }
-  var GLOBE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"></path></svg>';
+  var GLOBE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"></path></svg>';
+  // Mismo trazo que la lupa del buscador (stroke-width 2, extremos redondeados): antes era
+  // un ícono relleno (persona sólida) que desentonaba junto a la lupa y el globo, ambos de
+  // línea — ahora las tres insignias comparten el mismo lenguaje visual.
+  var A11Y_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="8.2" r="1.15" fill="currentColor" stroke="none"></circle><path d="M8.3 10.6c1.15.55 2.4.85 3.7.85s2.55-.3 3.7-.85"></path><path d="M12 11.4v3.1"></path><path d="M12 14.5l-2.1 4.3"></path><path d="M12 14.5l2.1 4.3"></path></svg>';
 %>
 <!-- Franja de utilidades: contacto rápido + buscador/idioma/accesibilidad. Vive por
      encima de la barra principal (no es sticky), así que se desplaza fuera de vista al
@@ -129,11 +133,7 @@
            Abre el mismo panel del widget de accesibilidad reutilizando su lógica. -->
       <button type="button" class="navbar-a11y" id="navA11y" aria-haspopup="dialog"
               aria-label="Herramientas de accesibilidad" title="Accesibilidad">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="12" r="10.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="12" cy="7.4" r="1.7"/>
-          <path d="M12 9.6c-2.7 0-5.2.7-5.2 1.8 0 .68.87 1.27 2.18 1.58l.5 2.02-1.66 4.28a1 1 0 0 0 1.86.73l1.55-4h1.58l1.55 4a1 1 0 0 0 1.86.73L14.54 15l.5-2.02c1.31-.31 2.18-.9 2.18-1.58 0-1.1-2.5-1.8-5.22-1.8Z"/>
-        </svg>
+        <%- A11Y_SVG %>
       </button>
     </div>
   </div>
