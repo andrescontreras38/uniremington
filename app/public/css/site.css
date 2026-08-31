@@ -636,10 +636,6 @@ section.blk.alt{background:var(--gris)}
 .hb-card .btn{margin:6px 18px 18px;padding:0;background:none!important;color:var(--azul-2)!important;
   font-weight:800;font-size:.92rem;display:inline-flex;align-items:center;gap:6px;width:fit-content;
   box-shadow:none!important;border:0!important;border-radius:0}
-/* .btn-oro (site-wide) trae su propio ::after (icono de flecha enmascarado) — acá el botón
-   ya es un link de texto plano (fondo transparente, flecha "→" de abajo), así que hay que
-   resetear esas propiedades para que no quede un fragmento de icono flotando encima del "→". */
-.hb-card .btn-oro::after{background-color:transparent;-webkit-mask:none;mask:none;width:auto;height:auto}
 .hb-card .btn::after{content:"→";transition:transform .2s ease}
 .hb-card:hover .btn{color:var(--rojo)!important}
 .hb-card:hover .btn::after{transform:translateX(4px)}
@@ -1626,27 +1622,22 @@ input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:none;b
    flecha. Mecánica de "barrido" de degradado (background-size:300% + desplazamiento del
    background-position al hover) en vez del compartimento que expandía antes — misma familia
    de rojo institucional, en varios tonos, para que el barrido se note. */
-.btn{letter-spacing:.01em;-webkit-tap-highlight-color:transparent;
-  transition:transform .16s cubic-bezier(.22,.61,.36,1),box-shadow .2s ease,background .2s ease,border-color .2s ease}
+.btn{letter-spacing:.01em;-webkit-tap-highlight-color:transparent}
 .btn-oro,.header-cta{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  border:0;border-radius:999px;letter-spacing:.03em;
-  background-image:linear-gradient(to right,#ff4d5a 0%,#ff2f3f 33%,var(--oro) 66%,#a80410 100%);
-  background-size:300% 100%;background-position:0 0;
-  padding:12px 24px;font-size:.92rem;
-  box-shadow:0 4px 15px 0 rgba(227,6,19,.45);
-  transition:background-position .5s ease,box-shadow .3s ease,transform .16s cubic-bezier(.22,.61,.36,1)}
-.btn-oro:hover,.header-cta:hover{background-position:100% 0;
-  box-shadow:0 6px 20px 0 rgba(227,6,19,.6)}
-.btn-oro:active,.header-cta:active{transform:translateY(1px)}
-.btn-oro::after,.header-cta::after{
-  content:"";flex:none;width:14px;height:14px;background-color:#fff;
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;
-          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;
-  transition:transform .25s cubic-bezier(.16,1,.3,1)}
-.btn-oro:hover::after,.header-cta:hover::after{transform:translateX(3px)}
+  display:inline-block;
+  border:0;border-radius:50px;
+  color:#fff;font-size:1rem;font-weight:600;letter-spacing:normal;
+  background-image:linear-gradient(to right,#ff4d5a,#ff2f3f,var(--oro),#a80410);
+  background-size:300% 100%;
+  padding:16px 32px;
+  box-shadow:0 4px 15px 0 rgba(227,6,19,.75);
+  cursor:pointer;
+  transition:all .4s ease-in-out}
+.btn-oro:hover,.header-cta:hover{
+  background-position:100% 0;
+  transition:all .4s ease-in-out}
 @media(prefers-reduced-motion:reduce){
-  .btn-oro,.header-cta,.btn-oro::after,.header-cta::after{transition:none}
+  .btn-oro,.header-cta{transition:none}
 }
 /* Botón fantasma/outline: borde nítido y hover suave */
 .btn-ghost{border-width:1.5px}
