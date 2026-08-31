@@ -21,8 +21,13 @@
     var LINK_REPO = cont.getAttribute('data-repo') || '#';
     var accent = cont.getAttribute('data-accent') || '#00457c';
     var url = BASE + archivo;
-    var contenido = cont.querySelector('#visor-contenido');
-    var pag = cont.querySelector('#visor-paginacion');
+    // Casi todos los grupos usan #visor-contenido/#visor-paginacion sin sufijo, pero al
+    // menos 2 (Asimétrico, GESHE) los generaron con el sufijo del grupo en el id
+    // (#visor-contenido-asimetrico) — sin este fallback el querySelector no encontraba
+    // nada, `if (!contenido) return` cortaba en seco y el widget quedaba inerte (ni
+    // pintaba "Cargando…" ni el error real: simplemente no hacía nada).
+    var contenido = cont.querySelector('#visor-contenido-' + suffix) || cont.querySelector('#visor-contenido');
+    var pag = cont.querySelector('#visor-paginacion-' + suffix) || cont.querySelector('#visor-paginacion');
     if (!contenido) return;
     var datos = [], actual = 1, limite = 10;   // producción: 10 por página
 
