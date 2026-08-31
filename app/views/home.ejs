@@ -251,38 +251,28 @@
       max-width: 480px;
     }
     .hero .cta-hero {
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      width: fit-content;
-      background: var(--accent);
+      justify-content: center;
+      min-width: 200px;
+      height: 55px;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 50px;
       color: #fff;
-      padding: 12px 26px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(227, 7, 21, 0.35);
-      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      background-image: linear-gradient(to right, #ff3b47, var(--accent), #c40410, #8a0209);
+      background-size: 300% 100%;
+      box-shadow: 0 5px 15px rgba(227, 6, 19, .4);
+      cursor: pointer;
+      transition: all .4s ease-in-out;
     }
     .hero .cta-hero:hover {
-      background: var(--accent-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(227, 7, 21, 0.45);
+      background-position: 100% 0;
+      transition: all .4s ease-in-out;
     }
-    .hero .cta-hero::after {
-      content: "";
-      position: absolute;
-      top: 0; left: -60%;
-      width: 45%; height: 100%;
-      background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-      transform: skewX(-20deg);
-      transition: left 0.65s ease;
-      pointer-events: none;
-    }
-    .hero .cta-hero:hover::after { left: 130%; }
 
     /* Mini-cifras secundarias dentro del titular (no ocupan celda propia) */
     .bento-meta {
@@ -1896,9 +1886,6 @@ html { scroll-behavior: smooth; }
 @keyframes scaleIn      { from {opacity:0; transform: scale(.9);} to {opacity:1; transform: scale(1);} }
 @keyframes float-y      { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-16px);} }
 @keyframes float-y-slow { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-24px);} }
-/* filter (no box-shadow): se anima en el hilo compositor en vez de forzar repintados
-   en cada frame — mismo brillo rojo de marca, como pulso de intensidad en vez de anillo. */
-@keyframes pulse-glow   { 0%,100% {filter: drop-shadow(0 0 0 rgba(227,7,21,0));} 50% {filter: drop-shadow(0 0 12px rgba(227,7,21,.55));} }
 @keyframes spin-slow    { from {transform: rotate(0);} to {transform: rotate(360deg);} }
 
 /* Contador — efecto ticking visible */
@@ -1933,17 +1920,6 @@ html { scroll-behavior: smooth; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bento-cell { animation: none; }
-}
-
-/* ─── CTA hero ───────────────────────────── */
-.cta-hero {
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-  animation: pulse-glow 2.6s ease-in-out infinite;
-}
-.cta-hero:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(227,7,21,.35);
-  animation-play-state: paused;
 }
 
 /* ─── Botones (shimmer + lift) ───────────── */

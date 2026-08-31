@@ -439,7 +439,7 @@
        (mismo rojo, mismo peso tipográfico) pero una ejecución propia para su contexto. */
     .navbar-cta {
       display: inline-block;
-      background-image: linear-gradient(to right, #eb3941, #f15e64, #e14e53, #e2373f);
+      background-image: linear-gradient(to right, #ff3b47, var(--accent), #c40410, #8a0209);
       background-size: 300% 100%;
       color: #fff;
       font-weight: 600;
@@ -448,7 +448,7 @@
       border-radius: 50px;
       padding: 11px 22px;
       white-space: nowrap;
-      box-shadow: 0 5px 15px rgba(242, 97, 103, .4);
+      box-shadow: 0 5px 15px rgba(227, 6, 19, .4);
       cursor: pointer;
       transition: all .4s ease-in-out;
     }
