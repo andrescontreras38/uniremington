@@ -883,6 +883,10 @@ function renderSedeContact(seg, sedeCity) {
   const social = [...seg.matchAll(/<a\s+href="(https?:\/\/[^"]+)"[^>]*>\s*(?:<br\s*\/?>)?\s*<img[^>]+alt="([^"]+)"/gi)]
     .map(m => ({ url: m[1].trim(), label: m[2] }));
   seg = seg.replace(/<strong>\s*Canales de redes sociales\s*<\/strong>[\s\S]*$/i, '');
+  // "¿Cómo llegar a...?" es un encabezado de pregunta huérfano (Ipiales, Palmira, Rionegro):
+  // sin su <h*> original quedó como un <p> suelto que la tarjeta de Ubicación confundía con
+  // una línea más de la dirección ("Ubicación: ¿Cómo llegar a…? Cra 5 # 10-58").
+  seg = seg.replace(/<p>\s*¿Cómo llegar[\s\S]*?\?\s*<\/p>\s*/gi, '');
 
   const groups = [];
   for (const part of seg.split(/(?=<strong>)/i)) {
@@ -897,7 +901,11 @@ function renderSedeContact(seg, sedeCity) {
   const extras = []; let curExtra = null;
   for (const { label, body } of groups) {
     if (phase === 'address' && !_SC_PHONE_RE.test(label) && !_SC_CORREO_RE.test(label)) {
+      // Un <strong> sin cuerpo propio (p. ej. "Rionegro - Antioquia" en su propia etiqueta)
+      // es parte de la dirección igual, no un encabezado de tarjeta — si se descarta, la
+      // dirección queda incompleta (sin ciudad/departamento).
       if (body) ubicLines.push(body);
+      else if (label && !_SC_GENERIC_RE.test(label)) ubicLines.push(label);
       continue;
     }
     if (_SC_PHONE_RE.test(label) && phase !== 'extra') {
