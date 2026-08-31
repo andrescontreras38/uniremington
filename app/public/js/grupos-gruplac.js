@@ -29,7 +29,7 @@
     var contenido = cont.querySelector('#visor-contenido-' + suffix) || cont.querySelector('#visor-contenido');
     var pag = cont.querySelector('#visor-paginacion-' + suffix) || cont.querySelector('#visor-paginacion');
     if (!contenido) return;
-    var datos = [], actual = 1, limite = 10;   // producción: 10 por página
+    var datos = [], actual = 1, limite = 6;   // menos nombres por página, se lee mejor
 
     // Marcación IDÉNTICA a la de producción (renderCard). El color blanco de las
     // iniciales se fija en línea porque el pipeline retira los `color:#fff` del CSS.
