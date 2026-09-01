@@ -126,44 +126,98 @@
     }
 
 
-    /* ═══════════════════════ HERO: foto real + franja de accesos ═══════════════════════
-       Antes: rejilla de tarjetas de vidrio esmerilado sobre manchas de gradiente
-       difuminadas ("aurora") -- exactamente el mismo lenguaje visual que cualquier
-       plantilla de SaaS genera por defecto, sin nada propio de Uniremington. Ahora: una
-       foto real (graduación) de fondo con una veladura direccional para el texto, sin
-       vidrio ni desenfoque -- el tratamiento editorial que usan universidades reales, no
-       paneles de interfaz flotando sobre manchas de color. */
-    .hero { position: relative; background: var(--dark); color: #fff; }
-
-    /* El slider ocupa todo el hero; cada diapositiva (institucional o promo) es un
-       .bm-slide a pantalla completa dentro de .hero-media -- ver más abajo, junto al
-       resto del carrusel, en vez de duplicar el layout del slider en dos sitios. */
-    .hero-media { position: relative; min-height: clamp(460px, 52vw, 600px); overflow: hidden; }
-
-    .hero-photo {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: 78% 38%;
+    /* ═══════════════════════ HERO: BENTO GRID ═══════════════════════ */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: #061c30;
+      padding: 44px 0 40px;
+      color: #fff;
     }
-    /* Veladura direccional (no un tinte plano ni un blur): oscurece donde va el texto y
-       deja ver la foto real -sonrisa y apretón de manos- del lado derecho. */
-    .hero-scrim {
-      position: absolute; inset: 0;
-      background: linear-gradient(100deg, var(--dark) 0%, rgba(11,43,58,.90) 30%, rgba(11,43,58,.48) 56%, rgba(11,43,58,.06) 80%);
+
+    /* Fondo "aurora": manchas de gradiente difuminadas y a la deriva (sin foto) */
+    .hero-aurora {
+      position: absolute;
+      inset: -15%;
+      z-index: 0;
+      filter: blur(70px);
+      pointer-events: none;
     }
-    .hero-content {
-      position: relative; z-index: 1;
-      max-width: var(--container);
+    .hero-aurora span {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .55;
+    }
+    .hero-aurora span:nth-child(1) {
+      width: 44vw; height: 44vw; top: -12%; left: -10%;
+      background: radial-gradient(circle, #0077b6, transparent 70%);
+      animation: auroraDrift1 24s ease-in-out infinite;
+    }
+    .hero-aurora span:nth-child(2) {
+      width: 36vw; height: 36vw; bottom: -16%; right: -8%;
+      background: radial-gradient(circle, #e30613, transparent 70%);
+      opacity: .4;
+      animation: auroraDrift2 28s ease-in-out infinite;
+    }
+    .hero-aurora span:nth-child(3) {
+      width: 28vw; height: 28vw; top: 26%; left: 42%;
+      background: radial-gradient(circle, #ffb703, transparent 70%);
+      opacity: .28;
+      animation: auroraDrift3 20s ease-in-out infinite;
+    }
+    @keyframes auroraDrift1 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6%,8%) scale(1.15);} }
+    @keyframes auroraDrift2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-8%,-6%) scale(1.1);} }
+    @keyframes auroraDrift3 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-10%,10%) scale(.9);} }
+
+    /* Rejilla bento */
+    .bento {
+      position: relative;
+      z-index: 1;
+      max-width: 1260px;
       margin: 0 auto;
       padding: 0 28px;
-      height: 100%;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      grid-template-areas:
+        "headline media   media"
+        "headline media   media"
+        "link-a   link-b  link-c";
+    }
+
+    /* Celda base: vidrio esmerilado + spotlight que sigue al cursor */
+    .bento-cell {
+      position: relative;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .bento-cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .16), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .bento-cell:hover::before { opacity: 1; }
+
+    /* Celda: titular */
+    .bento-headline {
+      grid-area: headline;
+      padding: 36px 34px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 16px;
+      gap: 15px;
     }
-    .hero-content > * { max-width: 480px; }
     .hero-badge {
       display: inline-block;
       width: fit-content;
@@ -220,32 +274,24 @@
       transition: all .4s ease-in-out;
     }
 
-    /* Franja de accesos rápidos: banda sólida bajo la foto (no tarjetas flotantes). */
-    .hero-links {
-      position: relative;
-      max-width: var(--container);
-      margin: 0 auto;
+    /* Celda: media — mini-carrusel de ofertas de Mercadeo */
+    .bento-media {
+      grid-area: media;
       display: flex;
-    }
-    .hero-link {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 28px;
+      flex-direction: column;
+      min-height: 150px;
       color: #fff;
-      text-decoration: none;
-      border-right: 1px solid rgba(255, 255, 255, .12);
-      transition: background .2s ease;
+      overflow: hidden;
     }
-    .hero-link:last-child { border-right: 0; }
-    .hero-link:hover { background: rgba(255, 255, 255, .06); }
-
-    /* Slider del hero: .bm-viewport llena .hero-media por completo; cada .bm-slide es una
-       diapositiva a pantalla completa (la institucional con foto+veladura+titular, o una
-       promo de Mercadeo con su gráfica + etiqueta). Mismo carrusel/JS que ya existía,
-       ahora a tamaño completo en vez de en una celda pequeña. */
-    .bm-viewport { position: absolute; inset: 0; }
+    /* Viewport: solo la imagen: aquí vive el crossfade y el tilt 3D */
+    .bm-viewport {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      transform: perspective(800px);
+      transition: transform .15s ease;
+    }
     .bm-slide {
       position: absolute; inset: 0;
       opacity: 0;
@@ -258,40 +304,36 @@
       transition: opacity .5s ease;
     }
     .bm-linkfull { position: absolute; inset: 0; display: block; }
-    /* object-fit:contain (no cover): estas piezas son gráficas de Mercadeo ya
-       diagramadas -texto, precio, botón "Conoce más" pegados a los bordes-, no fotos; con
-       cover el hero (mucho más ancho que la pieza original) recortaba justo ese texto. Con
-       contain se ve la pieza completa, apoyada sobre el fondo oscuro del propio hero. */
-    .hero-slide-promo img {
+    .bento-media img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center 35%;
       transition: transform .6s ease;
     }
-    .hero-slide-promo:hover img { transform: scale(1.03); }
+    .bm-slide:hover img { transform: scale(1.06); }
     .bento-media-cap {
       position: absolute;
-      left: 20px; bottom: 66px;
+      left: 14px; bottom: 14px;
       z-index: 2;
-      max-width: calc(100% - 40px);
+      max-width: calc(100% - 28px);
       display: inline-block;
-      padding: 7px 14px;
+      padding: 6px 12px;
       border-radius: 8px;
-      background: rgba(4, 20, 36, .6);
+      background: rgba(4, 20, 36, .55);
       backdrop-filter: blur(4px);
       font-weight: 700;
       font-size: .92rem;
       line-height: 1.25;
     }
-    /* Controles superpuestos sobre el borde inferior de la imagen (no una barra aparte
-       fuera del hero): una veladura suave basta para leerlos sin tapar la foto. */
+    /* Barra de controles: fuera de la imagen, debajo del viewport */
     .bm-controls {
-      position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 14px 20px;
-      background: linear-gradient(transparent, rgba(4, 20, 36, .62));
+      padding: 10px 12px;
+      background: rgba(4, 20, 36, .55);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .bm-dots {
       display: flex;
@@ -336,6 +378,16 @@
     .bm-arrow:active, .bm-play:active { transform: scale(.92); }
     .bm-arrow:focus-visible, .bm-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
+    /* Celdas: accesos rápidos */
+    .bento-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      color: #fff;
+      transition: transform .25s ease, background .25s ease;
+    }
+    .bento-link:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.08); }
     .bl-ic {
       flex: none;
       width: 42px; height: 42px;
@@ -354,7 +406,15 @@
       opacity: .65;
       transition: transform .25s ease, opacity .25s ease;
     }
-    .hero-link:hover .bl-go { transform: translateX(4px); opacity: 1; }
+    .bento-link:hover .bl-go { transform: translateX(4px); opacity: 1; }
+    .bento-link-a { grid-area: link-a; }
+    .bento-link-b { grid-area: link-b; }
+    .bento-link-c { grid-area: link-c; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-aurora span { animation: none; }
+      .hero h1 .accent { animation: none; }
+    }
 
     /* Sección Educación que transforma realidades */
     .impacto {
@@ -1511,6 +1571,28 @@
     font-size: 15px;
   }
 
+  /* La rejilla de 3 columnas se aprieta demasiado en tablet: pasa a 2, con el
+     titular ocupando el ancho completo arriba. */
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "headline headline"
+      "media    media"
+      "link-a   link-b"
+      "link-c   link-c";
+  }
+
+  /* En desktop la celda "media" comparte alto con el titular (grid-area de 2 filas);
+     aquí ocupa su propia fila y el grid la deja sin alto real (el flex:1 interno del
+     viewport no tiene de dónde tomar espacio), aplastándola a la altura de la barra
+     de controles. Se le da un alto explícito. */
+  /* El aspect-ratio va en .bm-viewport (el área de la imagen), no en toda la celda
+     (que también incluye la barra de controles) — así una sola imagen (recomendada
+     1200x850) se recorta siempre con la misma proporción real sin importar el ancho
+     de pantalla. flex:none anula el flex:1 de desktop para que el aspect-ratio mande. */
+  .bento-media { height: auto; }
+  .bm-viewport { flex: none; aspect-ratio: 1200 / 850; }
+
   .impacto-grid {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1540,11 +1622,22 @@
   .footer-top { padding: 40px 16px 24px; }
   .foot-bottom { padding: 18px 16px; }
 
-  .hero-media { min-height: 420px; }
-  .hero-content { padding: 0 20px; }
-  .hero-links { flex-direction: column; }
-  .hero-link { border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, .12); padding: 16px 20px; }
-  .hero-link:last-child { border-bottom: 0; }
+  .hero { padding: 32px 0; }
+
+  /* Rejilla bento: una sola columna, todo apilado en orden de lectura. */
+  .bento {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "headline"
+      "media"
+      "link-a"
+      "link-b"
+      "link-c";
+  }
+
+  /* Hereda el aspect-ratio de 1024px; no hace falta repetirlo, solo no pisarlo. */
+
+  .bento-headline { padding: 28px 24px; }
 
   .hero h1 {
     font-size: 28px;
@@ -1589,8 +1682,7 @@
 
 /* --- Pantallas menores a 480px --- */
 @media (max-width: 480px) {
-  .hero-media { min-height: 380px; }
-  .hero-content { padding: 0 18px; }
+  .bento-headline { padding: 24px 18px; }
 
   .hero h1 {
     font-size: 26px;
@@ -1598,6 +1690,10 @@
 
   .hero p {
     font-size: 14px;
+  }
+
+  .bento-meta {
+    gap: 18px;
   }
 
   .impacto-cifras {
@@ -1721,6 +1817,7 @@ img, iframe, video, svg { max-width: 100%; }
 @media (max-width: 360px) {
   .wrap { padding: 12px; }
   .lead-final { margin-bottom: -12px; }
+  .bento-meta { gap: 16px; }
   .btn, .btn-ghost { padding: 8px 10px; font-size: 0.9rem; }
   .act-tabs { gap: 14px; }
 }
@@ -1771,17 +1868,18 @@ html { scroll-behavior: smooth; }
 }
 
 /* ─── Hero bento — entrada escalonada de las celdas ──────── */
-.hero-content { animation: bentoIn .7s cubic-bezier(.22,.61,.36,1) backwards; }
-.hero-link { animation: bentoIn .7s cubic-bezier(.22,.61,.36,1) backwards; }
-.hero-link:nth-child(1) { animation-delay: .3s; }
-.hero-link:nth-child(2) { animation-delay: .36s; }
-.hero-link:nth-child(3) { animation-delay: .42s; }
+.bento-cell { animation: bentoIn .7s cubic-bezier(.22,.61,.36,1) backwards; }
+.bento-headline { animation-delay: .05s; }
+.bento-media    { animation-delay: .18s; }
+.bento-link-a   { animation-delay: .38s; }
+.bento-link-b   { animation-delay: .44s; }
+.bento-link-c   { animation-delay: .5s; }
 @keyframes bentoIn {
   from { opacity: 0; transform: translateY(16px) scale(.98); }
   to   { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-content, .hero-link { animation: none; }
+  .bento-cell { animation: none; }
 }
 
 /* ─── Botones (shimmer + lift) ───────────── */
@@ -1890,9 +1988,9 @@ html { scroll-behavior: smooth; }
 
     <%
       // Ofertas de Mercadeo (piezas gráficas reales, campañas vigentes de lanzamiento de
-      // posgrados), mostradas en la sección "Ofertas destacadas" justo debajo del hero.
-      // Mercadeo rota estas piezas seguido; para cambiar cuáles se muestran aquí, solo se
-      // edita este arreglo.
+      // posgrados): solo 2-3, pequeñas, integradas como celdas más del propio bento -no
+      // una sección/carrusel aparte-. Mercadeo rota estas piezas seguido; para cambiar
+      // cuáles se muestran aquí, solo se edita este arreglo.
       var campaigns = [
         { img: '/media/campanas/maestria-ciencias-salud.webp',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
@@ -1913,65 +2011,66 @@ html { scroll-behavior: smooth; }
       var campaignSizes = '(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 550px';
     %>
 
-    <!-- Hero: slider de pantalla completa. Diapositiva 0 = mensaje institucional (foto
-         real + veladura + titular); las siguientes son las campañas vigentes de Mercadeo
-         (antes competían por espacio en una celda aparte del bento). Solo la imagen de la
-         diapositiva 0 carga eager/fetchpriority=high (es el LCP real); las demás usan
-         data-src y las trae el propio JS del carrusel después del LCP -- mismo patrón que
-         ya usaba este carrusel, así que el rendimiento no cambia. -->
+    <!-- Hero: bento grid (sin carrusel). Todo el contenido real visible a la vez. -->
     <div class="hero" id="hero">
-      <div class="hero-media" id="bentoMedia">
-        <div class="bm-viewport">
-          <div class="bm-slide is-active hero-slide-main" data-slide="0" id="bm-panel-0" role="tabpanel" aria-labelledby="bm-tab-0">
-            <img class="hero-photo" src="/media/imagen-banner-1.webp" width="1200" height="856"
-                 alt="Estudiantes de Uniremington celebrando su grado" loading="eager" fetchpriority="high" decoding="async">
-            <div class="hero-scrim" aria-hidden="true"></div>
-            <div class="hero-content">
-              <span class="hero-badge">Inscripciones abiertas 2026</span>
-              <h1>La universidad que llegó a <span class="accent">19 ciudades de Colombia</span></h1>
-              <p>Desde 1915 formando profesionales — pregrado, posgrado y educación continua, en modalidad presencial, a distancia y virtual.</p>
-              <a href="/programas" class="cta-hero">Explorar Programas &rarr;</a>
-            </div>
-          </div>
-          <% campaigns.forEach(function(c, i){ %>
-          <div class="bm-slide hero-slide-promo" data-slide="<%= i + 1 %>" id="bm-panel-<%= i + 1 %>" role="tabpanel" aria-labelledby="bm-tab-<%= i + 1 %>">
-            <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-              <img data-src="<%= c.img %>" data-srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" decoding="async">
-              <span class="bento-media-cap"><%= c.label %></span>
-            </a>
-          </div>
-          <% }) %>
+      <div class="hero-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+      <div class="bento">
+        <div class="bento-cell bento-headline">
+          <span class="hero-badge">Inscripciones abiertas 2026</span>
+          <h1>La universidad que llegó a <span class="accent">19 ciudades de Colombia</span></h1>
+          <p>Desde 1915 formando profesionales — pregrado, posgrado y educación continua, en modalidad presencial, a distancia y virtual.</p>
+          <a href="/programas" class="cta-hero">Explorar Programas &rarr;</a>
         </div>
-        <div class="bm-controls">
-          <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Diapositiva anterior"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M560 240 320 480 560 720 616 664 432 480 616 296Z"/></svg></button>
-          <div class="bm-dots" role="tablist" aria-label="Seleccionar diapositiva del hero">
-            <button type="button" id="bm-tab-0" role="tab" aria-controls="bm-panel-0" aria-selected="true" class="bm-dot is-active" data-slide="0" aria-label="Ver mensaje institucional"></button>
+
+        <!-- Celda media: mini-carrusel de ofertas de Mercadeo -->
+        <div class="bento-cell bento-media" id="bentoMedia">
+          <div class="bm-viewport">
             <% campaigns.forEach(function(c, i){ %>
-            <button type="button" id="bm-tab-<%= i + 1 %>" role="tab" aria-controls="bm-panel-<%= i + 1 %>" aria-selected="false" class="bm-dot" data-slide="<%= i + 1 %>" aria-label="Ver oferta: <%= c.label %>"></button>
+            <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
+              <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
+                <% if (i === 0) { %>
+                <img src="<%= c.img %>" srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" loading="eager" fetchpriority="high" decoding="async">
+                <% } else { %>
+                <!-- data-src/data-srcset (sin src): las diapositivas inactivas están en
+                     position:absolute con el mismo tamaño del viewport (para el crossfade),
+                     así que aunque lleven loading="lazy" el navegador las considera "cerca" y
+                     las descarga igual — se cargan por JS más abajo, tras el LCP. -->
+                <img data-src="<%= c.img %>" data-srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" decoding="async">
+                <% } %>
+                <span class="bento-media-cap"><%= c.label %></span>
+              </a>
+            </div>
             <% }) %>
           </div>
-          <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M520 200V760H760V200ZM200 200V760H440V200Z"/></svg></button>
-          <button type="button" class="bm-arrow bm-arrow-next" aria-label="Diapositiva siguiente"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M504 480 320 664 376 720 616 480 376 240 320 296Z"/></svg></button>
+          <div class="bm-controls">
+            <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M560 240 320 480 560 720 616 664 432 480 616 296Z"/></svg></button>
+            <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
+              <% campaigns.forEach(function(c, i){ %>
+              <button type="button" id="bm-tab-<%= i %>" role="tab" aria-controls="bm-panel-<%= i %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
+              <% }) %>
+            </div>
+            <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M520 200V760H760V200ZM200 200V760H440V200Z"/></svg></button>
+            <button type="button" class="bm-arrow bm-arrow-next" aria-label="Oferta siguiente"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M504 480 320 664 376 720 616 480 376 240 320 296Z"/></svg></button>
+          </div>
         </div>
-      </div>
 
-      <nav class="hero-links" aria-label="Accesos rápidos">
-        <a class="hero-link" href="/programas">
+        <a class="bento-cell bento-link bento-link-a" href="/programas">
           <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M480 120 200 272V512L40 600L480 840L920 600V280H840V556L760 512V272ZM480 452 754 600 480 748 206 600ZM480 211 680 319V470L480 360L280 470V319Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Programas académicos</span><span class="bl-kicker">+80 opciones</span></span>
           <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
-        <a class="hero-link" href="/donde-estamos/">
+        <a class="bento-cell bento-link bento-link-b" href="/donde-estamos/">
           <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M600 120 360 204 120 111V758L360 840L600 756L840 849V202ZM560 218V686L400 742V274ZM640 218 760 258V732L640 686ZM200 228 320 274V742L200 702Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Sedes en Colombia</span><span class="bl-kicker">19 ciudades</span></span>
           <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
-        <a class="hero-link" href="/soy-egresado-uniremington/">
+        <a class="bento-cell bento-link bento-link-c" href="/soy-egresado-uniremington/">
           <span class="bl-ic"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M387 412 422 526 330 600H444L480 712L516 600H630L537 526L572 412L480 483ZM240 40V349Q202 391 181 445Q160 499 160 560Q160 694 253 787Q346 880 480 880Q614 880 707 787Q800 694 800 560Q800 499 779 445Q758 391 720 349V40L480 120ZM480 320Q580 320 650 390Q720 460 720 560Q720 660 650 730Q580 800 480 800Q380 800 310 730Q240 660 240 560Q240 460 310 390Q380 320 480 320ZM320 159 480 200 640 159V283Q605 263 564.5 251.5Q524 240 480 240Q436 240 395.5 251.5Q355 263 320 283Z"/></svg></span>
           <span class="bl-tx"><span class="bl-title">Comunidad de egresados</span><span class="bl-kicker">Red en crecimiento</span></span>
           <svg class="bl-go ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M647 440H160V520H647L423 744L480 800L800 480L480 160L423 216Z"/></svg>
         </a>
-      </nav>
+      </div>
     </div>
   </header>
 
@@ -2313,13 +2412,25 @@ html { scroll-behavior: smooth; }
       });
     }
 
-    // Leve tilt 3D en el carrusel de ofertas destacadas al mover el mouse encima.
+    // Hero bento: spotlight que sigue al cursor + leve tilt 3D en la celda de media.
+    // El resto del bento no rota (todo el contenido institucional está siempre visible);
+    // solo la celda de media tiene un pequeño carrusel propio (ver más abajo).
     (function () {
+      const hero = document.getElementById('hero');
+      if (!hero) return;
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const hasHover = window.matchMedia('(hover: hover)').matches;
       if (prefersReduced || !hasHover) return;
 
-      const media = document.getElementById('bentoMedia');
+      hero.querySelectorAll('.bento-cell').forEach((cell) => {
+        cell.addEventListener('mousemove', (e) => {
+          const r = cell.getBoundingClientRect();
+          cell.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+          cell.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        });
+      });
+
+      const media = hero.querySelector('.bento-media');
       const viewport = media && media.querySelector('.bm-viewport');
       if (media && viewport) {
         media.addEventListener('mousemove', (e) => {
