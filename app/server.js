@@ -2140,7 +2140,10 @@ const PAGE_SCRIPTS = {
 // componente es genérico y sitewide (gradiente institucional plano por defecto), así
 // que esto se aplica solo a la URL indicada, no a las demás páginas que lo comparten.
 const PAGE_HERO_IMAGES = {
-  '/biblioteca/': '/media/biblio-hero-banner.webp',
+  '/biblioteca/': '/media/biblioteca-hero-banner.webp',
+  '/bienestar/': '/media/bienestar-hero-banner.webp',
+  '/humanidades/': '/media/humanidades-hero-banner.webp',
+  '/internacionalizacion/': '/media/internacionales-hero-banner.webp',
 };
 // Oscurece un color hex hacia negro conservando el factor k (0..1) de cada canal.
 const _h2r = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join('');
