@@ -2136,6 +2136,12 @@ const PAGE_SCRIPTS = {
   '/biblioteca/': '/js/biblio.js',
   '/convenios-uniremington/': '/js/convenios.js',
 };
+// Foto de fondo para la franja de título (.dep-hero) de páginas concretas -- ese
+// componente es genérico y sitewide (gradiente institucional plano por defecto), así
+// que esto se aplica solo a la URL indicada, no a las demás páginas que lo comparten.
+const PAGE_HERO_IMAGES = {
+  '/biblioteca/': '/media/biblio-hero-banner.webp',
+};
 // Oscurece un color hex hacia negro conservando el factor k (0..1) de cada canal.
 const _h2r = (h) => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join('');
   return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
@@ -2203,7 +2209,7 @@ function renderPageContent(res, item) {
       : (sedeDesc || metaDesc(item)),
     canonical: SITE + (item.url || ''),
     item, h1: isGrados ? 'Postulación a Grados 2026-II' : ctx.h1, crumbs: ctx.crumbs, sidebar, curUrl,
-    bodyScripts: scripts, theme: contentTheme(item.content_html),
+    bodyScripts: scripts, theme: contentTheme(item.content_html), heroImage: PAGE_HERO_IMAGES[curUrl],
     contentOverride: sedeSlug ? sedeContent(item.content_html, sedeSlug) : undefined,
     jsonld: sedeSlug ? sedeJsonld(sedeSlug, item) : (isGrados ? gradosJsonld(item) : undefined),
     ctaTitle: isGrados ? '¿Y ahora qué sigue?' : undefined,

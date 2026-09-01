@@ -1469,6 +1469,13 @@ html:has(body.conv-modal-open),body.conv-modal-open{overflow:hidden}
   radial-gradient(120% 140% at 88% -20%,rgba(255,255,255,.14),transparent 55%),
   linear-gradient(150deg,var(--c,#00457c) 0%,var(--c2,#012a50) 78%);
   border-bottom:3px solid var(--rojo)}
+/* Variante con foto real de fondo (páginas puntuales vía --hero-img, ver page.ejs):
+   misma veladura oscura de la marca en vez del degradado plano, para que el título siga
+   siendo legible sobre cualquier imagen. */
+.dep-hero-photo{background:
+  linear-gradient(120deg,rgba(0,18,40,.74) 0%,rgba(0,18,40,.4) 55%,rgba(0,18,40,.6) 100%),
+  var(--hero-img) center/cover no-repeat;
+  border-bottom:3px solid var(--rojo)}
 .dep-hero::after{opacity:.5}
 .dep-hero .wrap{padding:clamp(40px,6vw,62px) 24px clamp(34px,4.5vw,50px)}
 .dep-hero .eyebrow{margin-bottom:16px;padding:0;border-left:0;color:#fff;opacity:1;
