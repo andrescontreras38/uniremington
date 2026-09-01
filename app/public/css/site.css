@@ -1469,15 +1469,31 @@ html:has(body.conv-modal-open),body.conv-modal-open{overflow:hidden}
   radial-gradient(120% 140% at 88% -20%,rgba(255,255,255,.14),transparent 55%),
   linear-gradient(150deg,var(--c,#00457c) 0%,var(--c2,#012a50) 78%);
   border-bottom:3px solid var(--rojo)}
-/* Variante con foto real de fondo (páginas puntuales vía --hero-img, ver page.ejs):
-   misma veladura oscura de la marca en vez del degradado plano, para que el título siga
-   siendo legible sobre cualquier imagen. */
+/* Variante con foto real de fondo (páginas puntuales vía --hero-img, ver page.ejs).
+   Tres capas en vez de un tinte plano, reutilizando el propio lenguaje del .dep-hero
+   de marca (mismo ángulo de 150deg, mismo brillo superior) para que se sienta parte de
+   la misma familia visual en vez de un tratamiento aparte:
+   1) brillo superior derecho (el mismo radial-gradient del .dep-hero sin foto)
+   2) veladura diagonal para el texto (misma dirección que el degradado de marca)
+   3) viñeta inferior extra, justo detrás del título y del borde rojo */
 .dep-hero-photo{background:
-  linear-gradient(120deg,rgba(0,18,40,.74) 0%,rgba(0,18,40,.4) 55%,rgba(0,18,40,.6) 100%),
+  radial-gradient(120% 140% at 88% -20%,rgba(255,255,255,.12),transparent 55%),
+  linear-gradient(150deg,rgba(2,16,36,.92) 0%,rgba(2,16,36,.64) 42%,rgba(2,16,36,.12) 76%),
+  linear-gradient(0deg,rgba(0,10,24,.6) 0%,transparent 46%),
   var(--hero-img) center/cover no-repeat;
   border-bottom:3px solid var(--rojo)}
 .dep-hero::after{opacity:.5}
 .dep-hero .wrap{padding:clamp(40px,6vw,62px) 24px clamp(34px,4.5vw,50px)}
+/* Más alto que el .dep-hero de marca: con una foto real de fondo, la franja se sentía
+   corta comparada con el hero de las páginas de facultad (.fac-hero, ~42px más alto en
+   escritorio). Padding extra fijo sobre el propio clamp() responsivo -- no se copia la
+   fórmula de .fac-hero tal cual porque su altura en móvil crece por el nombre largo de
+   la facultad envolviéndose en varias líneas, no por diseño; estos títulos son cortos.
+   Va DESPUÉS de ".dep-hero .wrap" a propósito: misma especificidad (dos clases), así
+   que si quedara antes el "padding" shorthand de esa regla la pisaría por completo. */
+.dep-hero-photo .wrap{
+  padding-top:calc(clamp(40px,6vw,62px) + 26px);
+  padding-bottom:calc(clamp(34px,4.5vw,50px) + 20px)}
 .dep-hero .eyebrow{margin-bottom:16px;padding:0;border-left:0;color:#fff;opacity:1;
   font-size:.72rem;letter-spacing:.24em;display:inline-flex;align-items:center;gap:11px}
 .dep-hero .eyebrow::before{content:"";width:26px;height:2px;background:var(--rojo);border-radius:2px}
