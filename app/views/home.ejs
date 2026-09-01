@@ -135,7 +135,11 @@
        paneles de interfaz flotando sobre manchas de color. */
     .hero { position: relative; background: var(--dark); color: #fff; }
 
+    /* El slider ocupa todo el hero; cada diapositiva (institucional o promo) es un
+       .bm-slide a pantalla completa dentro de .hero-media -- ver más abajo, junto al
+       resto del carrusel, en vez de duplicar el layout del slider en dos sitios. */
     .hero-media { position: relative; min-height: clamp(460px, 52vw, 600px); overflow: hidden; }
+
     .hero-photo {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
@@ -153,7 +157,7 @@
       max-width: var(--container);
       margin: 0 auto;
       padding: 0 28px;
-      min-height: clamp(460px, 52vw, 600px);
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -237,34 +241,11 @@
     .hero-link:last-child { border-right: 0; }
     .hero-link:hover { background: rgba(255, 255, 255, .06); }
 
-    /* Sección: ofertas destacadas (antes vivía metida en el hero) */
-    .promo-strip { padding: 48px 0 8px; }
-    .promo-strip-head { max-width: 640px; margin: 0 0 22px; }
-    .promo-strip-head h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 1.9rem); color: var(--blue); font-weight: 800; margin: 0 0 8px; }
-    .promo-strip-head p { color: var(--muted); line-height: 1.6; margin: 0; }
-    .promo-strip .bento-media {
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 14px 34px rgba(0, 40, 80, .16);
-    }
-
-    /* Carrusel de ofertas de Mercadeo */
-    .bento-media {
-      display: flex;
-      flex-direction: column;
-      min-height: 150px;
-      color: #fff;
-      overflow: hidden;
-    }
-    /* Viewport: solo la imagen: aquí vive el crossfade y el tilt 3D */
-    .bm-viewport {
-      position: relative;
-      flex: none;
-      aspect-ratio: 1200 / 850;
-      overflow: hidden;
-      transform: perspective(800px);
-      transition: transform .15s ease;
-    }
+    /* Slider del hero: .bm-viewport llena .hero-media por completo; cada .bm-slide es una
+       diapositiva a pantalla completa (la institucional con foto+veladura+titular, o una
+       promo de Mercadeo con su gráfica + etiqueta). Mismo carrusel/JS que ya existía,
+       ahora a tamaño completo en vez de en una celda pequeña. */
+    .bm-viewport { position: absolute; inset: 0; }
     .bm-slide {
       position: absolute; inset: 0;
       opacity: 0;
@@ -277,36 +258,40 @@
       transition: opacity .5s ease;
     }
     .bm-linkfull { position: absolute; inset: 0; display: block; }
-    .bento-media img {
+    /* object-fit:contain (no cover): estas piezas son gráficas de Mercadeo ya
+       diagramadas -texto, precio, botón "Conoce más" pegados a los bordes-, no fotos; con
+       cover el hero (mucho más ancho que la pieza original) recortaba justo ese texto. Con
+       contain se ve la pieza completa, apoyada sobre el fondo oscuro del propio hero. */
+    .hero-slide-promo img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: center 35%;
+      object-fit: contain;
       transition: transform .6s ease;
     }
-    .bm-slide:hover img { transform: scale(1.06); }
+    .hero-slide-promo:hover img { transform: scale(1.03); }
     .bento-media-cap {
       position: absolute;
-      left: 14px; bottom: 14px;
+      left: 20px; bottom: 66px;
       z-index: 2;
-      max-width: calc(100% - 28px);
+      max-width: calc(100% - 40px);
       display: inline-block;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 8px;
-      background: rgba(4, 20, 36, .55);
+      background: rgba(4, 20, 36, .6);
       backdrop-filter: blur(4px);
       font-weight: 700;
       font-size: .92rem;
       line-height: 1.25;
     }
-    /* Barra de controles: fuera de la imagen, debajo del viewport */
+    /* Controles superpuestos sobre el borde inferior de la imagen (no una barra aparte
+       fuera del hero): una veladura suave basta para leerlos sin tapar la foto. */
     .bm-controls {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      background: rgba(4, 20, 36, .55);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 20px;
+      background: linear-gradient(transparent, rgba(4, 20, 36, .62));
     }
     .bm-dots {
       display: flex;
@@ -1555,7 +1540,7 @@
   .footer-top { padding: 40px 16px 24px; }
   .foot-bottom { padding: 18px 16px; }
 
-  .hero-media, .hero-content { min-height: 420px; }
+  .hero-media { min-height: 420px; }
   .hero-content { padding: 0 20px; }
   .hero-links { flex-direction: column; }
   .hero-link { border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, .12); padding: 16px 20px; }
@@ -1604,7 +1589,7 @@
 
 /* --- Pantallas menores a 480px --- */
 @media (max-width: 480px) {
-  .hero-media, .hero-content { min-height: 380px; }
+  .hero-media { min-height: 380px; }
   .hero-content { padding: 0 18px; }
 
   .hero h1 {
@@ -1928,18 +1913,45 @@ html { scroll-behavior: smooth; }
       var campaignSizes = '(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 550px';
     %>
 
-    <!-- Hero: foto real (graduación) con veladura direccional + franja de accesos.
-         Antes era una rejilla de tarjetas de vidrio sobre manchas de gradiente. -->
+    <!-- Hero: slider de pantalla completa. Diapositiva 0 = mensaje institucional (foto
+         real + veladura + titular); las siguientes son las campañas vigentes de Mercadeo
+         (antes competían por espacio en una celda aparte del bento). Solo la imagen de la
+         diapositiva 0 carga eager/fetchpriority=high (es el LCP real); las demás usan
+         data-src y las trae el propio JS del carrusel después del LCP -- mismo patrón que
+         ya usaba este carrusel, así que el rendimiento no cambia. -->
     <div class="hero" id="hero">
-      <div class="hero-media">
-        <img class="hero-photo" src="/media/imagen-banner-1.webp" width="1200" height="856"
-             alt="Estudiantes de Uniremington celebrando su grado" loading="eager" fetchpriority="high" decoding="async">
-        <div class="hero-scrim" aria-hidden="true"></div>
-        <div class="hero-content">
-          <span class="hero-badge">Inscripciones abiertas 2026</span>
-          <h1>La universidad que llegó a <span class="accent">19 ciudades de Colombia</span></h1>
-          <p>Desde 1915 formando profesionales — pregrado, posgrado y educación continua, en modalidad presencial, a distancia y virtual.</p>
-          <a href="/programas" class="cta-hero">Explorar Programas &rarr;</a>
+      <div class="hero-media" id="bentoMedia">
+        <div class="bm-viewport">
+          <div class="bm-slide is-active hero-slide-main" data-slide="0" id="bm-panel-0" role="tabpanel" aria-labelledby="bm-tab-0">
+            <img class="hero-photo" src="/media/imagen-banner-1.webp" width="1200" height="856"
+                 alt="Estudiantes de Uniremington celebrando su grado" loading="eager" fetchpriority="high" decoding="async">
+            <div class="hero-scrim" aria-hidden="true"></div>
+            <div class="hero-content">
+              <span class="hero-badge">Inscripciones abiertas 2026</span>
+              <h1>La universidad que llegó a <span class="accent">19 ciudades de Colombia</span></h1>
+              <p>Desde 1915 formando profesionales — pregrado, posgrado y educación continua, en modalidad presencial, a distancia y virtual.</p>
+              <a href="/programas" class="cta-hero">Explorar Programas &rarr;</a>
+            </div>
+          </div>
+          <% campaigns.forEach(function(c, i){ %>
+          <div class="bm-slide hero-slide-promo" data-slide="<%= i + 1 %>" id="bm-panel-<%= i + 1 %>" role="tabpanel" aria-labelledby="bm-tab-<%= i + 1 %>">
+            <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
+              <img data-src="<%= c.img %>" data-srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" decoding="async">
+              <span class="bento-media-cap"><%= c.label %></span>
+            </a>
+          </div>
+          <% }) %>
+        </div>
+        <div class="bm-controls">
+          <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Diapositiva anterior"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M560 240 320 480 560 720 616 664 432 480 616 296Z"/></svg></button>
+          <div class="bm-dots" role="tablist" aria-label="Seleccionar diapositiva del hero">
+            <button type="button" id="bm-tab-0" role="tab" aria-controls="bm-panel-0" aria-selected="true" class="bm-dot is-active" data-slide="0" aria-label="Ver mensaje institucional"></button>
+            <% campaigns.forEach(function(c, i){ %>
+            <button type="button" id="bm-tab-<%= i + 1 %>" role="tab" aria-controls="bm-panel-<%= i + 1 %>" aria-selected="false" class="bm-dot" data-slide="<%= i + 1 %>" aria-label="Ver oferta: <%= c.label %>"></button>
+            <% }) %>
+          </div>
+          <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M520 200V760H760V200ZM200 200V760H440V200Z"/></svg></button>
+          <button type="button" class="bm-arrow bm-arrow-next" aria-label="Diapositiva siguiente"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M504 480 320 664 376 720 616 480 376 240 320 296Z"/></svg></button>
         </div>
       </div>
 
@@ -1964,47 +1976,6 @@ html { scroll-behavior: smooth; }
   </header>
 
   <main class="wrap" id="contenido" tabindex="-1">
-
-    <!-- Ofertas destacadas: el carrusel de campañas de Mercadeo, antes escondido en una
-         celda del hero -- suficiente contenido real (promos vigentes con descuento) como
-         para merecer su propia sección en vez de competir por espacio con el titular. -->
-    <section class="promo-strip">
-      <div class="promo-strip-head">
-        <h2>Ofertas destacadas</h2>
-        <p>Convocatorias y programas con beneficios especiales activos este mes.</p>
-      </div>
-      <div class="bento-media" id="bentoMedia">
-        <div class="bm-viewport">
-          <% campaigns.forEach(function(c, i){ %>
-          <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
-            <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-              <% if (i === 0) { %>
-              <img src="<%= c.img %>" srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" loading="eager" decoding="async">
-              <% } else { %>
-              <!-- data-src/data-srcset (sin src): las diapositivas inactivas están en
-                   position:absolute con el mismo tamaño del viewport (para el crossfade),
-                   así que aunque lleven loading="lazy" el navegador las considera "cerca" y
-                   las descarga igual — se cargan por JS más abajo, tras el LCP. -->
-              <img data-src="<%= c.img %>" data-srcset="<%= campaignSrcset(c.img) %>" sizes="<%= campaignSizes %>" alt="<%= c.label %>" width="1100" height="779" decoding="async">
-              <% } %>
-              <span class="bento-media-cap"><%= c.label %></span>
-            </a>
-          </div>
-          <% }) %>
-        </div>
-        <div class="bm-controls">
-          <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M560 240 320 480 560 720 616 664 432 480 616 296Z"/></svg></button>
-          <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
-            <% campaigns.forEach(function(c, i){ %>
-            <button type="button" id="bm-tab-<%= i %>" role="tab" aria-controls="bm-panel-<%= i %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
-            <% }) %>
-          </div>
-          <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M520 200V760H760V200ZM200 200V760H440V200Z"/></svg></button>
-          <button type="button" class="bm-arrow bm-arrow-next" aria-label="Oferta siguiente"><svg class="ico" viewBox="0 0 960 960" aria-hidden="true"><path transform="matrix(1 0 0 -1 0 960)" d="M504 480 320 664 376 720 616 480 376 240 320 296Z"/></svg></button>
-        </div>
-      </div>
-    </section>
-
 
     <!-- Oferta Académica: el grid de programas (las imágenes) va primero, el video
          institucional cierra la sección como banner de invitación + CTA. -->
